@@ -1,9 +1,9 @@
 //! Auto Settings decodes a selection off the UI thread and commits it as one undo step.
-use crate::LightcraftApp;
-use lightcraft_catalog::{Op, PhotoId};
-use lightcraft_develop::DevelopSettings;
-use lightcraft_engine::media::{SourceLevel, SourceRef};
-use lightcraft_pipeline::SourceInfo;
+use crate::LuzApp;
+use luz_catalog::{Op, PhotoId};
+use luz_develop::DevelopSettings;
+use luz_engine::media::{SourceLevel, SourceRef};
+use luz_pipeline::SourceInfo;
 use serde_json::{Value, json};
 use std::sync::{Arc, atomic::AtomicBool};
 
@@ -28,7 +28,7 @@ struct Completed {
     skipped: usize,
 }
 
-fn prepare(app: &mut LightcraftApp, params: &Value) -> Result<Prepared, String> {
+fn prepare(app: &mut LuzApp, params: &Value) -> Result<Prepared, String> {
     let ids = app.session.targets(params).map_err(|e| e.to_string())?;
     let mut inputs = Vec::with_capacity(ids.len());
     for id in ids {
@@ -41,7 +41,7 @@ fn prepare(app: &mut LightcraftApp, params: &Value) -> Result<Prepared, String> 
     Ok(Prepared { library: app.session.library_generation(), commits: app.session.commits(), inputs })
 }
 impl Prepared {
-    fn run(self, progress: Option<&lightcraft_engine::activity::TaskHandle>) -> Result<Completed, String> {
+    fn run(self, progress: Option<&luz_engine::activity::TaskHandle>) -> Result<Completed, String> {
         let total = self.inputs.len() as u64;
         let mut settings = Vec::with_capacity(self.inputs.len());
         let mut failed: Option<String> = None;
@@ -60,7 +60,7 @@ impl Prepared {
                 }
             };
             let info = source.info_or(input.info);
-            let auto = lightcraft_pipeline::auto::auto_tone(&source.image, &info, &input.settings);
+            let auto = luz_pipeline::auto::auto_tone(&source.image, &info, &input.settings);
             let mut develop = (*input.settings).clone();
             develop.light.exposure = auto.exposure;
             develop.light.contrast = auto.contrast;
@@ -84,7 +84,7 @@ impl Prepared {
         Ok(Completed { library: self.library, commits: self.commits, settings, skipped })
     }
 }
-fn apply(app: &mut LightcraftApp, completed: Completed) -> Result<usize, String> {
+fn apply(app: &mut LuzApp, completed: Completed) -> Result<usize, String> {
     // An undo or a live edit changes a photo's settings without a commit: compare the settings too.
     let moved = completed.settings.iter().any(|(id, before, _)| app.session.develop_of(*id).is_none_or(|now| now != *before));
     if app.session.library_generation() != completed.library || app.session.commits() != completed.commits || moved {
@@ -102,7 +102,7 @@ fn apply(app: &mut LightcraftApp, completed: Completed) -> Result<usize, String>
     }
     Ok(completed.skipped)
 }
-pub(crate) fn command(app: &mut LightcraftApp, params: &Value) -> Result<Value, String> {
+pub(crate) fn command(app: &mut LuzApp, params: &Value) -> Result<Value, String> {
     if app.tasks.is_running(LABEL) {
         return Err("Auto Settings is already running".into());
     }
@@ -128,8 +128,8 @@ pub(crate) fn command(app: &mut LightcraftApp, params: &Value) -> Result<Value, 
 #[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
-    fn app() -> LightcraftApp {
-        LightcraftApp::new(lightcraft_engine::Session::with_demo(), crate::Services::default())
+    fn app() -> LuzApp {
+        LuzApp::new(luz_engine::Session::with_demo(), crate::Services::default())
     }
     #[test]
     fn selection_auto_is_deferred_and_commits_once() {
@@ -157,7 +157,7 @@ mod tests {
         assert!(apply(&mut app, done).is_err());
         assert_eq!(app.session.commits(), before);
         let done = prepare(&mut app, &json!({})).unwrap().run(None).unwrap();
-        app.session = lightcraft_engine::Session::with_demo();
+        app.session = luz_engine::Session::with_demo();
         assert!(apply(&mut app, done).is_err());
     }
 }

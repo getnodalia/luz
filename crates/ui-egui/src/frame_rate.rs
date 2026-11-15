@@ -1,4 +1,4 @@
-//! Help ▸ Debug ▸ Frame Rate (`view.frameRate`; `LIGHTCRAFT_FPS=1` starts with it on): a
+//! Help ▸ Debug ▸ Frame Rate (`view.frameRate`; `LUZ_FPS=1` starts with it on): a
 //! frame-rate display in the window's top-right corner, to watch how a slider drag or a zoom holds
 //! up. It shows where a frame's time goes: the UI
 //! thread's CPU time (layout, painting, texture uploads) and the rest of the frame interval, which
@@ -8,7 +8,7 @@
 
 use std::collections::VecDeque;
 
-use crate::LightcraftApp;
+use crate::LuzApp;
 use crate::render::Slot;
 
 /// Frames kept for the graph (about two seconds at 120 Hz).
@@ -93,7 +93,7 @@ fn mb(bytes: u64) -> f64 {
 }
 
 /// Count this frame and draw the display over everything.
-pub fn show(ctx: &egui::Context, app: &LightcraftApp) {
+pub fn show(ctx: &egui::Context, app: &LuzApp) {
     let now = ctx.input(|i| i.time);
     let cpu = app.perf.host_frame_ms.unwrap_or(0.0) / 1e3;
     let (frames, log) = record(ctx, now, app.renderer.completed, app.renderer.discarded, cpu);
@@ -106,13 +106,11 @@ pub fn show(ctx: &egui::Context, app: &LightcraftApp) {
     let renders_s: u64 = recent.iter().map(|f| f.renders).sum();
     let discarded_s: u64 = recent.iter().map(|f| f.discarded).sum();
     let window = app.renderer.textures.get(&Slot::Region);
-    let mem = lightcraft_engine::gpu::memory();
+    let mem = luz_engine::gpu::memory();
     // (`ready` first: `available` would wait for a device still being created)
-    let device = match lightcraft_engine::gpu::unavailable_reason() {
+    let device = match luz_engine::gpu::unavailable_reason() {
         Some(why) => format!("off ({why})"),
-        None if lightcraft_engine::gpu::ready() && lightcraft_engine::gpu::available() => {
-            lightcraft_engine::gpu::adapter_name().unwrap_or_else(|| "on".into())
-        }
+        None if luz_engine::gpu::ready() && luz_engine::gpu::available() => luz_engine::gpu::adapter_name().unwrap_or_else(|| "on".into()),
         None => "starting…".into(),
     };
     if log {
@@ -216,7 +214,7 @@ mod tests {
 
     use crate::headless::Headless;
     use crate::menubar::{MenuNode, menu_bar};
-    use crate::{LightcraftApp, Services};
+    use crate::{LuzApp, Services};
 
     const T: Duration = Duration::from_secs(20);
 
@@ -227,7 +225,7 @@ mod tests {
     }
 
     /// The Help ▸ Debug item for it, and its checkmark.
-    fn debug_item(app: &LightcraftApp) -> Option<Option<bool>> {
+    fn debug_item(app: &LuzApp) -> Option<Option<bool>> {
         let help = menu_bar(app).into_iter().find(|(t, _)| t == "Help").map(|(_, items)| items).unwrap_or_default();
         help.into_iter().find_map(|n| match n {
             MenuNode::Submenu { label, children } if label == "Debug" => children.into_iter().find_map(|c| match c {
@@ -242,7 +240,7 @@ mod tests {
     /// and frames draw with it on.
     #[test]
     fn show_frame_rate_is_a_debug_toggle() {
-        let app = LightcraftApp::new(lightcraft_engine::Session::with_demo(), Services { png: None, ..Default::default() });
+        let app = LuzApp::new(luz_engine::Session::with_demo(), Services { png: None, ..Default::default() });
         let mut h = Headless::new(app, [1200.0, 800.0], 1.0);
         let was = h.app.ui.frame_rate;
         assert_eq!(debug_item(&h.app), Some(Some(was)), "Help ▸ Debug lists it, checked as it is");
@@ -265,7 +263,7 @@ mod tests {
     /// one long frame (a red spike and a "worst" of the whole time off).
     #[test]
     fn turning_it_back_on_shows_no_spike_for_the_time_it_was_off() {
-        let app = LightcraftApp::new(lightcraft_engine::Session::with_demo(), Services { png: None, ..Default::default() });
+        let app = LuzApp::new(luz_engine::Session::with_demo(), Services { png: None, ..Default::default() });
         let mut h = Headless::new(app, [1200.0, 800.0], 1.0);
         set(&mut h, json!({"show": true}));
         for _ in 0..3 {
@@ -285,7 +283,7 @@ mod tests {
     /// A pause while it shows (window hidden, machine asleep) starts a fresh count too.
     #[test]
     fn a_long_pause_while_it_shows_is_not_a_frame() {
-        let app = LightcraftApp::new(lightcraft_engine::Session::with_demo(), Services { png: None, ..Default::default() });
+        let app = LuzApp::new(luz_engine::Session::with_demo(), Services { png: None, ..Default::default() });
         let mut h = Headless::new(app, [1200.0, 800.0], 1.0);
         set(&mut h, json!({"show": true}));
         for _ in 0..3 {

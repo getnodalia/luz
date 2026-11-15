@@ -1,19 +1,19 @@
 [package]
-name = "lightcraft-raw"
+name = "luz-raw"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "LightCraft RAW decoding, demosaicing and DNG colour model (L1)"
+description = "Luz RAW decoding, demosaicing and DNG colour model (L1)"
 
 [lints]
 workspace = true
 
 [dependencies]
-lightcraft-tiff = { workspace = true }
-lightcraft-meta = { workspace = true }
-lightcraft-raster = { workspace = true }
-lightcraft-color = { workspace = true }
-lightcraft-geom = { workspace = true }
+luz-tiff = { workspace = true }
+luz-meta = { workspace = true }
+luz-raster = { workspace = true }
+luz-color = { workspace = true }
+luz-geom = { workspace = true }
 serde = { workspace = true }
 chrono = { workspace = true }
 craft-crw = { workspace = true }
@@ -32,7 +32,7 @@ jxl = ["dep:jxl-oxide"]
 
 [dev-dependencies]
 # tests record why they skip (`cargo xtask ci` lists the skips)
-lightcraft-testkit = { workspace = true }
+luz-testkit = { workspace = true }
 proptest = { workspace = true }
 zune-jpegxl = { workspace = true }
 # Pinned CC0 corpus identities; not a product dependency.

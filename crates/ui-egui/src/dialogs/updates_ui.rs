@@ -5,7 +5,7 @@
 
 use serde_json::Value;
 
-use crate::LightcraftApp;
+use crate::LuzApp;
 
 #[cfg(not(target_arch = "wasm32"))]
 use nodalia_update::egui::{Action, Updater};
@@ -47,7 +47,7 @@ impl Default for Runtime {
     }
 }
 
-impl LightcraftApp {
+impl LuzApp {
     /// Whether the app looks for a newer release when it starts (off until the desktop app turns it on).
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_startup_update_check(&mut self, on: bool) {
@@ -56,7 +56,7 @@ impl LightcraftApp {
 }
 
 /// The update windows are modal while they are open: shortcuts must not reach the library behind them.
-pub(crate) fn blocks_input(app: &LightcraftApp) -> bool {
+pub(crate) fn blocks_input(app: &LuzApp) -> bool {
     #[cfg(not(target_arch = "wasm32"))]
     {
         app.updates_rt.updater.is_open()
@@ -68,7 +68,7 @@ pub(crate) fn blocks_input(app: &LightcraftApp) -> bool {
     }
 }
 
-pub(crate) fn check(app: &mut LightcraftApp) -> Result<Value, String> {
+pub(crate) fn check(app: &mut LuzApp) -> Result<Value, String> {
     #[cfg(not(target_arch = "wasm32"))]
     {
         app.updates_rt.check_requested = true;
@@ -85,7 +85,7 @@ pub(crate) fn check(app: &mut LightcraftApp) -> Result<Value, String> {
     }
 }
 
-pub(crate) fn tick(app: &mut LightcraftApp, ctx: &egui::Context) {
+pub(crate) fn tick(app: &mut LuzApp, ctx: &egui::Context) {
     #[cfg(not(target_arch = "wasm32"))]
     {
         let rt = &mut app.updates_rt;
@@ -122,7 +122,7 @@ fn act(ctx: &egui::Context, action: Action) {
     }
 }
 
-pub(crate) fn show(app: &mut LightcraftApp, ctx: &egui::Context) {
+pub(crate) fn show(app: &mut LuzApp, ctx: &egui::Context) {
     #[cfg(not(target_arch = "wasm32"))]
     {
         // An installation waits until nothing is unsaved.
@@ -135,7 +135,7 @@ pub(crate) fn show(app: &mut LightcraftApp, ctx: &egui::Context) {
     #[cfg(target_arch = "wasm32")]
     if app.updates_rt.manual_window_open {
         let mut open = true;
-        let shown = egui::Window::new(crate::i18n::tr("LightCraft Updates"))
+        let shown = egui::Window::new(crate::i18n::tr("Luz Updates"))
             .open(&mut open)
             .collapsible(false)
             .resizable(false)
@@ -162,7 +162,7 @@ pub(crate) fn show(app: &mut LightcraftApp, ctx: &egui::Context) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use lightcraft_engine::Session;
+    use luz_engine::Session;
     #[cfg(not(target_arch = "wasm32"))]
     use nodalia_update::egui::Status;
 
@@ -189,7 +189,7 @@ mod tests {
     #[test]
     #[cfg(not(target_arch = "wasm32"))]
     fn startup_prompt_shows_holds_the_keys_and_closes() {
-        let mut app = LightcraftApp::new(Session::new(), Default::default());
+        let mut app = LuzApp::new(Session::new(), Default::default());
         let ctx = egui::Context::default();
         app.updates_rt.updater = Updater::new(crate::UPDATE_APP).with_stamp(None);
         app.updates_rt.updater.offer(nodalia_update::Release {
@@ -199,7 +199,7 @@ mod tests {
             page: "https://github.com/getnodalia/luz/releases/tag/v99.0.0".into(),
             asset: None,
         });
-        let frame = |app: &mut LightcraftApp, events: Vec<egui::Event>| {
+        let frame = |app: &mut LuzApp, events: Vec<egui::Event>| {
             let mut output = ctx.run_ui(egui::RawInput { events, ..Default::default() }, |ui| {
                 show(app, ui.ctx());
             });
@@ -215,7 +215,7 @@ mod tests {
     #[test]
     #[cfg(not(target_arch = "wasm32"))]
     fn a_silent_check_at_start_holds_no_keys() {
-        let mut app = LightcraftApp::new(Session::new(), Default::default());
+        let mut app = LuzApp::new(Session::new(), Default::default());
         app.updates_rt.updater.set_status(Status::Checking { user: false });
         assert!(!blocks_input(&app));
         app.updates_rt.updater.set_status(Status::Checking { user: true });

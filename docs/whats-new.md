@@ -195,7 +195,7 @@
   written there now, and Try Again opens the library once its drive or share is back: on an empty folder left in
   its place, such as a share's mount point, it says so again instead of making a new library there. A library
   folder Luz isn't allowed to read is reported as unreadable, with the system's reason, not as gone. A
-  library given with `--library` or `LIGHTCRAFT_LIBRARY`, and the default location on first launch, are still
+  library given with `--library` or `LUZ_LIBRARY`, and the default location on first launch, are still
   created as before.
 
 ### The histogram's clipping buttons read in light themes
@@ -312,7 +312,7 @@
 
 ### A one-field white balance edit no longer shifts the other one
 - Settings that name only a white balance temperature, or only a tint — `develop.merge`,
-  `lightcraft-cli render --settings <partial JSON>`, an MCP `set_develop {settings: …}` call, or a hand-written
+  `luz-cli render --settings <partial JSON>`, an MCP `set_develop {settings: …}` call, or a hand-written
   preset naming one of the two — used to change the colour balance of photos they never mentioned. On a raw edited in
   Kelvin the field the partial left out was re-read on the other scale: `wb {temp: 5800}` on a photo at 5000 K /
   +12 tint came back at 5800 K with the +12 read as a relative shift, moving the green–magenta balance by a visible
@@ -558,7 +558,7 @@
   or `xmp`. Those foreign properties no longer become Luz settings or ratings when imported.
 
 ### The log can show every thumbnail and preview Luz asks for
-- With `RUST_LOG=warn,lightcraft*=info,lightcraft_ui_egui::render=debug` (or `LIGHTCRAFT_LOG=debug`), the log has a
+- With `RUST_LOG=warn,luz*=info,luz_ui_egui::render=debug` (or `LUZ_LOG=debug`), the log has a
   line for each picture Luz asks for, with its file, and one for how it ended: drawn, or dropped and why.
   Before, only failures were logged, so the log couldn't tell a file asked for 37 times from one asked for once and
   failing inside (issue #2682).
@@ -624,7 +624,7 @@
 - Holding Alt (Option on a Mac) as the window appears shows the same list once, over the library that opened: open
   another one from it, or press Esc to keep working where you were. On a Mac, an Option key held from before
   Luz starts is only noticed once it changes, so press it as the window appears.
-- `--library` and `LIGHTCRAFT_LIBRARY` still decide the library when given, and `lightcraft-cli` never asks.
+- `--library` and `LUZ_LIBRARY` still decide the library when given, and `luz-cli` never asks.
 - File ▸ Open Recent Library ▸ **Remove from List** forgets one library, and the launch window's **Remove from
   List** does the same. Only the entry goes: the library and its photos stay where they are. Agents use
   `app.recentLibraries {remove: path}`; its list now also says when each library was last opened (`lastOpened`).
@@ -1000,7 +1000,7 @@
   dark sky is now removed too.
 - Photo ▸ Photo Merge ▸ HDR for Each Bracket Set merges every bracket among the selected photos with the last HDR
   settings, one after the other: each stack, and photos taken less than a second apart at different exposures.
-  From the command line: `lightcraft-cli merge hdr-batch FOLDER`.
+  From the command line: `luz-cli merge hdr-batch FOLDER`.
 - Merging uses about a quarter less memory: three 67 MP raws need 3.8 GB instead of 4.8 GB.
 
 ### XMP sidecars catch up after a network share comes back
@@ -1215,7 +1215,7 @@
 
 ### Portable mode
 - A file named `portable.txt` next to the Luz program makes it keep its settings, logs and downloaded
-  models in a `LightCraftData` folder beside it instead of the per-user settings folder (issue #1200), as
+  models in a `LuzData` folder beside it instead of the per-user settings folder (issue #1200), as
   Lienzo does. If that folder can't be written, the usual folder is used and the log says why.
 
 ### Reliability
@@ -1463,7 +1463,7 @@
   smart preview" or "This photo can't be opened", the reason on hover) instead of showing that preview as if it were
   the photo.
 ### `--import <folder>` takes HEIC
-- `lightcraft-cli run --import <folder>` (and the MCP tools that take folders) now picks up HEIC, HEIF and Nikon NRW
+- `luz-cli run --import <folder>` (and the MCP tools that take folders) now picks up HEIC, HEIF and Nikon NRW
   files, the same files as `library.import` (issue #1080). They used to be skipped without a word.
 - Compare and Reference View panes say "Rendering…" (or that the photo can't be opened) the same way, so a
   magnified preview isn't taken for the photo when checking focus at 1:1.
@@ -1539,7 +1539,7 @@
 - Choosing a Lightroom Classic catalog folder in File → Open Library… (or one of its `Previews.lrdata` /
   `.lrcat-data` folders, or the `.lrcat`) no longer makes an empty Luz library inside it (issue #891). The
   library open now stays, and Luz says "This is a Lightroom catalog, not a Luz library" and offers
-  **Import Lightroom Catalog…** with that catalog, or Cancel. `lightcraft-cli --library` refuses those folders too.
+  **Import Lightroom Catalog…** with that catalog, or Cancel. `luz-cli --library` refuses those folders too.
 
 ### Canon EOS R5 Mark II
 - Canon EOS R5 Mark II C-RAW files that opened as "preview only" (more than half of them, depending on the
@@ -1551,7 +1551,7 @@
 - File ▸ Open Recent Library lists the last 8 libraries; ones that are gone (moved, drive disconnected) are greyed
   out. Clear Recent Libraries empties the list.
 - The open library's name shows under My Photos at the top of the left panel and in the window title.
-- `lightcraft-cli --library` given a library's own file (`catalog.snap`) opens its folder instead of failing with
+- `luz-cli --library` given a library's own file (`catalog.snap`) opens its folder instead of failing with
   "File exists".
 - Agents use `app.newLibrary {path, name}`, `app.recentLibraries` and `app.clearRecentLibraries`.
 
@@ -1591,7 +1591,7 @@
 - Grid, filmstrip, preset and profile thumbnails render on the GPU once it is ready (about a quarter faster on an RTX
   5070, and the CPU stays free for decoding raws).
 - While a slider is dragged, the loupe is drawn straight from the GPU: rendering and drawing share the window's
-  graphics device, so drafts are never copied to memory and back (`LIGHTCRAFT_GPU_WINDOW=0` turns this off).
+  graphics device, so drafts are never copied to memory and back (`LUZ_GPU_WINDOW=0` turns this off).
 
 ### Large preset collections
 - A library holding thousands of presets (a Lightroom collection imported whole: 11 000 presets, a 42 MB
@@ -1952,7 +1952,7 @@
   (issue #735).
 
 ### Formats
-- HEIC / HEIF photos (iPhone and Mac) open now: the optional `lightcraft-heif` crate (heic-rs, pure Rust) behind
+- HEIC / HEIF photos (iPhone and Mac) open now: the optional `luz-heif` crate (heic-rs, pure Rust) behind
   codecs' `heif` feature — 8- and 10-bit, alpha, grid tiles, the container's rotation/mirror/crop, ICC, EXIF and XMP.
   Off by default (HEVC patents are the distributor's call, same as Lienzo); official builds pass `--features heif`.
 - HEIC colours now match libheif to within one code value (they were up to ~10 off): the HEVC stream's own
@@ -2082,16 +2082,16 @@
 - `--memory` sessions keep their promise to save nothing (issues #164, #169): UI changes made in one no longer
   land in `ui.json` (where they replaced the saved settings), and the GPU crash sentinel no longer creates the
   settings folder there. The same goes for the temporary session offered when the library can't be opened.
-- The desktop app keeps a log file: `logs/lightcraft.log` in its settings folder (Linux `~/.config/lightcraft/logs/`),
+- The desktop app keeps a log file: `logs/luz.log` in its settings folder (Linux `~/.config/luz/logs/`),
   with the logs of the two previous runs beside it, so warnings and crashes of a run started from a desktop menu or the
-  Dock can be attached to a bug report. `LIGHTCRAFT_LOG` works as before; `RUST_LOG` takes env_logger-style
+  Dock can be attached to a bug report. `LUZ_LOG` works as before; `RUST_LOG` takes env_logger-style
   directives. See README → Quick start → Logs.
 - Help → Open Log Folder shows that log file in the file manager (Finder, Explorer, or the folder on Linux), so it
   can be attached to a report without hunting for the settings folder (issue #260).
-- `lightcraft-cli` logs warnings on stderr too (issue #168); `LIGHTCRAFT_LOG` or `RUST_LOG` picks another level.
+- `luz-cli` logs warnings on stderr too (issue #168); `LUZ_LOG` or `RUST_LOG` picks another level.
 - Luz no longer crashes at launch on Windows PCs whose Vulkan driver is broken (issue #136, e.g. some Intel UHD
   630 drivers): on Windows the window and GPU rendering use DirectX 12 only and never load the Vulkan driver unless
-  asked to. `LIGHTCRAFT_GPU_BACKEND=dx12 | vulkan | metal | off` (or wgpu's `WGPU_BACKEND`, which GPU rendering
+  asked to. `LUZ_GPU_BACKEND=dx12 | vulkan | metal | off` (or wgpu's `WGPU_BACKEND`, which GPU rendering
   ignored before) chooses the graphics backend; `off` renders on the CPU. The GPU now starts after the window
   is up, and only when Settings ▸ Performance ▸ Use the GPU for rendering is on; if Luz ever dies while
   starting the GPU, the next launch starts with GPU rendering off and says how to turn it back on.
@@ -2100,7 +2100,7 @@
   compiler built into Windows (FXC). `WGPU_DX12_COMPILER=dxc` uses a `dxcompiler.dll` instead.
 - Exports and renders never write over a photo's original (issue #93): exporting into the photo's own folder with
   the same name and "Overwrite" (or Export with Previous repeating it), an exact output path from the control
-  channel or MCP, a merge preview path or `lightcraft-cli render IMG.jpg -o IMG.jpg` is refused with a clear
+  channel or MCP, a merge preview path or `luz-cli render IMG.jpg -o IMG.jpg` is refused with a clear
   message, and the original is left byte for byte. Ordinary earlier exports are still overwritten when asked.
   Exported files are written to a temp file and then renamed into place, so a full disk or an unplugged drive
   never leaves a truncated file; the XMP sidecar of an "Original" export follows the "If file exists" choice too.
@@ -2220,7 +2220,7 @@
 - Smaller, faster catalogs: photos you only looked at in Local (never added, rated or edited) are forgotten once
   their folder has not been browsed for 30 days — your files and sidecars stay, and browsing the folder shows them
   again. Change the period (or turn it off) in Settings → Performance.
-- A library is open in one program at a time (issue #99): opening a library that Luz or `lightcraft-cli` already
+- A library is open in one program at a time (issue #99): opening a library that Luz or `luz-cli` already
   has open — on this computer or another one sharing the folder — says who has it ("already open in Luz (process
   123 on studio-mac)") instead of letting both write and silently drop each other's edits. A crash never leaves the
   library locked: the lock is the operating system's and goes away with the program.

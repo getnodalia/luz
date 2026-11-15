@@ -1,7 +1,7 @@
 use super::*;
 
 fn layout(w: usize, h: usize) -> Layout {
-    lightcraft_slideshow::layout(&lightcraft_slideshow::SlideSettings::default().merged(&json!({"margins": 0.1})).unwrap(), 1.5, w, h)
+    luz_slideshow::layout(&luz_slideshow::SlideSettings::default().merged(&json!({"margins": 0.1})).unwrap(), 1.5, w, h)
 }
 
 fn photo() -> Photo {
@@ -144,7 +144,7 @@ fn identity_plate_image_draws_at_its_opacity_and_a_missing_one_is_reported() {
     std::fs::create_dir_all(&dir).unwrap();
     let path = dir.join("plate.png");
     let red = Image::filled(40, 20, [255u8, 0, 0, 255]);
-    let png = lightcraft_codecs::encode_png(&lightcraft_codecs::EncodeImage::rgba8(&red), &lightcraft_codecs::EncodeMeta::default()).unwrap();
+    let png = luz_codecs::encode_png(&luz_codecs::EncodeImage::rgba8(&red), &luz_codecs::EncodeMeta::default()).unwrap();
     std::fs::write(&path, png).unwrap();
     let l = layout(800, 500);
     let s = OverlaySettings::default()
@@ -163,9 +163,8 @@ fn identity_plate_image_draws_at_its_opacity_and_a_missing_one_is_reported() {
     let behind = s.merged(&json!({"identityPlate": {"behind": true, "anchor": "center"}})).unwrap();
     let photo_img = Image::filled(30, 20, [0u8, 0, 255, 255]);
     let ob = SlideOverlays::resolve(&behind, None);
-    let (img, l2) = lightcraft_slideshow::compose_with(&photo_img, None, &lightcraft_slideshow::SlideSettings::default(), 800, 500, &mut |i, l| {
-        ob.draw_behind(i, l)
-    });
+    let (img, l2) =
+        luz_slideshow::compose_with(&photo_img, None, &luz_slideshow::SlideSettings::default(), 800, 500, &mut |i, l| ob.draw_behind(i, l));
     let _ = l2;
     assert_eq!(img.get(400, 250), [0, 0, 255, 255], "the photo is on top");
     // a missing file: reported, nothing drawn, no panic
@@ -257,7 +256,7 @@ fn hostile_settings_are_refused_or_clamped_and_never_panic() {
         let mut bare = photo();
         bare.meta = Default::default();
         for (w, h) in [(1, 1), (17, 9), (320, 200)] {
-            let l = lightcraft_slideshow::layout(&lightcraft_slideshow::SlideSettings::default(), f64::NAN, w, h);
+            let l = luz_slideshow::layout(&luz_slideshow::SlideSettings::default(), f64::NAN, w, h);
             let o = SlideOverlays::resolve(&s, Some(&bare));
             let mut img = blank(l.slide.width() as usize, l.slide.height() as usize);
             o.draw_behind(&mut img, &l);
@@ -281,7 +280,7 @@ fn huge_overlays_on_a_big_slide_stay_cheap() {
         .unwrap();
     let mut p = photo();
     p.rating = 5;
-    let l = lightcraft_slideshow::layout(&lightcraft_slideshow::SlideSettings::default(), 1.5, 4000, 2500);
+    let l = luz_slideshow::layout(&luz_slideshow::SlideSettings::default(), 1.5, 4000, 2500);
     let mut img = blank(4000, 2500);
     let t = std::time::Instant::now();
     SlideOverlays::resolve(&s, Some(&p)).draw_front(&mut img, &l);

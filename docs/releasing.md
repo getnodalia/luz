@@ -45,20 +45,20 @@ and the WASM web app. The platform scripts in [`packaging/`](../packaging/) writ
 - Windows: MSI installer and portable ZIP for each architecture.
 - Linux: AppImage (with its `.AppImage.zsync`), `.deb`, `.rpm`, and `.tar.gz` for each
   architecture (`packaging/linux/package.sh`). Each AppImage embeds
-  `gh-releases-zsync|storytold|lightcraft|latest|lightcraft-*-linux-<arch>.AppImage.zsync`, so
+  `gh-releases-zsync|storytold|luz|latest|luz-*-linux-<arch>.AppImage.zsync`, so
   AppImageUpdate fetches only the changed blocks from the latest published (non-pre-) release.
 - Linux riscv64: `.tar.gz` only, cross-compiled on Ubuntu 24.04 against its riscv64 ports
   libraries (so glibc 2.39 or newer), with the CLI smoke-tested under QEMU (`CROSS_*` variables
   of `packaging/linux/package.sh`).
 - Flatpak: a single-file `.flatpak` bundle for each architecture, repackaged from that
   architecture's Linux tarball (`packaging/linux/flatpak-bundle.sh` with
-  `packaging/linux/flatpak/ai.storyteller.lightcraft.bundle.yml`; no Rust build). The from-source
-  manifest `ai.storyteller.lightcraft.yml` is for Flathub; packaging-lint keeps their runtime and
+  `packaging/linux/flatpak/dev.danielmiguelt.Luz.bundle.yml`; no Rust build). The from-source
+  manifest `dev.danielmiguelt.Luz.yml` is for Flathub; packaging-lint keeps their runtime and
   `finish-args` identical.
-- FreeBSD: `lightcraft-<version>-freebsd-x86_64.tar.gz`, a `/usr/local`-style tree built in a
+- FreeBSD: `luz-<version>-freebsd-x86_64.tar.gz`, a `/usr/local`-style tree built in a
   FreeBSD 14.3 VM (`packaging/freebsd/package.sh`, the same packages as `freebsd.yml`). Install
   with `tar -xzf <file> --strip-components 1 -C /usr/local`.
-- Web: `lightcraft-web-<version>.zip`.
+- Web: `luz-web-<version>.zip`.
 
 Only the macOS, Windows and draft-release jobs use the `release` environment. The others sign
 nothing, so dispatching the workflow on a branch (`gh workflow run release.yml --ref <branch>`)
@@ -74,7 +74,7 @@ revision and require it (`CRAFT_FONTS_REQUIRED=1`). Keep that pin deliberate whe
 workflow, and bump it (in `release.yml`, five jobs, and `freebsd.yml`) whenever craft-fonts adds a face a
 shipped language needs: a stale pin still builds, it just ships tofu (issue #319: v0.4.0 pinned a revision
 from before Noto Sans CJK SC, so Simplified Chinese had no glyphs). Before a release, check the pin against
-craft-fonts' `fonts/manifest.txt` and run `CRAFT_FONTS_DIR=../craft-fonts cargo test -p lightcraft-ui-egui i18n`,
+craft-fonts' `fonts/manifest.txt` and run `CRAFT_FONTS_DIR=../craft-fonts cargo test -p luz-ui-egui i18n`,
 whose glyph-coverage test checks the characters in available faces. `CRAFT_FONTS_REQUIRED=1` now also makes
 the native build fail if the pinned manifest lacks Noto Sans CJK SC Regular (`Hans`) or BIZ UDPGothic Regular;
 the web build requires BIZ UDPGothic Regular and packages Noto Sans CJK SC as a separate asset.

@@ -3,11 +3,11 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use lightcraft_catalog::{APP_VERSION, MediaKind, Op, Photo, PhotoId, Source};
-use lightcraft_engine::{Session, cmd::recheck, media::content_key};
-use lightcraft_pipeline::SourceInfo;
-use lightcraft_preview::Hash128;
-use lightcraft_raster::Rgb32f;
+use luz_catalog::{APP_VERSION, MediaKind, Op, Photo, PhotoId, Source};
+use luz_engine::{Session, cmd::recheck, media::content_key};
+use luz_pipeline::SourceInfo;
+use luz_preview::Hash128;
+use luz_raster::Rgb32f;
 use serde_json::json;
 
 struct OrfLibrary {
@@ -82,7 +82,7 @@ fn mark_orf_preview_only(s: &mut Session) {
             file_size: p.file_size,
             content_hash: p.content_hash.clone(),
             preview_only: Some("Olympus compressed ORF".into()),
-            preview_checked: lightcraft_catalog::APP_VERSION.into(),
+            preview_checked: luz_catalog::APP_VERSION.into(),
         })
         .unwrap();
     s.media.forget(p.id);
@@ -133,7 +133,7 @@ fn legacy_orf(name: &str, preview_only: Option<String>) -> OrfLibrary {
     p.kind = MediaKind::Raw;
     p.file_size = 1024;
     p.content_hash = Some("same-file".into());
-    let info = lightcraft_engine::media::ProbeInfo {
+    let info = luz_engine::media::ProbeInfo {
         width: p.width,
         height: p.height,
         file_size: p.file_size,
@@ -144,7 +144,7 @@ fn legacy_orf(name: &str, preview_only: Option<String>) -> OrfLibrary {
         ..Default::default()
     };
     s.commit("Legacy ORF", Op::AddPhoto { photo: Box::new(p) }).unwrap();
-    s.selection = lightcraft_engine::Selection::single(id);
+    s.selection = luz_engine::Selection::single(id);
     s.media.file_probe = Some(Arc::new(move |_| Ok(info.clone())));
     OrfLibrary { s, dir, lib, id }
 }

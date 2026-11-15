@@ -1,4 +1,4 @@
-// The per-pixel stage: a straight port of `lightcraft_pipeline::finish` (keep in step with it).
+// The per-pixel stage: a straight port of `luz_pipeline::finish` (keep in step with it).
 // Bindings: img (rgb, pre-exposure), log_l, base, clar, tex, dark, masks (NMASK planes, then the
 // blurred chromaticity when HAS_CHROMA), aux
 // (tone LUT | chroma curve | sRGB LUT | curve LUTs | mask terms | light operator tables), out (packed RGBA8; a float render:
@@ -69,7 +69,7 @@ fn curve(ch: u32, x: f32) -> f32 {
     return v;
 }
 
-// Process V4's calibrated Contrast, Blacks (`lightcraft_pipeline::light_v3`): operator `k`'s
+// Process V4's calibrated Contrast, Blacks (`luz_pipeline::light_v3`): operator `k`'s
 // table (linear output over encoded v) at v (`Operator::eval`).
 fn light_eval(k: u32, v: f32) -> f32 {
     let o = pu(F_LIGHT_OFF) + k * LIGHT_N;
@@ -291,7 +291,7 @@ fn ghash(i: i32, j: i32, seed: u32) -> f32 {
     return f32(v & 0xffffu) / 32768.0 - 1.0;
 }
 
-// Crystal grain (process V4): `lightcraft_pipeline::crystal` (keep in step with it). The tori's
+// Crystal grain (process V4): `luz_pipeline::crystal` (keep in step with it). The tori's
 // summed-area tables follow the other tables in `aux` (offsets F_GRAIN_SAT).
 fn cg_bilinear(o: u32, t: u32, x: f32, y: f32) -> f32 {
     let s = t + 1u;

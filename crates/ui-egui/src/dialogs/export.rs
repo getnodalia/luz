@@ -1,5 +1,5 @@
 use super::frame::{field, num};
-use super::{ControlSpec, LightcraftApp, Section, SettingsGroup, Tokens, Track};
+use super::{ControlSpec, LuzApp, Section, SettingsGroup, Tokens, Track};
 
 /// The Export dialog's watermark preview: the first exported photo, as wide as the dialog whatever
 /// its shape, with the watermark drawn on it as the file will have it at size `resize` (`None` =
@@ -7,20 +7,15 @@ use super::{ControlSpec, LightcraftApp, Section, SettingsGroup, Tokens, Track};
 /// thumbnail comes first (at once, a little soft) and then a render at the preview's own pixel size
 /// replaces it. The watermark is redrawn on a copy only when it, the output size or the picture
 /// changes, which is quick at this size, so the preview follows the sliders.
-pub(super) fn watermark_preview(
-    app: &mut LightcraftApp,
-    ui: &mut egui::Ui,
-    wm: &lightcraft_engine::export::Watermark,
-    resize: Option<lightcraft_engine::export::Resize>,
-) {
+pub(super) fn watermark_preview(app: &mut LuzApp, ui: &mut egui::Ui, wm: &luz_engine::export::Watermark, resize: Option<luz_engine::export::Resize>) {
     use std::hash::{Hash, Hasher};
     // (pictures received so far: 1 the thumbnail, 2 the sharp render; the latest, or why none came)
-    type Base = std::sync::Arc<std::sync::Mutex<(u8, Option<Result<lightcraft_raster::Rgba8, String>>)>>;
-    type Shown = (u64, u8, lightcraft_engine::export::Watermark, usize, egui::TextureHandle);
+    type Base = std::sync::Arc<std::sync::Mutex<(u8, Option<Result<luz_raster::Rgba8, String>>)>>;
+    type Shown = (u64, u8, luz_engine::export::Watermark, usize, egui::TextureHandle);
     let t = Tokens::get(ui.ctx());
     let Some(&id) = app.session.selected().first() else { return };
     let Some(photo) = app.session.catalog.photo(id).cloned() else { return };
-    let (out_w, out_h) = lightcraft_engine::export::output_size(&photo, &lightcraft_engine::export::ExportOptions { resize, ..Default::default() });
+    let (out_w, out_h) = luz_engine::export::output_size(&photo, &luz_engine::export::ExportOptions { resize, ..Default::default() });
     let export_short = out_w.min(out_h);
     // pixels across the dialog, in steps so a scroll bar or a point of layout doesn't re-render
     let step = 128.0;
@@ -94,7 +89,7 @@ pub(super) fn watermark_preview(
                     return;
                 }
             };
-            lightcraft_engine::export::draw_watermark_preview(&mut img, wm, export_short);
+            luz_engine::export::draw_watermark_preview(&mut img, wm, export_short);
             // shown through the monitor profile like every other preview
             if let Some(d) = app.renderer.display()
                 && let Err(e) = d.profile.from_srgb(&mut img)
@@ -129,8 +124,8 @@ pub(crate) const TIFF_LZW_NOTE: &str =
 
 /// The note shown under Compression when a TIFF export uses LZW (none otherwise). The export
 /// keeps LZW: some software reads only LZW TIFFs.
-pub(crate) fn tiff_lzw_note(o: &lightcraft_engine::export::ExportOptions) -> Option<&'static str> {
-    use lightcraft_engine::export::{ExportFormat, OutputDepth, TiffCompression};
+pub(crate) fn tiff_lzw_note(o: &luz_engine::export::ExportOptions) -> Option<&'static str> {
+    use luz_engine::export::{ExportFormat, OutputDepth, TiffCompression};
     if o.format != ExportFormat::Tiff || o.tiff_compression != TiffCompression::Lzw {
         return None;
     }
@@ -139,21 +134,18 @@ pub(crate) fn tiff_lzw_note(o: &lightcraft_engine::export::ExportOptions) -> Opt
 
 /// [`tiff_lzw_note`] for an export preset's params: the hint on presets that write LZW TIFFs.
 pub(crate) fn preset_lzw_note(params: &serde_json::Value) -> Option<&'static str> {
-    tiff_lzw_note(&lightcraft_engine::export::ExportOptions::from_json(params))
+    tiff_lzw_note(&luz_engine::export::ExportOptions::from_json(params))
 }
 
 /// The Export dialog's choices as `app.export` params (without the folder).
 pub(super) fn export_dialog_params(
-    opts: &lightcraft_engine::export::ExportOptions,
+    opts: &luz_engine::export::ExportOptions,
     full_size: bool,
-    resize: &lightcraft_engine::export::Resize,
+    resize: &luz_engine::export::Resize,
     limit_kb: u32,
 ) -> serde_json::Value {
-    let o = lightcraft_engine::export::ExportOptions {
-        resize: (!full_size).then_some(*resize),
-        limit_kb: (limit_kb > 0).then_some(limit_kb),
-        ..opts.clone()
-    };
+    let o =
+        luz_engine::export::ExportOptions { resize: (!full_size).then_some(*resize), limit_kb: (limit_kb > 0).then_some(limit_kb), ..opts.clone() };
     o.to_json()
 }
 
@@ -218,8 +210,8 @@ pub(super) const START_NUMBER: ControlSpec = spec("export.startNumber", "Start n
 const PPI: ControlSpec = spec("export.ppi", "Resolution (ppi)", 1.0, 1200.0, 240.0, 1.0);
 
 /// Image Sizing: full size, or a resize mode and its value(s), don't enlarge, ppi.
-pub(super) fn export_size(ui: &mut egui::Ui, full: &mut bool, r: &mut lightcraft_engine::export::Resize, ppi: &mut u16) {
-    use lightcraft_engine::export::ResizeMode as R;
+pub(super) fn export_size(ui: &mut egui::Ui, full: &mut bool, r: &mut luz_engine::export::Resize, ppi: &mut u16) {
+    use luz_engine::export::ResizeMode as R;
     const MODES: [(R, &str); 8] = [
         (R::LongEdge, "Long Edge"),
         (R::ShortEdge, "Short Edge"),
@@ -283,8 +275,8 @@ pub(super) fn export_size(ui: &mut egui::Ui, full: &mut bool, r: &mut lightcraft
 
 /// All nine positions supported by both the text and graphic watermark renderer.
 /// Keep them in grid order so bottom-centre and edge-centre anchors are available in Export.
-pub(super) const WM_POSITIONS: [(lightcraft_engine::export::Anchor, &str); 9] = {
-    use lightcraft_engine::export::Anchor::*;
+pub(super) const WM_POSITIONS: [(luz_engine::export::Anchor, &str); 9] = {
+    use luz_engine::export::Anchor::*;
     [(TopLeft, "↖"), (Top, "↑"), (TopRight, "↗"), (Left, "←"), (Center, "•"), (Right, "→"), (BottomLeft, "↙"), (Bottom, "↓"), (BottomRight, "↘")]
 };
 
@@ -303,7 +295,7 @@ pub(super) const WM_INSET_Y: ControlSpec =
 #[cfg(test)]
 mod watermark_position_tests {
     use super::WM_POSITIONS;
-    use lightcraft_engine::export::Anchor;
+    use luz_engine::export::Anchor;
 
     #[test]
     fn export_dialog_offers_every_rendered_anchor_exactly_once() {
@@ -329,13 +321,13 @@ mod watermark_position_tests {
 mod tiff_lzw_note_tests {
     use std::time::Duration;
 
-    use lightcraft_engine::export::{ExportFormat, ExportOptions, TiffCompression};
+    use luz_engine::export::{ExportFormat, ExportOptions, TiffCompression};
     use serde_json::json;
 
     use super::{TIFF_LZW_NOTE, TIFF_LZW_NOTE_16, export_dialog_params, preset_lzw_note, tiff_lzw_note};
     use crate::headless::Headless;
     use crate::state::Dialog;
-    use crate::{LightcraftApp, Services};
+    use crate::{LuzApp, Services};
 
     const T: Duration = Duration::from_secs(20);
 
@@ -368,7 +360,7 @@ mod tiff_lzw_note_tests {
         assert_eq!(preset_lzw_note(&json!({"format": "tiff", "tiffCompression": "LZW", "bitDepth": 8})), Some(TIFF_LZW_NOTE));
         assert_eq!(preset_lzw_note(&json!({"format": "tiff", "tiffCompression": "zip"})), None);
         assert_eq!(preset_lzw_note(&json!({"format": "tiff"})), None, "ZIP is the default");
-        for p in lightcraft_engine::export::builtin_presets() {
+        for p in luz_engine::export::builtin_presets() {
             assert_eq!(preset_lzw_note(&p.params), None, "{}", p.name);
         }
     }
@@ -407,7 +399,7 @@ mod tiff_lzw_note_tests {
     #[test]
     fn export_dialog_shows_the_lzw_note_under_compression() {
         let services = Services { png: None, write_shared: Some(std::sync::Arc::new(|_: &str, _: &[u8]| Ok(()))), ..Default::default() };
-        let app = LightcraftApp::new(lightcraft_engine::Session::with_demo(), services);
+        let app = LuzApp::new(luz_engine::Session::with_demo(), services);
         let mut h = Headless::new(app, [1600.0, 1000.0], 1.0);
         h.settle(T);
         let r = h.request("engine.execute", json!({"command": "dialog.export", "params": {}}), T);

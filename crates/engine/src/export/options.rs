@@ -7,7 +7,7 @@ pub enum ExportFormat {
     Jpeg,
     Png,
     Tiff,
-    /// A flat PSD (8/16-bit, no layers): what an image editor such as PhotoCraft saves back to.
+    /// A flat PSD (8/16-bit, no layers): what an image editor such as Lienzo saves back to.
     Psd,
     Webp,
     Avif,
@@ -308,10 +308,10 @@ impl HdrCurve {
             _ => None,
         }
     }
-    pub(super) fn codec(self) -> lightcraft_codecs::HdrTransfer {
+    pub(super) fn codec(self) -> luz_codecs::HdrTransfer {
         match self {
-            Self::Pq => lightcraft_codecs::HdrTransfer::Pq,
-            Self::Hlg => lightcraft_codecs::HdrTransfer::Hlg,
+            Self::Pq => luz_codecs::HdrTransfer::Pq,
+            Self::Hlg => luz_codecs::HdrTransfer::Hlg,
         }
     }
 }

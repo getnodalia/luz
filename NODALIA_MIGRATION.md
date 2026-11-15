@@ -23,7 +23,7 @@ interface follows Foundation's [NDL standard](https://github.com/getnodalia/foun
 | `storytold/craft-libs` | `nix/package.nix`, `packaging/linux/flatpak/README.md`, `packaging/linux/flatpak/cargo-sources.json` | to decide | — |
 | `storytold/egui` | `packaging/linux/flatpak/cargo-sources.json` | to decide | — |
 | `storytold/egui.git` | `packaging/linux/flatpak/cargo-sources.json` | to decide | — |
-| `storytold/lightcraft` | `.github/workflows/upstream-sync.yml`, `Cargo.toml`, `packaging/linux/ai.storyteller.lightcraft.metainfo.xml.in`, `packaging/linux/flatpak-oci.sh`, `packaging/linux/package.sh`, `packaging/windows/sign.ps1` | none: intended upstream sync | — |
+| `getnodalia/luz` | `.github/workflows/upstream-sync.yml`, `Cargo.toml`, `packaging/linux/dev.danielmiguelt.Luz.metainfo.xml.in`, `packaging/linux/flatpak-oci.sh`, `packaging/linux/package.sh`, `packaging/windows/sign.ps1` | none: intended upstream sync | — |
 | `storytold/vectorcraft` | `packaging/macos/dmg/README.md` | to decide | — |
 | `storytold/winit` | `packaging/linux/flatpak/cargo-sources.json` | to decide | — |
 | `storytold/winit.git` | `packaging/linux/flatpak/cargo-sources.json` | to decide | — |
@@ -64,6 +64,6 @@ menu exported over D-Bus on Linux.
 
 Luz releases through `release-auto.yml` like every Nodalia app (Foundation's `release-tag` and
 `release-publish`, with `release-linux.yml`, `release-macos.yml` and `release-windows.yml`). The
-packages are still named `lightcraft-X.Y.Z-…`: rename them (packaging scripts, the release workflows,
+packages are still named `luz-X.Y.Z-…`: rename them (packaging scripts, the release workflows,
 `app=` in `scripts/check-release-notes.sh`) before the first release. Until then the notes check
-refuses any notes, since they would have to name `lightcraft` files.
+refuses any notes, since they would have to name `luz` files.

@@ -3,7 +3,7 @@
     <img src="https://raw.githubusercontent.com/danielmigueltejedor/nodalia-web/main/assets/brand/nodalia-wordmark-badge.svg" width="150" alt="Nodalia">
   </a>
   <br><br>
-  <img src="https://raw.githubusercontent.com/danielmigueltejedor/luz/main/assets/app-icon/hicolor/512x512/apps/ai.storyteller.lightcraft.png" width="192" alt="Luz">
+  <img src="https://raw.githubusercontent.com/danielmigueltejedor/luz/main/assets/app-icon/hicolor/512x512/apps/dev.danielmiguelt.Luz.png" width="192" alt="Luz">
   <h1>Luz</h1>
   <p><strong>The RAW developer and photo library of the Nodalia suite.</strong></p>
 
@@ -40,7 +40,7 @@ You need a recent stable Rust toolchain.
 ```bash
 git clone https://github.com/getnodalia/luz.git
 cd luz
-cargo run --release -p lightcraft
+cargo run --release -p luz
 ```
 
 ## Project status

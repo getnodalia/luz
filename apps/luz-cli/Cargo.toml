@@ -1,0 +1,42 @@
+[package]
+name = "luz-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+description = "Luz command-line tool: headless render, command listing and the MCP server"
+
+[[bin]]
+name = "luz-cli"
+path = "src/main.rs"
+
+[lints]
+workspace = true
+
+[dependencies]
+luz-engine = { workspace = true }
+luz-denoise = { workspace = true }
+luz-sysmem = { workspace = true }
+luz-mcp = { workspace = true }
+luz-ui-egui = { workspace = true }
+luz-codecs = { workspace = true }
+luz-raster = { workspace = true }
+luz-merge = { workspace = true }
+serde_json = { workspace = true }
+dhat = { workspace = true, optional = true }
+
+[dev-dependencies]
+luz-testkit = { workspace = true }
+
+[features]
+default = ["denoise"]
+denoise = ["luz-engine/denoise"]
+rawnind-model = ["denoise", "luz-engine/rawnind-model"]
+# Heap profiling: `cargo run --release -p luz-cli --features dhat-heap -- snapshot …` counts
+# every allocation (live/peak bytes in `library.memory` / `ui.inspect`) and writes dhat-heap.json
+# (open it in DHAT's viewer: allocation sites by bytes at the peak). Slows allocation-heavy work.
+dhat-heap = ["dep:dhat"]
+
+# Open HEIC/HEIF photos (the optional luz-heif crate). Not default so distributors choose
+# it (HEVC patents); build with `--features heif` to include it.
+heif = ["luz-codecs/heif"]

@@ -251,7 +251,7 @@ mod tests {
 
     fn assert_script_glyphs(script: &str, text: &str) {
         if !CRAFT_FONTS.iter().any(|font| font.covers(script)) {
-            lightcraft_testkit::skip!(Fonts, "built without the {script} face from craft-fonts");
+            luz_testkit::skip!(Fonts, "built without the {script} face from craft-fonts");
             return;
         }
         let layout = TextLayout::new(text, 40.0, false, CRAFT_FONTS).unwrap();
@@ -269,7 +269,7 @@ mod tests {
     #[test]
     fn bundled_arabic_stays_out_of_export_fallback() {
         if !CRAFT_FONTS.iter().any(|font| font.covers("Arab")) {
-            lightcraft_testkit::skip!(Fonts, "built without the Arabic face from craft-fonts");
+            luz_testkit::skip!(Fonts, "built without the Arabic face from craft-fonts");
             return;
         }
         // UI names still use their existing Arabic face. Export needs joining and bidi first.
@@ -300,7 +300,7 @@ mod tests {
     #[test]
     fn decomposed_hangul_draws_whole_syllables() {
         if !CRAFT_FONTS.iter().any(|font| font.covers("Hang")) {
-            lightcraft_testkit::skip!(Fonts, "built without a Hangul face from craft-fonts");
+            luz_testkit::skip!(Fonts, "built without a Hangul face from craft-fonts");
             return;
         }
         assert_draws_composed("제주도 바다 여행.jpg", CRAFT_FONTS);
@@ -342,7 +342,7 @@ mod tests {
     fn latin_and_cjk_rendering_keeps_the_existing_preference() {
         let mut cjk: Vec<_> = crate::fonts::cjk(CRAFT_FONTS).collect();
         if cjk.is_empty() {
-            lightcraft_testkit::skip!(Fonts, "built without CJK faces from craft-fonts");
+            luz_testkit::skip!(Fonts, "built without CJK faces from craft-fonts");
             return;
         }
         cjk.sort_by_key(|font| !font.is_mincho());
@@ -359,7 +359,7 @@ mod tests {
             assert!(font.font_data() == expected.bytes, "existing CJK face order: {} {}", expected.family, expected.style);
         }
         for vertical in [false, true] {
-            for text in ["LightCraft AV 123", "日本語、。你好世界한국어"] {
+            for text in ["Luz AV 123", "日本語、。你好世界한국어"] {
                 let before = TextLayout::new(text, 40.0, vertical, previous).unwrap();
                 let after = TextLayout::new(text, 40.0, vertical, CRAFT_FONTS).unwrap();
                 assert_eq!((before.width, before.height), (after.width, after.height));

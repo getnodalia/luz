@@ -129,7 +129,7 @@ the APS-C half diagonal / 10 = 372.09 px:
 | Uncorrected | 3.8–5.6 px (19 photos; on the other 11 the shift exceeds the method's ±20 px search) |
 | Sensor-fixed 400 px (the ILCE-7RM6's pixel spacing) | 0.56–3.71 px (passes only at 10 mm) |
 | **Half diagonal / 10 = 372 px, unit 15000** (exact table) | **0.23–0.68 px on 27 photos (median 0.43); 1.34–1.42 px on the three 10 mm photos** |
-| The same as Luz renders it (`lightcraft-cli render`, Enable Lens Corrections on, fitted polynomial) | **0.22–0.73 px on 27 photos (median 0.44); 1.36–1.38 px at 10 mm** |
+| The same as Luz renders it (`luz-cli render`, Enable Lens Corrections on, fitted polynomial) | **0.22–0.73 px on 27 photos (median 0.44); 1.36–1.38 px at 10 mm** |
 
 Units 14000–17000 and a reading that drops the first table value as a non-knot (10 knots over the half diagonal,
 413 px) were also scanned; none keeps all 30 within 0.75 px, and 15000 gives the lowest worst case at 372 px. The
@@ -153,7 +153,7 @@ over spacing 372–426 px and unit 14000–16500 was measured on the exact table
 shooting location: 63 to choose the values, 34 to check them. A larger spacing with a smaller unit fits about as well
 (a ridge in the grid): 420 px / 14000 was best on the 63 choice photos (0.445 px worst) but put 2 of the 34 check photos
 above 0.75 px, so the pick is **416 px / 14250**, within 0.51 px on both sets.
-As rendered (`lightcraft-cli render`, Enable Lens Corrections on):
+As rendered (`luz-cli render`, Enable Lens Corrections on):
 
 | Sigma 10–18 mm | p95 at 1440 px |
 |---|---|
@@ -325,7 +325,7 @@ corrected and uncorrected renders differ on all 54; by default each gets the one
 
 ## Performance
 
-`LIGHTCRAFT_PROFILE=1` renders of the full-frame lossless file and the full-frame Compressed HQ file (corpus
+`LUZ_PROFILE=1` renders of the full-frame lossless file and the full-frame Compressed HQ file (corpus
 `arw-sony-ilce7rm6-ff-land-lossless.arw`, `arw6-sony-ilce7rm6-ff-land-hq.arw`), on a 4-core laptop shared with other
 builds (so absolute times are high); the fastest of 3–5 runs. The warp runs in the `sample` stage:
 

@@ -1,7 +1,7 @@
 use super::raw_samples::RAW_SAMPLES;
 use super::{Command, Path, root, run};
 
-/// A Nikon D750 ColorChecker set released under CC0 by dieli (github.com/dieli/d750-lightcraft-colorchecker),
+/// A Nikon D750 ColorChecker set released under CC0 by dieli (github.com/dieli/d750-luz-colorchecker),
 /// pinned to one commit: a matrix-only dual-illuminant DNG camera profile (Cool White Fluorescent + D55)
 /// made with Calibrite PROFILER from the two chart shots, the chart NEFs, and Lightroom Classic 15.6's
 /// renders of them with that profile. Downloaded into `corpus/d750-colorchecker/` (the repository's own
@@ -40,7 +40,7 @@ pub(crate) fn cmd_corpus(download: bool) -> Result<(), String> {
         "Test corpora live under {} (git-ignored, never committed).
 Tests that use a corpus skip cleanly when it is absent.
 
-  corpus/raw/        raw.pixls.us samples (CC0) — lightcraft-raw decodes every file.
+  corpus/raw/        raw.pixls.us samples (CC0) — luz-raw decodes every file.
   corpus/images/     CC0 / public-domain JPEG/PNG/TIFF/HEIC samples (optional)
   corpus/d750-colorchecker/  Nikon D750 ColorChecker set (CC0, dieli): a .dcp, chart NEFs, Lightroom renders
 ",

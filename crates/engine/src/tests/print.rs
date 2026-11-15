@@ -1,6 +1,6 @@
 //! The `print.*` commands: state, cells, templates and the PDF.
 
-use lightcraft_catalog::MemStore;
+use luz_catalog::MemStore;
 use serde_json::{Value, json};
 
 use crate::Session;
@@ -19,7 +19,7 @@ struct Scratch(std::path::PathBuf);
 
 impl Scratch {
     fn new(tag: &str) -> Scratch {
-        let dir = std::env::temp_dir().join(format!("lightcraft-print-{tag}-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("luz-print-{tag}-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap();
         Scratch(dir)
@@ -204,7 +204,7 @@ fn media_box(pdf: &[u8]) -> (f64, f64) {
 }
 
 fn temp_pdf(name: &str) -> String {
-    std::env::temp_dir().join(format!("lightcraft-print-{name}-{}.pdf", std::process::id())).to_string_lossy().to_string()
+    std::env::temp_dir().join(format!("luz-print-{name}-{}.pdf", std::process::id())).to_string_lossy().to_string()
 }
 
 #[test]
@@ -263,10 +263,10 @@ fn export_pdf_uses_the_japanese_paper_sizes() {
 fn export_pdf_with_a_printer_profile() {
     let mut s = Session::with_demo();
     let ids: Vec<u64> = s.catalog.photos().take(1).map(|p| p.id.0).collect();
-    let dir = std::env::temp_dir().join(format!("lightcraft-print-icc-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("luz-print-icc-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
     let icc = dir.join("Fine Art Matte.icc");
-    std::fs::write(&icc, lightcraft_codecs::icc::write_named(lightcraft_codecs::NamedSpace::AdobeRgb)).unwrap();
+    std::fs::write(&icc, luz_codecs::icc::write_named(luz_codecs::NamedSpace::AdobeRgb)).unwrap();
     let color = json!({"profile": {"kind": "icc", "path": icc}, "intent": "relative", "sharpen": "high", "media": "matte", "brightness": 10});
     run(
         &mut s,
@@ -414,7 +414,7 @@ fn templates_export_to_a_file_and_import_from_one() {
 #[derive(Clone, Default)]
 struct PrefsUnreadable(MemStore);
 
-impl lightcraft_catalog::Store for PrefsUnreadable {
+impl luz_catalog::Store for PrefsUnreadable {
     fn read(&mut self, name: &str) -> std::io::Result<Option<Vec<u8>>> {
         if name == "prefs.json" {
             return Err(std::io::Error::other("locked by another process"));

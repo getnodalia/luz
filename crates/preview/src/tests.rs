@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use lightcraft_raster::Rgba8;
+use luz_raster::Rgba8;
 
 use super::*;
 

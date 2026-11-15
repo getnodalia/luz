@@ -7,11 +7,11 @@
 
 use std::sync::Arc;
 
-use lightcraft_develop::{DevelopSettings, Mask, MaskComponent, MaskOp, MaskShape};
-use lightcraft_geom::Point;
-use lightcraft_gpu::{Fallback, Fault};
-use lightcraft_pipeline::{RenderRequest, SourceInfo, render};
-use lightcraft_raster::Rgba8;
+use luz_develop::{DevelopSettings, Mask, MaskComponent, MaskOp, MaskShape};
+use luz_geom::Point;
+use luz_gpu::{Fallback, Fault};
+use luz_pipeline::{RenderRequest, SourceInfo, render};
+use luz_raster::Rgba8;
 
 fn mean_abs_diff(a: &Rgba8, b: &Rgba8) -> f64 {
     let sum: u64 = a.data.iter().zip(&b.data).map(|(p, q)| (0..3).map(|c| p[c].abs_diff(q[c]) as u64).sum::<u64>()).sum();
@@ -37,13 +37,13 @@ fn masked(s: &mut DevelopSettings, k: usize) {
 
 #[test]
 fn failed_gpu_renders_fall_back_with_a_reason() {
-    if !lightcraft_gpu::available() {
-        lightcraft_testkit::skip!(Gpu, "no GPU adapter ({})", lightcraft_gpu::unavailable_reason().unwrap_or_default());
+    if !luz_gpu::available() {
+        luz_testkit::skip!(Gpu, "no GPU adapter ({})", luz_gpu::unavailable_reason().unwrap_or_default());
         return;
     }
-    assert_eq!(lightcraft_gpu::unavailable_reason(), None);
+    assert_eq!(luz_gpu::unavailable_reason(), None);
     let (w, h) = (1200, 800);
-    let src = Arc::new(lightcraft_scenes::demo_library()[0].render(w, h));
+    let src = Arc::new(luz_scenes::demo_library()[0].render(w, h));
     let info = SourceInfo { raw: true, ..Default::default() };
     let mut s = DevelopSettings::default();
     s.light.exposure = 0.3;
@@ -52,81 +52,80 @@ fn failed_gpu_renders_fall_back_with_a_reason() {
     let req = RenderRequest::fit(w, h);
     let cpu = render(&src, &info, &s, &req).image;
     let ok = |what: &str| {
-        let g = lightcraft_gpu::render(&src, &info, &s, &req, None)
-            .unwrap_or_else(|| panic!("{what}: gpu render ({:?})", lightcraft_gpu::last_fallback()));
+        let g = luz_gpu::render(&src, &info, &s, &req, None).unwrap_or_else(|| panic!("{what}: gpu render ({:?})", luz_gpu::last_fallback()));
         let d = mean_abs_diff(&cpu, &g.image);
         assert!(d < 0.5, "{what}: GPU differs from the CPU by {d:.3} LSB");
     };
     ok("healthy");
     // the render that fell back says why itself; the process-wide diagnostic agrees
     let failed = |what: &str| -> String {
-        match lightcraft_gpu::try_render(&src, &info, &s, &req, None) {
+        match luz_gpu::try_render(&src, &info, &s, &req, None) {
             Ok(_) => panic!("{what}: the GPU render must fall back"),
-            Err(Fallback::NotTried) => panic!("{what}: the render must be tried on the GPU ({:?})", lightcraft_gpu::unavailable_reason()),
+            Err(Fallback::NotTried) => panic!("{what}: the render must be tried on the GPU ({:?})", luz_gpu::unavailable_reason()),
             Err(Fallback::Failed(why)) => {
-                assert_eq!(lightcraft_gpu::last_fallback().as_deref(), Some(why.as_str()), "{what}");
+                assert_eq!(luz_gpu::last_fallback().as_deref(), Some(why.as_str()), "{what}");
                 why
             }
         }
     };
 
     // the output itself is over the limit: refused up front, the GPU stays in use
-    lightcraft_gpu::inject_fault(Fault::Limit(1 << 20));
+    luz_gpu::inject_fault(Fault::Limit(1 << 20));
     let why = failed("output over the limit");
     assert!(why.contains("limit"), "{why}");
-    assert!(lightcraft_gpu::available(), "a limit is no device failure");
+    assert!(luz_gpu::available(), "a limit is no device failure");
 
     // the output fits but the mask planes (4 masks: 4 planes in one buffer) don't: caught when the
     // buffer is created, without a device error, and the GPU stays in use
-    lightcraft_gpu::inject_fault(Fault::Limit((w * h * 3 * 4 + 1024) as u64));
+    luz_gpu::inject_fault(Fault::Limit((w * h * 3 * 4 + 1024) as u64));
     let why = failed("mask planes over the limit");
     assert!(why.contains("exceeds"), "{why}");
-    assert!(lightcraft_gpu::available(), "{:?}", lightcraft_gpu::unavailable_reason());
+    assert!(luz_gpu::available(), "{:?}", luz_gpu::unavailable_reason());
     ok("after the limit faults");
 
     // a device (validation) error: captured by the render's error scope; the GPU is not used again
     // on this thread — other threads keep it (a simulated failure, not a real one)
-    lightcraft_gpu::inject_fault(Fault::Validation);
+    luz_gpu::inject_fault(Fault::Validation);
     let why = failed("validation error");
     assert!(why.contains("device error"), "{why}");
-    assert!(!lightcraft_gpu::available());
-    assert!(lightcraft_gpu::unavailable_reason().is_some_and(|r| r.contains("device error")), "{:?}", lightcraft_gpu::unavailable_reason());
-    assert_eq!(lightcraft_gpu::render(&src, &info, &s, &req, None).map(|_| ()), None, "no GPU render on this thread after a fatal fault");
-    let elsewhere = std::thread::spawn(|| (lightcraft_gpu::available(), lightcraft_gpu::unavailable_reason())).join();
+    assert!(!luz_gpu::available());
+    assert!(luz_gpu::unavailable_reason().is_some_and(|r| r.contains("device error")), "{:?}", luz_gpu::unavailable_reason());
+    assert_eq!(luz_gpu::render(&src, &info, &s, &req, None).map(|_| ()), None, "no GPU render on this thread after a fatal fault");
+    let elsewhere = std::thread::spawn(|| (luz_gpu::available(), luz_gpu::unavailable_reason())).join();
     assert_eq!(elsewhere.ok(), Some((true, None)), "a simulated failure switches the GPU off for its own thread only");
-    lightcraft_gpu::reset_failures();
-    assert_eq!(lightcraft_gpu::unavailable_reason(), None);
+    luz_gpu::reset_failures();
+    assert_eq!(luz_gpu::unavailable_reason(), None);
     ok("after a device error");
 
     // the per-pixel work never runs (a driver dropping a submission without an error): before
     // the fix this came back as a fully black image
-    lightcraft_gpu::inject_fault(Fault::DropWork);
+    luz_gpu::inject_fault(Fault::DropWork);
     let why = failed("dropped work");
     assert!(why.contains("incomplete"), "an unwritten image must not be returned: {why}");
-    assert!(!lightcraft_gpu::available());
-    lightcraft_gpu::reset_failures();
+    assert!(!luz_gpu::available());
+    luz_gpu::reset_failures();
     ok("after dropped work");
     // ... and the float render, where a cleared word would pass for a valid 0
-    lightcraft_gpu::inject_fault(Fault::DropWork);
-    let hdr = RenderRequest { depth: lightcraft_pipeline::OutputDepth::F32Hdr, ..req };
-    match lightcraft_gpu::try_render(&src, &info, &s, &hdr, None) {
+    luz_gpu::inject_fault(Fault::DropWork);
+    let hdr = RenderRequest { depth: luz_pipeline::OutputDepth::F32Hdr, ..req };
+    match luz_gpu::try_render(&src, &info, &s, &hdr, None) {
         Err(Fallback::Failed(why)) => assert!(why.contains("incomplete"), "an unwritten float image must not be returned: {why}"),
         other => panic!("a float render with dropped work is redone on the CPU: {:?}", other.map(|_| ())),
     }
-    lightcraft_gpu::reset_failures();
+    luz_gpu::reset_failures();
     ok("after dropped float work");
 
     // a black photo is still rendered (on the CPU, to be sure)
-    let black = Arc::new(lightcraft_raster::Rgb32f::from_fn(256, 256, |_, _| [0.0; 3]));
+    let black = Arc::new(luz_raster::Rgb32f::from_fn(256, 256, |_, _| [0.0; 3]));
     let s0 = DevelopSettings::default();
-    match lightcraft_gpu::try_render(&black, &info, &s0, &RenderRequest::fit(256, 256), None) {
+    match luz_gpu::try_render(&black, &info, &s0, &RenderRequest::fit(256, 256), None) {
         Err(Fallback::Failed(why)) => assert!(why.contains("black"), "{why}"),
         other => panic!("a black result is redone on the CPU: {:?}", other.map(|_| ())),
     }
-    assert!(lightcraft_gpu::last_fallback().unwrap_or_default().contains("black"));
-    assert!(lightcraft_gpu::available());
+    assert!(luz_gpu::last_fallback().unwrap_or_default().contains("black"));
+    assert!(luz_gpu::available());
 
     // a request the GPU never renders is not a fallback
-    let deep = RenderRequest { depth: lightcraft_pipeline::OutputDepth::U16, ..RenderRequest::fit(256, 256) };
-    assert_eq!(lightcraft_gpu::try_render(&src, &info, &s, &deep, None).err(), Some(Fallback::NotTried));
+    let deep = RenderRequest { depth: luz_pipeline::OutputDepth::U16, ..RenderRequest::fit(256, 256) };
+    assert_eq!(luz_gpu::try_render(&src, &info, &s, &deep, None).err(), Some(Fallback::NotTried));
 }

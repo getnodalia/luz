@@ -51,4 +51,4 @@ General bugs without a security impact should use the project's normal issue and
 
 ## Current limitations
 
-The control channel (`lightcraft --control PORT`) listens on loopback only and has no authentication, so any local process can drive the app while it is enabled; only enable it when you need it ([control-protocol.md](docs/control-protocol.md)).
+The control channel (`luz --control PORT`) listens on loopback only and has no authentication, so any local process can drive the app while it is enabled; only enable it when you need it ([control-protocol.md](docs/control-protocol.md)).

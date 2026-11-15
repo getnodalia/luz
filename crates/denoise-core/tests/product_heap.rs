@@ -3,7 +3,7 @@
 //! whose compressed bytes are damaged or absent fails without first reserving the (multi-megabyte) output. One test
 //! per binary (dhat's profiler is global).
 
-use lightcraft_denoise_core::product::read_window;
+use luz_denoise_core::product::read_window;
 
 #[global_allocator]
 static ALLOC: dhat::Alloc = dhat::Alloc;

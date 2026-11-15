@@ -18,9 +18,9 @@
 use std::borrow::Cow;
 use std::sync::Mutex;
 
-use lightcraft_develop::{Crop, DevelopSettings, Geometry, Upright};
-use lightcraft_geom::{Homography, Point};
-use lightcraft_raster::{Plane, Rgb32f};
+use luz_develop::{Crop, DevelopSettings, Geometry, Upright};
+use luz_geom::{Homography, Point};
+use luz_raster::{Plane, Rgb32f};
 
 use crate::SourceInfo;
 
@@ -78,7 +78,7 @@ pub fn detect_segments(lum: &Plane) -> Vec<Segment> {
     if w < 16 || h < 16 {
         return Vec::new();
     }
-    let img = lightcraft_raster::blur::gaussian(lum, 0.8);
+    let img = luz_raster::blur::gaussian(lum, 0.8);
     let at = |x: usize, y: usize| img.data[y * w + x];
     let n = w * h;
     let mut mag = vec![0.0f32; n];
@@ -572,7 +572,7 @@ pub(crate) fn analysis_key(src: &Rgb32f, info: &SourceInfo, s: &DevelopSettings)
     format!("{:?}", info.lens).hash(&mut more);
     s.section_enabled("optics").hash(&mut more);
     crate::optics::fingerprint(src)
-        ^ lightcraft_develop::DevelopSettings { optics: s.optics, orientation: s.orientation, ..Default::default() }.hash64().rotate_left(17)
+        ^ luz_develop::DevelopSettings { optics: s.optics, orientation: s.orientation, ..Default::default() }.hash64().rotate_left(17)
         ^ more.finish().rotate_left(29)
 }
 

@@ -1,13 +1,13 @@
 //! Parameter blocks: the per-pixel stage's [`FinishParams`] packed into the 32-bit words the
 //! `finish` kernel reads (`F_*` constants, generated from [`FIELDS`]), plus its auxiliary tables.
 
-use lightcraft_develop::VignetteStyle;
-use lightcraft_pipeline::colorops::POINT_WORDS;
-use lightcraft_pipeline::finish::{FinishParams, GrainModel, MASK_TERMS, srgb_lut};
+use luz_develop::VignetteStyle;
+use luz_pipeline::colorops::POINT_WORDS;
+use luz_pipeline::finish::{FinishParams, GrainModel, MASK_TERMS, srgb_lut};
 
 use crate::ctx::{FailKind, fail};
 
-/// Entries per tone-curve table (`lightcraft_pipeline::finish` builds them at this size).
+/// Entries per tone-curve table (`luz_pipeline::finish` builds them at this size).
 pub const CURVE_N: u32 = 1024;
 
 /// Set on every word of a float render's output: the values are at least 0, so the sign bit is
@@ -301,7 +301,7 @@ pub fn finish_block(fp: &FinishParams, masks: &[[f32; MASK_TERMS]], present: &Pr
         p.f("BALANCE", *balance);
     }
     p.f("SKIN", ops.skin);
-    p.fs("BANDH", lightcraft_pipeline::colorops::band_hues());
+    p.fs("BANDH", luz_pipeline::colorops::band_hues());
     p.fs("VIG_VIEW", &fp.view);
 
     if let Some(v) = &fp.vig {

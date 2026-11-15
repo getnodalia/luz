@@ -131,7 +131,7 @@ fn error(error: DockError) -> String {
     error.to_string()
 }
 
-/// The shared checks plus LightCraft's own: saved settings cannot float, hide, share or
+/// The shared checks plus Luz's own: saved settings cannot float, hide, share or
 /// collapse the photo view, nor send a hidden panel back onto it.
 pub fn validate(workspace: &Workspace) -> Result<(), String> {
     workspace.validate().map_err(error)?;
@@ -229,17 +229,17 @@ fn run(workspace: &mut Workspace, params: &Value) -> Result<(), String> {
     Ok(())
 }
 
-fn from_ui(app: &crate::LightcraftApp) -> Workspace {
+fn from_ui(app: &crate::LuzApp) -> Workspace {
     docked(crate::state::LEFT_WIDTH.clamp(app.ui.left_width), crate::state::RIGHT_WIDTH.clamp(app.ui.right_width))
 }
 
-fn sync(workspace: &mut Workspace, app: &crate::LightcraftApp) -> Result<(), String> {
+fn sync(workspace: &mut Workspace, app: &crate::LuzApp) -> Result<(), String> {
     set_visible(workspace, Panel::Library, app.ui.left_panel)?;
     set_visible(workspace, Panel::Tools, app.ui.right != crate::state::RightPanel::None)?;
     set_visible(workspace, Panel::Presets, app.ui.presets)
 }
 
-fn publish_visibility(app: &mut crate::LightcraftApp, workspace: &Workspace) {
+fn publish_visibility(app: &mut crate::LuzApp, workspace: &Workspace) {
     app.ui.left_panel = workspace.layout.contains(&Panel::Library);
     app.ui.presets = workspace.layout.contains(&Panel::Presets);
     if !workspace.layout.contains(&Panel::Tools) {
@@ -268,11 +268,11 @@ fn publish_visibility(app: &mut crate::LightcraftApp, workspace: &Workspace) {
     }
 }
 
-pub(crate) fn exposed(app: &crate::LightcraftApp, panel: Panel) -> bool {
+pub(crate) fn exposed(app: &crate::LuzApp, panel: Panel) -> bool {
     app.ui.docking.as_ref().is_none_or(|workspace| exposed_in(workspace, panel))
 }
 
-pub(crate) fn reveal_command(app: &mut crate::LightcraftApp, id: &str) -> Result<(), String> {
+pub(crate) fn reveal_command(app: &mut crate::LuzApp, id: &str) -> Result<(), String> {
     let panel = if id == "panel.presets" && app.ui.presets {
         Some(Panel::Presets)
     } else if id == "app.showInFolders" {
@@ -305,26 +305,26 @@ pub(crate) fn drop_target(ui: &egui::Ui, rect: egui::Rect, pointer: Option<egui:
 
 /// Explicit host commands replace the snapshot before rendering. Cancel only their old
 /// gestures; actions returned by the renderer must keep continuous resizing alive.
-pub(crate) fn cancel_replaced_gesture(app: &crate::LightcraftApp, workspace: Option<&Workspace>) {
+pub(crate) fn cancel_replaced_gesture(app: &crate::LuzApp, workspace: Option<&Workspace>) {
     let replaced = match (app.ui.docking.as_ref(), workspace) {
         (Some(old), Some(next)) => old.layout != next.layout || old.hidden != next.hidden,
         (None, None) => false,
         _ => true,
     };
     if replaced && let Some(ctx) = &app.tasks.repaint {
-        craft_ui::docking::cancel_drag::<Panel>(ctx, egui::Id::unique("lightcraft-docking"));
+        craft_ui::docking::cancel_drag::<Panel>(ctx, egui::Id::unique("luz-docking"));
     }
 }
 
-pub fn command(app: &mut crate::LightcraftApp, reset: bool, params: &Value) -> Result<Value, String> {
+pub fn command(app: &mut crate::LuzApp, reset: bool, params: &Value) -> Result<Value, String> {
     command_impl(app, reset, params, false)
 }
 
-fn command_impl(app: &mut crate::LightcraftApp, reset: bool, params: &Value, renderer_action: bool) -> Result<Value, String> {
+fn command_impl(app: &mut crate::LuzApp, reset: bool, params: &Value, renderer_action: bool) -> Result<Value, String> {
     let mut workspace = app.ui.docking.clone().unwrap_or_else(|| from_ui(app));
     if reset {
         workspace = default_workspace();
-        // The usual LightCraft starting workspace shows its current tool beside the photo.
+        // The usual Luz starting workspace shows its current tool beside the photo.
         set_visible(&mut workspace, Panel::Library, false)?;
         set_visible(&mut workspace, Panel::Presets, false)?;
     } else {
@@ -343,7 +343,7 @@ fn command_impl(app: &mut crate::LightcraftApp, reset: bool, params: &Value, ren
 /// visibility, render the panels and the current view in the canvas, then apply the docking
 /// actions. If the layout changed during the pass, any in-flight dock drag is cancelled and the
 /// docking actions it produced are not applied.
-pub fn show(app: &mut crate::LightcraftApp, ui: &mut egui::Ui) {
+pub fn show(app: &mut crate::LuzApp, ui: &mut egui::Ui) {
     let t = crate::theme::Tokens::get(ui.ctx());
     let mut workspace = app.ui.docking.clone().unwrap_or_else(|| from_ui(app));
     if let Err(error) = validate(&workspace).and_then(|()| sync(&mut workspace, app)) {
@@ -393,7 +393,7 @@ pub fn show(app: &mut crate::LightcraftApp, ui: &mut egui::Ui) {
     style.font = t.font(12.0);
     // Tool and preset panels publish hover previews before the photo consumes them.
     let mut canvas = None;
-    let output = DockArea::new(egui::Id::unique("lightcraft-docking")).locked(workspace.locked).show_with_limits(
+    let output = DockArea::new(egui::Id::unique("luz-docking")).locked(workspace.locked).show_with_limits(
         ui,
         &workspace.layout,
         &style,
@@ -449,7 +449,7 @@ pub fn show(app: &mut crate::LightcraftApp, ui: &mut egui::Ui) {
     let _ = sync(&mut workspace, app);
     let stale = workspace.layout != rendered.layout || workspace.hidden != rendered.hidden;
     if stale {
-        craft_ui::docking::cancel_drag::<Panel>(ui.ctx(), egui::Id::unique("lightcraft-docking"));
+        craft_ui::docking::cancel_drag::<Panel>(ui.ctx(), egui::Id::unique("luz-docking"));
     }
     publish_visibility(app, &workspace);
     app.ui.docking = Some(workspace);
@@ -567,8 +567,8 @@ pub(crate) fn columns(workspace: &Workspace, side: Side) -> Vec<(f32, Vec<Vec<Pa
 mod tests {
     use super::*;
 
-    fn app_with_widths() -> crate::LightcraftApp {
-        let mut app = crate::LightcraftApp::new(lightcraft_engine::Session::new(), crate::Services::default());
+    fn app_with_widths() -> crate::LuzApp {
+        let mut app = crate::LuzApp::new(luz_engine::Session::new(), crate::Services::default());
         app.ui.left_width = 333.0;
         app.ui.right_width = 410.0;
         app

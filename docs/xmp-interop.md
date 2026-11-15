@@ -28,7 +28,7 @@ What we write (standard namespaces, so other tools can read the metadata):
 | Location | `lc:location` |
 | Develop settings | `lc:settings` — our complete `DevelopSettings` as JSON (exact round trip, incl. masks, spots, crop and the rendering process; settings without `process` are V1, see [process-versions.md](process-versions.md)) |
 
-`lc:` is `http://ns.lightcraft.app/lc/1.0/`.
+`lc:` is `http://ns.luz.app/lc/1.0/`.
 
 Reading merges into the catalog with the **sidecar winning** for every field it states; fields it doesn't state are
 kept. The one exception is the **capture time**: a valid time embedded in the file (EXIF/IPTC) wins. Invalid EXIF
@@ -159,7 +159,7 @@ application's renderer and is ignored: the photo keeps Luz's own process, the la
 | `Contrast2012`, `Highlights2012`, `Shadows2012`, `Whites2012`, `Blacks2012` | `light.contrast` … `light.blacks` | −100..100, 1:1 |
 | `HDREditMode` | `hdr.enabled` | `1` / `True` = HDR editing on, `0` / `False` off |
 | `WhiteBalance` | `wb.mode` | `As Shot`, `Auto`, `Daylight`, `Cloudy`, `Shade`, `Tungsten`, `Fluorescent`, `Flash`; other names → custom |
-| `Temperature`, `Tint` | `wb.temp`, `wb.tint` (+ `wb.scale: kelvin`) | Kelvin / tint as written for raws with colour matrices — in the file (DNG) or measured for the camera (`lightcraft_raw::spectral`: ILCE-7M3, D850, EOS 5D Mark III…, issue #730) or read from its white-balance presets (`lightcraft_raw::kelvin_presets`: ILCA-99M2, ILCA-77M2…) — and for presets; the mapped settings say `"scale": "kelvin"` so the value stays Kelvin wherever it lands. Raws Luz develops relative to their as-shot look (ARW, NEF, RW2, RAF, CR3, CR2, PEF, SRW of other cameras: 6500 K / 0 means as shot) take the same mired shift from the packet's `AsShotTemperature` / `AsShotTint` instead; without that reference a custom Kelvin stays As Shot and is reported (`Temperature, Tint (custom white balance without AsShotTemperature: kept As Shot)`), because read on the relative scale it would be a large colour cast (issue #510). Note that Luz's Kelvin for a camera comes from its measured matrices, Lightroom's from Adobe's: the two scales differ (about 7–10 % on the ILCE-7M3), so the number is carried over, not the exact look |
+| `Temperature`, `Tint` | `wb.temp`, `wb.tint` (+ `wb.scale: kelvin`) | Kelvin / tint as written for raws with colour matrices — in the file (DNG) or measured for the camera (`luz_raw::spectral`: ILCE-7M3, D850, EOS 5D Mark III…, issue #730) or read from its white-balance presets (`luz_raw::kelvin_presets`: ILCA-99M2, ILCA-77M2…) — and for presets; the mapped settings say `"scale": "kelvin"` so the value stays Kelvin wherever it lands. Raws Luz develops relative to their as-shot look (ARW, NEF, RW2, RAF, CR3, CR2, PEF, SRW of other cameras: 6500 K / 0 means as shot) take the same mired shift from the packet's `AsShotTemperature` / `AsShotTint` instead; without that reference a custom Kelvin stays As Shot and is reported (`Temperature, Tint (custom white balance without AsShotTemperature: kept As Shot)`), because read on the relative scale it would be a large colour cast (issue #510). Note that Luz's Kelvin for a camera comes from its measured matrices, Lightroom's from Adobe's: the two scales differ (about 7–10 % on the ILCE-7M3), so the number is carried over, not the exact look |
 | `IncrementalTemperature`, `IncrementalTint` | `wb.temp`, `wb.tint` | rendered files: −100..100 on our relative scale (mired shift around 6500 K, same as the Temp slider); a rendered file with only `Temperature` shifts from `AsShotTemperature` like the raws above when it is present |
 | `Vibrance`, `Saturation` | `color.vibrance`, `color.saturation` | 1:1 |
 | `Texture`, `Clarity2012`, `Dehaze` | `effects.texture`, `effects.clarity`, `effects.dehaze` | 1:1 |
@@ -338,4 +338,4 @@ tone of the look fitted to its camera JPEG — so the
 photo's source is decoded again when its profile changes; rendered (non-raw) photos ignore it. Smart previews and the
 web build's render worker keep the file's own colour. A library on disk keeps a copy of each file in `Profiles/`;
 `profile.deleteCamera` (or `profile.deleteImported`) removes one. No profile ships with Luz, and the repository
-holds none: tests build theirs in memory (`lightcraft_raw::dcp::write_dcp`).
+holds none: tests build theirs in memory (`luz_raw::dcp::write_dcp`).

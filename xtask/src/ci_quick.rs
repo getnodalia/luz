@@ -7,7 +7,7 @@
 //! - fmt, layers, assets, roots: always (seconds);
 //! - clippy on the whole workspace (check builds only; catches callers broken by an API change);
 //! - the tests of the changed packages only (not their dependents);
-//! - heif when `lightcraft-codecs` / `lightcraft-heif` changed;
+//! - heif when `luz-codecs` / `luz-heif` changed;
 //! - parity when the tracker docs, a command/control crate, or a file's path changed (renames and
 //!   deletions: the tracker cites paths);
 //! - the wasm check of the changed packages that must build for wasm32.
@@ -26,22 +26,22 @@ const WORKSPACE_WIDE: &[&str] =
     &["Cargo.toml", "Cargo.lock", "clippy.toml", "rustfmt.toml", ".rustfmt.toml", "rust-toolchain", "rust-toolchain.toml"];
 const WORKSPACE_WIDE_DIRS: &[&str] = &[".cargo/"];
 /// Packages whose ids or paths the parity tracker cites (commands, develop controls, UI menus).
-const PARITY_PACKAGES: &[&str] = &["lightcraft-engine", "lightcraft-develop", "lightcraft-ui-egui", "lightcraft-cli"];
+const PARITY_PACKAGES: &[&str] = &["luz-engine", "luz-develop", "luz-ui-egui", "luz-cli"];
 const PARITY_DOCS: &[&str] = &["docs/parity-checklist.md", "docs/gaps.md"];
-const HEIF_PACKAGES: &[&str] = &["lightcraft-codecs", "lightcraft-heif"];
+const HEIF_PACKAGES: &[&str] = &["luz-codecs", "luz-heif"];
 /// Files outside a package's directory that it compiles in (`include_str!` / `include_bytes!`,
 /// a build script's `rerun-if-changed`): a change to one counts as a change to those packages.
 /// An entry ending in `/` covers the directory. `embedded_files_are_mapped` keeps this complete.
 const EMBEDDED: &[(&str, &[&str])] = &[
-    ("assets/app-icon/", &["lightcraft", "lightcraft-ui-egui"]),
-    ("assets/camera-profiles/", &["lightcraft-engine"]),
-    ("assets/camera-tone/", &["lightcraft-engine"]),
-    ("assets/fonts/", &["lightcraft-engine", "lightcraft-ui-egui"]),
-    ("contributors/", &["lightcraft-ui-egui"]),
-    ("docs/whats-new.md", &["lightcraft-ui-egui"]),
-    ("docs/raw/coverage-sweep.tsv", &["lightcraft-raw"]),
-    ("docs/raf-corpus.sha256", &["lightcraft-raw"]),
-    ("xtask/src/raw_samples.rs", &["lightcraft-raw"]),
+    ("assets/app-icon/", &["luz", "luz-ui-egui"]),
+    ("assets/camera-profiles/", &["luz-engine"]),
+    ("assets/camera-tone/", &["luz-engine"]),
+    ("assets/fonts/", &["luz-engine", "luz-ui-egui"]),
+    ("contributors/", &["luz-ui-egui"]),
+    ("docs/whats-new.md", &["luz-ui-egui"]),
+    ("docs/raw/coverage-sweep.tsv", &["luz-raw"]),
+    ("docs/raf-corpus.sha256", &["luz-raw"]),
+    ("xtask/src/raw_samples.rs", &["luz-raw"]),
     ("crates/ui-egui/src/menus.rs", &["xtask"]),
     ("crates/ui-egui/src/menus/", &["xtask"]),
 ];
@@ -189,12 +189,12 @@ mod tests {
 
     fn pkgs() -> Vec<(String, String)> {
         [
-            ("lightcraft-raw", "crates/raw"),
-            ("lightcraft-codecs", "crates/codecs"),
-            ("lightcraft-engine", "crates/engine"),
-            ("lightcraft-cli", "apps/lightcraft-cli"),
+            ("luz-raw", "crates/raw"),
+            ("luz-codecs", "crates/codecs"),
+            ("luz-engine", "crates/engine"),
+            ("luz-cli", "apps/luz-cli"),
             ("xtask", "xtask"),
-            ("lightcraft-raw-nested", "crates/raw/nested"),
+            ("luz-raw-nested", "crates/raw/nested"),
         ]
         .into_iter()
         .map(|(a, b)| (a.to_owned(), b.to_owned()))
@@ -204,7 +204,7 @@ mod tests {
     #[test]
     fn changed_files_pick_their_innermost_package() {
         let p = plan(&[ch("crates/raw/src/lib.rs"), ch("crates/raw/nested/src/x.rs"), ch("crates/rawx/y.rs")], &pkgs(), "b".into());
-        assert_eq!(p.packages.iter().map(String::as_str).collect::<Vec<_>>(), ["lightcraft-raw", "lightcraft-raw-nested"]);
+        assert_eq!(p.packages.iter().map(String::as_str).collect::<Vec<_>>(), ["luz-raw", "luz-raw-nested"]);
         assert!(p.rust() && !p.workspace_wide && !p.heif && !p.parity);
     }
 
@@ -256,18 +256,18 @@ mod tests {
         let untracked: Vec<_> = parse_paths_z("crates/codecs/ünï code.rs\0").collect();
         assert_eq!(untracked, [ch("crates/codecs/ünï code.rs")]);
         let p = plan(&[v, untracked].concat(), &pkgs(), "b".into());
-        assert_eq!(p.packages.iter().map(String::as_str).collect::<Vec<_>>(), ["lightcraft-codecs", "lightcraft-engine", "lightcraft-raw"]);
+        assert_eq!(p.packages.iter().map(String::as_str).collect::<Vec<_>>(), ["luz-codecs", "luz-engine", "luz-raw"]);
     }
 
     #[test]
     fn embedded_files_outside_a_crate_test_the_crates_that_embed_them() {
         let p = plan(&[ch("docs/raw/coverage-sweep.tsv")], &pkgs(), "b".into());
         assert!(p.rust());
-        assert_eq!(p.packages.iter().map(String::as_str).collect::<Vec<_>>(), ["lightcraft-raw"]);
+        assert_eq!(p.packages.iter().map(String::as_str).collect::<Vec<_>>(), ["luz-raw"]);
         let p = plan(&[ch("assets/fonts/Inter-Regular.ttf")], &pkgs(), "b".into());
-        assert!(p.rust() && p.packages.contains("lightcraft-engine"));
+        assert!(p.rust() && p.packages.contains("luz-engine"));
         // a consumer missing from the workspace's package list is not invented
-        assert!(!p.packages.contains("lightcraft-ui-egui"));
+        assert!(!p.packages.contains("luz-ui-egui"));
         let p = plan(&[ch("assets/ATTRIBUTION.md"), ch("docs/raw-parity.md")], &pkgs(), "b".into());
         assert!(!p.rust(), "only files something compiles in");
     }

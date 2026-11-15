@@ -4,14 +4,14 @@
 
 use std::path::Path;
 
-use lightcraft_catalog::PhotoId;
-use lightcraft_develop::{DevelopSettings, Preset};
+use luz_catalog::PhotoId;
+use luz_develop::{DevelopSettings, Preset};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
 use crate::Session;
 
-/// File extension of LightCraft preset files.
+/// File extension of Luz preset files.
 pub const LCPRESET_EXT: &str = "lcpreset";
 /// The `format` tag of a `.lcpreset` file.
 pub const LCPRESET_FORMAT: &str = "lightcraft.preset";
@@ -173,7 +173,7 @@ pub fn expand_preset_paths(paths: &[String]) -> Vec<String> {
 
 impl Session {
     /// The settings after applying `preset` to photo `id` at `amount`. The settings the preset
-    /// names are computed on the photo's import state ([`lightcraft_catalog::Photo::import_defaults`])
+    /// names are computed on the photo's import state ([`luz_catalog::Photo::import_defaults`])
     /// when a default preset recorded one (`import_look`); a photo without one (its settings came
     /// from an XMP sidecar or a catalog import, which record none) composes them on its current
     /// settings instead, since the camera defaults are not its import state. Either way, the
@@ -618,7 +618,7 @@ mod tests {
 
     #[test]
     fn builtin_presets_parse_and_apply() {
-        let base = lightcraft_develop::DevelopSettings::default();
+        let base = luz_develop::DevelopSettings::default();
         let mut ids = std::collections::HashSet::new();
         for pr in builtin() {
             assert!(ids.insert(pr.id.clone()));
@@ -754,10 +754,10 @@ mod tests {
         let mut s = Session::with_demo();
         s.execute("preset.apply", &json!({"id": "lc.bw-high-contrast"})).unwrap();
         let dv = s.develop_of(s.active().unwrap()).unwrap();
-        assert_eq!(dv.treatment, lightcraft_develop::Treatment::Bw);
+        assert_eq!(dv.treatment, luz_develop::Treatment::Bw);
         s.execute("preset.apply", &json!({"id": "lc.warm-glow"})).unwrap();
         let dv = s.develop_of(s.active().unwrap()).unwrap();
-        assert_eq!(dv.treatment, lightcraft_develop::Treatment::Color, "the color preset restores the treatment");
+        assert_eq!(dv.treatment, luz_develop::Treatment::Color, "the color preset restores the treatment");
         assert_eq!(dv.light.contrast, 8.0, "the color preset's values, not the B&W preset's");
         assert_eq!(dv.light.whites, 20.0, "a setting the color preset doesn't name keeps the B&W preset's value");
     }
@@ -841,8 +841,8 @@ mod tests {
         look.light.blacks = -10.0;
         p.import_look = Some(std::sync::Arc::new(look.clone()));
         p.develop = std::sync::Arc::new(look);
-        s.catalog.apply(lightcraft_catalog::Op::RemovePhoto { id: p.id }).unwrap();
-        s.catalog.apply(lightcraft_catalog::Op::AddPhoto { photo: Box::new(p) }).unwrap();
+        s.catalog.apply(luz_catalog::Op::RemovePhoto { id: p.id }).unwrap();
+        s.catalog.apply(luz_catalog::Op::AddPhoto { photo: Box::new(p) }).unwrap();
         s.execute("develop.set", &json!({"control": "light.exposure", "value": 2.0})).unwrap();
         s.execute("develop.set", &json!({"control": "light.blacks", "value": -30.0})).unwrap();
         s.execute("preset.apply", &json!({"id": "lc.bright-airy", "amount": 50})).unwrap();
@@ -865,11 +865,11 @@ mod tests {
         let look = p.camera_defaults();
         p.import_look = Some(std::sync::Arc::new(look.clone()));
         p.develop = std::sync::Arc::new(look);
-        s.catalog.apply(lightcraft_catalog::Op::RemovePhoto { id: p.id }).unwrap();
-        s.catalog.apply(lightcraft_catalog::Op::AddPhoto { photo: Box::new(p) }).unwrap();
+        s.catalog.apply(luz_catalog::Op::RemovePhoto { id: p.id }).unwrap();
+        s.catalog.apply(luz_catalog::Op::AddPhoto { photo: Box::new(p) }).unwrap();
         s.execute("crop.aspect", &json!({"aspect": [3, 2]})).unwrap();
         assert!(s.develop_of(id).unwrap().crop.aspect.is_some(), "the aspect is locked for this test");
-        let added = s.add_presets(vec![lightcraft_develop::Preset {
+        let added = s.add_presets(vec![luz_develop::Preset {
             id: "user.free-aspect".into(),
             name: "Free aspect".into(),
             group: "Test".into(),

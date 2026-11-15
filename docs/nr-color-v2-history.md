@@ -72,7 +72,7 @@ background load from other jobs made single timings useless (compare in one proc
 - Flat dark areas are smoothed somewhat less than by root V2 (cat spread 6.5 vs 5.1 at 25).
 - The Color slider changes little above 25 (the blend is complete at 25; only the reach grows). To us 25 already
   removes the visible colour noise.
-- Prototype switches (`NRV2_*`, `LIGHTCRAFT_NR_V2`) instead of a process version; debug output; a test-only copy
+- Prototype switches (`NRV2_*`, `LUZ_NR_V2`) instead of a process version; debug output; a test-only copy
   of an earlier version (`nrc_joint_reference.rs`) for bit-exactness checks.
 
 ## 3a. Speck brake
@@ -134,7 +134,7 @@ GPU samples; at most 1/255 from the CPU):
 | Tried | Result |
 |---|---|
 | a new path/weight buffer per scale, only `flush` | out of device memory, whole render fell back to the CPU |
-| two ping-pong buffers + `flush` | still out of memory: **3950 MiB real use** (nvidia-smi) while lightcraft counted 1.9 GB – the driver frees dropped buffers only when the GPU is done with them |
+| two ping-pong buffers + `flush` | still out of memory: **3950 MiB real use** (nvidia-smi) while luz counted 1.9 GB – the driver frees dropped buffers only when the GPU is done with them |
 | **`sync` after large drops** | fixes it (3.27 GB one piece, 2.4 GB in bands) |
 | bands with halo 4·Σδ + 8 | correct but slow at small budgets; now 2·Σδ + δmax + 8 (bands vs one piece: ≤ 1/255 in a few dozen pixels, from the box blur's running sums) |
 | band budget | free device memory where it can be asked without `unsafe` (nvidia-smi; amdgpu sysfs) + own pooled buffers − 384 MB, else 2 GB |

@@ -1,5 +1,5 @@
 //! `photo.cycleFlag` / `photo.increaseFlag` / `photo.decreaseFlag` through the real engine.
-use lightcraft_catalog::{Flag, Op, Photo, PhotoId, Source};
+use luz_catalog::{Flag, Op, Photo, PhotoId, Source};
 use serde_json::json;
 
 use crate::{Result, Selection, Session};
@@ -7,15 +7,8 @@ use crate::{Result, Selection, Session};
 fn session() -> Result<Session> {
     let mut s = Session::new();
     for (id, flag) in [(1, Flag::None), (2, Flag::Pick), (3, Flag::Reject), (4, Flag::None)] {
-        let mut photo = Photo::new(
-            PhotoId(id),
-            Source::File { path: format!("/lightcraft-flag-cycle/{id}.jpg") },
-            &format!("{id}.jpg"),
-            "JPEG",
-            40,
-            30,
-            "2026-10-13",
-        );
+        let mut photo =
+            Photo::new(PhotoId(id), Source::File { path: format!("/luz-flag-cycle/{id}.jpg") }, &format!("{id}.jpg"), "JPEG", 40, 30, "2026-10-13");
         photo.flag = flag;
         s.catalog.apply(Op::AddPhoto { photo: Box::new(photo) })?;
     }

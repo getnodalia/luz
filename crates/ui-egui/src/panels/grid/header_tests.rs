@@ -1,6 +1,6 @@
 use egui::{Rect, vec2};
 
-use crate::{LightcraftApp, Services, headless::HeadlessView, i18n::Locale};
+use crate::{LuzApp, Services, headless::HeadlessView, i18n::Locale};
 
 /// Issue #538: a breadcrumb opens its folder spelled as the path is, keeping a UNC share's leading
 /// `\\` and giving a bare drive its root back.
@@ -21,9 +21,9 @@ fn breadcrumbs_open_their_folder_as_spelled() {
 /// photos"); with nothing selected the header shows the photo count alone.
 #[test]
 fn the_header_counts_a_single_selected_photo() {
-    use lightcraft_catalog::{Op, Photo, Source};
+    use luz_catalog::{Op, Photo, Source};
     for (selected, folder) in [(0, false), (1, false), (2, false), (0, true), (1, true)] {
-        let mut session = lightcraft_engine::Session::new();
+        let mut session = luz_engine::Session::new();
         for i in 0..3 {
             let id = session.catalog.alloc_photo_id();
             let p = Photo::new(id, Source::File { path: format!("/pics/{i}.jpg") }, "x.jpg", "JPEG", 60, 40, "2026-01-01T10:00:00");
@@ -32,10 +32,10 @@ fn the_header_counts_a_single_selected_photo() {
         session.selection.ids = session.catalog.photos().take(selected).map(|p| p.id).collect();
         if folder {
             // a Local folder view: the same count, in the breadcrumb header
-            session.source = lightcraft_engine::LibrarySource::Folder;
-            session.browse = Some(lightcraft_engine::Browse { path: "/pics".into(), subfolders: false });
+            session.source = luz_engine::LibrarySource::Folder;
+            session.browse = Some(luz_engine::Browse { path: "/pics".into(), subfolders: false });
         }
-        let mut app = LightcraftApp::new(session, Services { png: None, ..Default::default() });
+        let mut app = LuzApp::new(session, Services { png: None, ..Default::default() });
         app.ui.view = crate::state::ViewMode::PhotoGrid;
         let mut h = crate::headless::Headless::new(app, [1400.0, 900.0], 1.0);
         h.step();
@@ -79,7 +79,7 @@ fn texts_painted(shape: &egui::Shape, out: &mut Vec<(String, Rect)>) {
 fn a_long_library_count_stays_inside_a_narrow_header() {
     for width in [crate::state::MIN_PHOTO_WIDTH, 590.0] {
         for scale in [1.0, 2.0] {
-            let app = LightcraftApp::new(lightcraft_engine::Session::new(), Services::default());
+            let app = LuzApp::new(luz_engine::Session::new(), Services::default());
             let ctx = egui::Context::default();
             crate::i18n::set_language(Locale::De);
             crate::theme::install_fonts(&ctx);
@@ -152,8 +152,8 @@ fn local_folder_header_text_and_controls_do_not_overlap() {
                     (r"C:\Users\Photographer\Pictures\A very long folder name with many photographs to import", 2408),
                     ("/Pictures", 0),
                 ] {
-                    let mut app = LightcraftApp::new(lightcraft_engine::Session::new(), Services::default());
-                    let browse = lightcraft_engine::Browse { path: path.into(), subfolders: false };
+                    let mut app = LuzApp::new(luz_engine::Session::new(), Services::default());
+                    let browse = luz_engine::Browse { path: path.into(), subfolders: false };
                     let ctx = egui::Context::default();
                     crate::i18n::set_language(locale);
                     crate::theme::install_fonts(&ctx);

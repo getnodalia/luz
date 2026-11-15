@@ -24,26 +24,26 @@ hicolor PNG, so it has the Linux margin and shadow.
 
 | File | What |
 |---|---|
-| `lightcraft.svg` | master: the portrait as a 1024 px image embedded in an SVG with the tile clip (canonical) |
-| `lightcraft-small.svg` | lighter 512 px version; also the web favicon where there is one |
-| `lightcraft-1024.png` | 1024 px render (store listings, docs) |
-| `lightcraft-macos-512.png` | runtime window/Dock icon on macOS (embedded by `apps/lightcraft/src/main.rs`) |
-| `lightcraft.icns` | macOS bundle icon (`CFBundleIconFile`) |
-| `lightcraft.ico` | Windows icon, 16-256 px, embedded in `lightcraft.exe` by `apps/lightcraft/build.rs` |
-| `hicolor/<n>x<n>/apps/ai.storyteller.lightcraft.png` | Linux icon theme, 16-512 px; the 256 px one is also the runtime window icon on Windows and Linux |
-| `hicolor/scalable/apps/ai.storyteller.lightcraft.svg` | Linux scalable icon (Nodalix app grid) |
+| `luz.svg` | master: the portrait as a 1024 px image embedded in an SVG with the tile clip (canonical) |
+| `luz-small.svg` | lighter 512 px version; also the web favicon where there is one |
+| `luz-1024.png` | 1024 px render (store listings, docs) |
+| `luz-macos-512.png` | runtime window/Dock icon on macOS (embedded by `apps/luz/src/main.rs`) |
+| `luz.icns` | macOS bundle icon (`CFBundleIconFile`) |
+| `luz.ico` | Windows icon, 16-256 px, embedded in `luz.exe` by `apps/luz/build.rs` |
+| `hicolor/<n>x<n>/apps/dev.danielmiguelt.Luz.png` | Linux icon theme, 16-512 px; the 256 px one is also the runtime window icon on Windows and Linux |
+| `hicolor/scalable/apps/dev.danielmiguelt.Luz.svg` | Linux scalable icon (Nodalix app grid) |
 
-The app id is `ai.storyteller.lightcraft`: the Wayland app id and the `.desktop` file
-(`packaging/linux/ai.storyteller.lightcraft.desktop`). Its `Icon=` is the Nodalia name, `dev.danielmiguelt.Luz`,
+The app id is `dev.danielmiguelt.Luz`: the Wayland app id and the `.desktop` file
+(`packaging/linux/dev.danielmiguelt.Luz.desktop`). Its `Icon=` is the Nodalia name, `dev.danielmiguelt.Luz`,
 so an icon theme can tell Luz from the Nodalia app that shares the id; `packaging/linux/package.sh` installs the
 hicolor icons under both names, and the Flatpak keeps the app id as the icon name because Flatpak only exports
 icons named after it. To install by hand, copy the contents of `hicolor/` into `/usr/share/icons/hicolor/`
-(`cp -R hicolor/. /usr/share/icons/hicolor/`, or `~/.local/share/icons/hicolor/`), copy each `ai.storyteller.lightcraft.*` there to `dev.danielmiguelt.Luz.*`, and put
+(`cp -R hicolor/. /usr/share/icons/hicolor/`, or `~/.local/share/icons/hicolor/`), copy each `dev.danielmiguelt.Luz.*` there to `dev.danielmiguelt.Luz.*`, and put
 the `.desktop` file into `applications/`.
 
 ## Regenerate
 
 The icon is a raster portrait, so the SVG files embed an image instead of traced paths. The
 derived files in this directory were rendered directly from the portrait. `packaging/icons.sh`
-still works on `lightcraft.svg` (resvg renders embedded images), but its output will differ slightly
+still works on `luz.svg` (resvg renders embedded images), but its output will differ slightly
 from the committed files in resampling.

@@ -1,14 +1,14 @@
 # From-source Flatpak packaging
 
-`ai.storyteller.lightcraft.yml` builds Luz and `lightcraft-cli` from this
+`dev.danielmiguelt.Luz.yml` builds Luz and `luz-cli` from this
 repository inside the Flatpak SDK. Flatpak builders have no network access, so
 `cargo-sources.json` lists every crate and git source with a fixed checksum or
 commit. Regenerate it after changing `Cargo.lock`:
 
 ```sh
 ./packaging/linux/flatpak/generate-cargo-sources.py
-flatpak-builder --user --install --force-clean build-flatpak packaging/linux/flatpak/ai.storyteller.lightcraft.yml
-flatpak run ai.storyteller.lightcraft
+flatpak-builder --user --install --force-clean build-flatpak packaging/linux/flatpak/dev.danielmiguelt.Luz.yml
+flatpak run dev.danielmiguelt.Luz
 ```
 
 ## Regeneration wrapper
@@ -27,7 +27,7 @@ Requirements: Python 3.9+ with `aiohttp` and `tomlkit` (`PyYAML` is optional and
 only needed for upstream's YAML output), plus `git` and network access to fetch
 the generator and git dependencies. Crate archive URLs and checksums are read
 from Cargo.lock; Flatpak downloads those archives when materializing the sources. The generator clones git
-repositories into `$XDG_CACHE_HOME/lightcraft-flatpak-cargo` by default, or the
+repositories into `$XDG_CACHE_HOME/luz-flatpak-cargo` by default, or the
 directory passed with `--cache-dir`; the wrapper refuses a cache inside the
 checkout or `CARGO_TARGET_DIR`. `cargo-sources.json` is written to a temporary
 file and atomically renamed only after the generator succeeds, so a failed run
@@ -115,6 +115,6 @@ python3 -B packaging/linux/flatpak/test_generate_cargo_sources.py
 
 The cancellation and timeout tests check process liveness and a frozen
 heartbeat before their teardown kills anything. With
-`LIGHTCRAFT_FLATPAK_TEST_BREAK_KILL=1` the group kill is a deliberate no-op and
+`LUZ_FLATPAK_TEST_BREAK_KILL=1` the group kill is a deliberate no-op and
 those tests must fail; run that variant to confirm they do not silently pass on
 a broken kill path.

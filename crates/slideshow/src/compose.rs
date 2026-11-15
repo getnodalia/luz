@@ -5,9 +5,9 @@
 //! wash → cast shadow → stroke border → photo. The stroke is drawn around the outside of the
 //! photo (the photo keeps its size); the shadow falls from the photo with its stroke.
 
-use lightcraft_raster::blur::gaussian;
-use lightcraft_raster::resample::{Filter, resize};
-use lightcraft_raster::{Image, Plane, Rgba8, par_rows};
+use luz_raster::blur::gaussian;
+use luz_raster::resample::{Filter, resize};
+use luz_raster::{Image, Plane, Rgba8, par_rows};
 
 use crate::settings::{MAX_SIDE, SlideSettings};
 

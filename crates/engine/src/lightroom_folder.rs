@@ -1,14 +1,14 @@
-//! Recognise a Lightroom Classic catalog where a LightCraft library was asked for (issue #891).
+//! Recognise a Lightroom Classic catalog where a Luz library was asked for (issue #891).
 //!
 //! A Lightroom catalog folder holds `Name.lrcat` (SQLite) next to `Name Previews.lrdata`,
 //! `Name Smart Previews.lrdata`, `Name Helper.lrdata`, `Name.lrcat-data`, the `-wal` / `-shm` /
 //! `.lock` files of an open catalog and `Backups/`. Opening any of these as a library would create
-//! an empty LightCraft library inside Lightroom's folder; [`Session::open_library`] refuses with
+//! an empty Luz library inside Lightroom's folder; [`Session::open_library`] refuses with
 //! [`EngineError::LightroomCatalog`] instead, and the app offers File ▸ Import Lightroom Catalog….
 //!
 //! What counts (only names are looked at, and a backup zip's list of files; no catalog is opened
 //! or read):
-//! - a LightCraft library (`catalog.snap` or `catalog.log` in the folder) is never a Lightroom
+//! - a Luz library (`catalog.snap` or `catalog.log` in the folder) is never a Lightroom
 //!   catalog, whatever else the folder holds: it opens as before;
 //! - a path named `*.lrcat` or one of its companions (`*.lrcat-wal`, `*.lrcat-shm`,
 //!   `*.lrcat-journal`, `*.lrcat.lock`);

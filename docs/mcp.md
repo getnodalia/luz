@@ -1,17 +1,17 @@
 # Luz MCP server
 
-`lightcraft-cli mcp` exposes Luz to AI agents through the
+`luz-cli mcp` exposes Luz to AI agents through the
 [Model Context Protocol](https://modelcontextprotocol.io): newline-delimited JSON-RPC 2.0 over
 stdio (protocol revision `2025-06-18`; `2025-03-26` and `2024-11-05` clients are accepted). The
-server lives in `crates/mcp` (`lightcraft-mcp`, layer L5) and is hand-written: no async runtime,
+server lives in `crates/mcp` (`luz-mcp`, layer L5) and is hand-written: no async runtime,
 no C dependencies.
 
 It runs in one of two modes:
 
 | Mode | Command | What it drives |
 |---|---|---|
-| **Headless** (default) | `lightcraft-cli mcp [--demo] [FILES/FOLDERS…]` | An in-process engine `Session`. Develop, render and export without a window. |
-| **Connect** | `lightcraft-cli mcp --connect [127.0.0.1:7980]` | A running desktop app started with `lightcraft --control 7980`, through its loopback JSON-lines control channel ([control-protocol.md](control-protocol.md)). Adds the UI tools (screenshot, clicks, keys, pointer gestures). |
+| **Headless** (default) | `luz-cli mcp [--demo] [FILES/FOLDERS…]` | An in-process engine `Session`. Develop, render and export without a window. |
+| **Connect** | `luz-cli mcp --connect [127.0.0.1:7980]` | A running desktop app started with `luz --control 7980`, through its loopback JSON-lines control channel ([control-protocol.md](control-protocol.md)). Adds the UI tools (screenshot, clicks, keys, pointer gestures). |
 
 Options: `--library DIR` opens (or creates) a persistent Luz library — the same crash-safe
 format the desktop app uses (`~/Pictures/Luz Library` by default there) — so ratings, edits and albums
@@ -37,16 +37,16 @@ Logs go to stderr; stdout carries only protocol messages.
 
 ## Wiring it into a client
 
-Build once: `cargo build --release -p lightcraft-cli` (binary: `target/release/lightcraft-cli`).
+Build once: `cargo build --release -p luz-cli` (binary: `target/release/luz-cli`).
 
 ### Claude Code
 
 ```sh
 # headless, with a folder of photos imported at start
-claude mcp add lightcraft -- /path/to/lightcraft/target/release/lightcraft-cli mcp ~/Pictures/shoot
+claude mcp add luz -- /path/to/luz/target/release/luz-cli mcp ~/Pictures/shoot
 
-# or: drive the running desktop app (start it with `lightcraft --control 7980`)
-claude mcp add lightcraft-app -- /path/to/lightcraft/target/release/lightcraft-cli mcp --connect 127.0.0.1:7980
+# or: drive the running desktop app (start it with `luz --control 7980`)
+claude mcp add luz-app -- /path/to/luz/target/release/luz-cli mcp --connect 127.0.0.1:7980
 ```
 
 Or check a project-scoped `.mcp.json` into your repo:
@@ -54,8 +54,8 @@ Or check a project-scoped `.mcp.json` into your repo:
 ```json
 {
   "mcpServers": {
-    "lightcraft": {
-      "command": "/path/to/lightcraft/target/release/lightcraft-cli",
+    "luz": {
+      "command": "/path/to/luz/target/release/luz-cli",
       "args": ["mcp", "--connect", "127.0.0.1:7980"]
     }
   }
@@ -64,7 +64,7 @@ Or check a project-scoped `.mcp.json` into your repo:
 
 ### Codex
 
-The macOS release includes a separate `lightcraft-cli-<version>-macos-universal.zip`;
+The macOS release includes a separate `luz-cli-<version>-macos-universal.zip`;
 unpack it alongside the desktop app if you do not want to build from source. Use the CLI
 and app from the same release. Verify both downloads against that release's `SHA256SUMS.txt`.
 
@@ -72,11 +72,11 @@ Register the CLI's stdio server with Codex using its **absolute** installed path
 
 ```sh
 # Headless: a persistent library whose edits survive MCP restarts.
-codex mcp add lightcraft -- "/absolute/path/lightcraft-cli" mcp --library "/absolute/path/library"
+codex mcp add luz -- "/absolute/path/luz-cli" mcp --library "/absolute/path/library"
 
 # Live desktop: start the app on the matching loopback port first.
 "/absolute/path/Luz.app/Contents/MacOS/Luz" --library "/absolute/path/library" --control 7980
-codex mcp add lightcraft-app -- "/absolute/path/lightcraft-cli" mcp --connect 127.0.0.1:7980
+codex mcp add luz-app -- "/absolute/path/luz-cli" mcp --connect 127.0.0.1:7980
 ```
 
 Choose one mode for a library: a headless server cannot open a library already locked by
@@ -94,19 +94,19 @@ expected library before editing. Configuration options are in the
 
 ### From an installed release
 
-The release packages ship `lightcraft-cli` alongside the desktop app, so no build is needed:
+The release packages ship `luz-cli` alongside the desktop app, so no build is needed:
 
 | Install | CLI |
 |---|---|
-| Windows (MSI) | `%LOCALAPPDATA%\Programs\ArtCraft\Luz\lightcraft-cli.exe` by default (`C:\Program Files\ArtCraft\Luz\lightcraft-cli.exe` for an all-users install, under `Program Files (x86)` instead for the 32-bit build, or wherever you installed it otherwise), not on `PATH` |
-| Linux (deb, rpm) | `/usr/bin/lightcraft-cli` |
-| macOS | the separate `lightcraft-cli-<version>-macos-<arch>.zip` release asset (the `.app` holds only the desktop app) |
+| Windows (MSI) | `%LOCALAPPDATA%\Programs\Nodalia\Luz\luz-cli.exe` by default (`C:\Program Files\Nodalia\Luz\luz-cli.exe` for an all-users install, under `Program Files (x86)` instead for the 32-bit build, or wherever you installed it otherwise), not on `PATH` |
+| Linux (deb, rpm) | `/usr/bin/luz-cli` |
+| macOS | the separate `luz-cli-<version>-macos-<arch>.zip` release asset (the `.app` holds only the desktop app) |
 
 ```sh
 # Windows (PowerShell), default install folder
-claude mcp add lightcraft -- "$env:LOCALAPPDATA\Programs\ArtCraft\Luz\lightcraft-cli.exe" mcp
+claude mcp add luz -- "$env:LOCALAPPDATA\Programs\Nodalia\Luz\luz-cli.exe" mcp
 # Linux, or macOS with the CLI unzipped onto PATH
-claude mcp add lightcraft -- lightcraft-cli mcp
+claude mcp add luz -- luz-cli mcp
 ```
 
 ### Other clients (Claude Desktop, Cursor, …)
@@ -117,15 +117,15 @@ Every stdio MCP client takes the same shape: a `command` plus `args`. For exampl
 ```json
 {
   "mcpServers": {
-    "lightcraft": {
-      "command": "/path/to/lightcraft/target/release/lightcraft-cli",
+    "luz": {
+      "command": "/path/to/luz/target/release/luz-cli",
       "args": ["mcp", "--demo"]
     }
   }
 }
 ```
 
-During development you can also point the client at `cargo run --release -p lightcraft-cli -- mcp`
+During development you can also point the client at `cargo run --release -p luz-cli -- mcp`
 (with `"cwd"` set to the repository), at the cost of a slower start.
 
 ## Shared core tools
@@ -160,7 +160,7 @@ export options) is preserved. Escaped tool panics return `isError: true`, and th
 serving; backend panics during resource reads or tool listing return an internal error.
 The headless backend owns its session directly, without a session mutex.
 
-`lightcraft://document` and `lightcraft://commands` contain JSON matching `doc_inspect` and
+`luz://document` and `luz://commands` contain JSON matching `doc_inspect` and
 `command_list`. Existing resources remain available. Requests declaring MCP 2026-07-28 in
 per-request `_meta` receive `resultType: complete` and list/read cache hints; reads are not cached.
 
@@ -250,15 +250,15 @@ develop settings and history.
 
 | URI | Content |
 |---|---|
-| `lightcraft://library` | Source, filter, sort, selection, undo/redo labels (`library.state`) |
-| `lightcraft://photos` | Photos in the current view (`catalog.query`) |
-| `lightcraft://photo/active` | Everything about the active photo (`photo.inspect`), including the camera's focus point as `meta.focus` when the file records one ([focus-points.md](focus-points.md); `run_command photo.readFocusPoints {wait: true}` reads it for photos imported before it was read, a few KB per file) |
-| `lightcraft://develop/active` | The active photo's develop settings (`develop.get`) |
-| `lightcraft://controls` | Every develop control with its current value (`develop.controls`) |
+| `luz://library` | Source, filter, sort, selection, undo/redo labels (`library.state`) |
+| `luz://photos` | Photos in the current view (`catalog.query`) |
+| `luz://photo/active` | Everything about the active photo (`photo.inspect`), including the camera's focus point as `meta.focus` when the file records one ([focus-points.md](focus-points.md); `run_command photo.readFocusPoints {wait: true}` reads it for photos imported before it was read, a few KB per file) |
+| `luz://develop/active` | The active photo's develop settings (`develop.get`) |
+| `luz://controls` | Every develop control with its current value (`develop.controls`) |
 
 Read these resources again to poll current state; they are snapshots, and `initialize` advertises
-`resources.subscribe: false`. `lightcraft://photo/active` includes the photo's `id` and `develop`
-settings together; `lightcraft://controls` contains slider values for the active photo at that read.
+`resources.subscribe: false`. `luz://photo/active` includes the photo's `id` and `develop`
+settings together; `luz://controls` contains slider values for the active photo at that read.
 Separate reads can observe different active photos. For controller feedback from GUI edits, use
 connect mode; headless mode owns a separate session. See [External controllers](control-protocol.md#external-controllers)
 for command mapping, live slider values and polling semantics.
@@ -267,7 +267,7 @@ for command mapping, live slider values and polling semantics.
 
 ```text
 → {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"me","version":"1"}}}
-← {"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{…},"resources":{…}},"serverInfo":{"name":"lightcraft",…},"instructions":"…"}}
+← {"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{…},"resources":{…}},"serverInfo":{"name":"luz",…},"instructions":"…"}}
 → {"jsonrpc":"2.0","method":"notifications/initialized"}
 → {"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"set_develop","arguments":{"values":{"light.exposure":0.7}}}}
 ← {"jsonrpc":"2.0","id":2,"result":{"content":[{"type":"text","text":"{…}"}],"isError":false,"structuredContent":{"ok":true,"controls":[{"id":"light.exposure","value":0.7}]}}}
@@ -284,7 +284,7 @@ With `--library`, a command whose change can't be written to disk (disk full, �
 `saved in memory but not written to disk: <reason>; Luz will retry` — the change is applied in the session and
 written by the next successful save (see [control-protocol.md](control-protocol.md#when-the-library-cant-be-saved)).
 
-## One-shot commands: `lightcraft-cli run`
+## One-shot commands: `luz-cli run`
 
 For agents that prefer a shell over an MCP session: run any chain of commands in one process and read one JSON
 line per command (`{"command", "ok", "result" | "error", "ms"}`; non-zero exit status on failure). A word without
@@ -293,27 +293,27 @@ JSON object into the params. Quote values with brackets or spaces for your shell
 
 ```sh
 # headless: import, edit, export
-lightcraft-cli run --import ~/Pictures/a.dng develop.set control=light.exposure value=0.7 \
+luz-cli run --import ~/Pictures/a.dng develop.set control=light.exposure value=0.7 \
     develop.auto app.export path=/tmp/a.jpg shortEdge=1080 colorSpace=displayP3
 # a persistent library: edits are saved, later invocations see them
-lightcraft-cli run --library ~/lc-lib --import ~/Pictures/shoot library.info
-lightcraft-cli run --library ~/lc-lib library.select ids=[3] develop.get
+luz-cli run --library ~/lc-lib --import ~/Pictures/shoot library.info
+luz-cli run --library ~/lc-lib library.select ids=[3] develop.get
 # the running app (same commands, plus ui.* methods)
-lightcraft-cli run --connect ui.set view=detail ui.screenshot path=/tmp/ui.png
+luz-cli run --connect ui.set view=detail ui.screenshot path=/tmp/ui.png
 # JSON lines from a file or stdin: {"command": id, "params": {…}} or {"method": "ui.inspect"}
-lightcraft-cli run --demo --script steps.jsonl --keep-going
+luz-cli run --demo --script steps.jsonl --keep-going
 ```
 
 ## Other CLI subcommands
 
 ```sh
-lightcraft-cli render in.dng -o out.tif --opt colorSpace=displayP3 --opt bitDepth=16 --opt percent=50
-lightcraft-cli render in.dng -o out.jpg --set light.exposure=0.5 --set light.contrast=20 --size 2048
-lightcraft-cli render in.jpg -o out.png --settings look.json --preset <presetId>
-lightcraft-cli render in.dng -o out.jpg --opt addToPhotos=true --opt photosAlbum=Trip   # macOS: then into Apple Photos
-lightcraft-cli commands [--json]   # the command registry
-lightcraft-cli controls [--json]   # develop control ids and ranges
-lightcraft-cli calibrate --max 300 ~/Pictures/2026   # camera colour profiles (docs/camera-preview-colour.md)
+luz-cli render in.dng -o out.tif --opt colorSpace=displayP3 --opt bitDepth=16 --opt percent=50
+luz-cli render in.dng -o out.jpg --set light.exposure=0.5 --set light.contrast=20 --size 2048
+luz-cli render in.jpg -o out.png --settings look.json --preset <presetId>
+luz-cli render in.dng -o out.jpg --opt addToPhotos=true --opt photosAlbum=Trip   # macOS: then into Apple Photos
+luz-cli commands [--json]   # the command registry
+luz-cli controls [--json]   # develop control ids and ranges
+luz-cli calibrate --max 300 ~/Pictures/2026   # camera colour profiles (docs/camera-preview-colour.md)
 ```
 
 ## Tests
@@ -321,23 +321,23 @@ lightcraft-cli calibrate --max 300 ~/Pictures/2026   # camera colour profiles (d
 - `crates/mcp/tests/it/e2e.rs` — M0.9 acceptance: over the stdio framing, set exposure and render;
   checks the decoded PNG gets brighter/darker. Runs headless and through the TCP transport
   (`Remote`) against a stand-in control server; also import → render → JPEG export of a real file.
-- `apps/lightcraft-cli/tests/it/cli.rs` — spawns `lightcraft-cli mcp` with real pipes; `render`;
+- `apps/luz-cli/tests/it/cli.rs` — spawns `luz-cli mcp` with real pipes; `render`;
   `commands`.
 
 ## Add to Apple Photos (macOS)
 
-`app.export` (MCP `export` tool, `lightcraft-cli run`, the desktop app) takes `addToPhotos: true` and
+`app.export` (MCP `export` tool, `luz-cli run`, the desktop app) takes `addToPhotos: true` and
 `photosAlbum` to hand the files it wrote to Apple Photos, into that album (a top-level album of exactly that
 name, made when missing). The result's `applePhotos` is the import job: `{job, running, requested, album}`
 plus `{imported, ids, warning?}`, `{error}` or `{skipped}` (with `cancelled: true` when the export was cancelled) once Photos is done; the files are written either
-way. Headless (this server, `lightcraft-cli`) waits for Photos by default; the desktop app (connect mode)
+way. Headless (this server, `luz-cli`) waits for Photos by default; the desktop app (connect mode)
 answers with the running job and `export.photosImports {job}` gives the outcome. `export.addToPhotos {paths,
 album?, wait?}` does the same for files already on disk (`wait` defaults to true headless, false in the desktop
 app, which refuses `wait: true`; with `wait: false` headless, the server waits for the import before it exits at end of input). One import
 runs at a time, and an export adding to Photos reserves it before it writes: another is refused, naming the
 job in the way. On other platforms `addToPhotos: true` is refused before anything is written, and
 `export.addToPhotos` is disabled with the reason. The first time, macOS asks the user to allow Luz (or
-the terminal running `lightcraft-cli`) to control Photos. After that, any client can add any file Luz can
+the terminal running `luz-cli`) to control Photos. After that, any client can add any file Luz can
 read to the user's Photos library (and so to iCloud Photos when that is on), not only exported ones: see [Who
 can add what](apple-photos.md#how-it-works).
 

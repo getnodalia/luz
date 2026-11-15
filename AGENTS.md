@@ -95,20 +95,19 @@ of it.
   text, because nearly every OFL Chinese face derives from it. Use it unmodified under its OFL; this does not open the
   door to Source Han under Adobe's name or to any other Adobe asset.
 - Every asset in the repository must be one of: **our own original work** (e.g. icons drawn in code as vectors, procedurally generated demo photos), **public domain / CC0**, **Creative Commons** (CC-BY / CC-BY-SA with attribution honoured), **OFL** (fonts), or **permissive open-source** (MIT/Apache-2.0/BSD/ISC) — or contributed by a person who created the asset and licenses it openly.
-- **Exception: `docs/brand/`.** The ArtCraft name, wordmark and logos there are ArtCraft Team trademarks, not open source and not covered by Luz's MIT OR Apache-2.0 licence (`LICENSE-MIT`, `LICENSE-APACHE`, `NOTICE`); their terms are in `docs/brand/LICENSE-brand.txt`. Use them only unmodified and never redraw, recolour or derive from them.
 - **Every asset must have an entry in `assets/ATTRIBUTION.md`** (path, title, author/creator, source URL or "original work", licence, date added, modifications) and its licence text when required (e.g. `assets/fonts/OFL-*.txt`). Add the entry in the same commit as the asset. Assets without an attribution entry must not be committed.
 - **Fonts live in [getnodalia/foundation's `vendor/craft-fonts/main` branch](https://github.com/getnodalia/foundation/tree/vendor/craft-fonts/main), never in this repo.** Don't commit
   font files here (Inter, already in `assets/fonts/`, is the one exception); add new fonts to craft-fonts. Luz
   uses it as the optional build input `CRAFT_FONTS_DIR`: `git clone https://github.com/storytold/craft-fonts ../craft-fonts`
-  then `CRAFT_FONTS_DIR=../craft-fonts cargo run -p lightcraft` (or any cargo/xtask command). `crates/engine/build.rs`
-  embeds the manifest's fonts as `lightcraft_engine::CRAFT_FONTS` (wasm32: BIZ UDPGothic Regular only); `cargo xtask web`
+  then `CRAFT_FONTS_DIR=../craft-fonts cargo run -p luz` (or any cargo/xtask command). `crates/engine/build.rs`
+  embeds the manifest's fonts as `luz_engine::CRAFT_FONTS` (wasm32: BIZ UDPGothic Regular only); `cargo xtask web`
   ships Noto Sans CJK SC Regular as a separate asset loaded by the UI before startup. The UI
   (`theme::font_definitions`) and the export watermark renderer use CJK faces (picked by script) as fallbacks after Inter; the UI also falls back on the faces of other scripts (Thai, Arabic, …). Unset,
   `CRAFT_FONTS` is empty: everything builds, tests and runs, but Chinese and Japanese text lack glyphs. Releases always build
   with it (the `release-*.yml` workflows, `CRAFT_FONTS_REQUIRED=1`) and ship the fonts' OFL licences. Tests that need these fonts skip
   without it; the FreeBSD CI job runs them with it.
 - Icons drawn in code (e.g. `crates/ui-egui/src/icons.rs`) are original work and are recorded in `assets/ATTRIBUTION.md` as such; do not trace them from Adobe icons.
-- Demo/test images: generated procedurally by `lightcraft-scenes`, or CC0 downloads kept in the gitignored `corpus/` with their source recorded. Screenshots of Adobe apps live only in the gitignored `plan/` and are never committed or published.
+- Demo/test images: generated procedurally by `luz-scenes`, or CC0 downloads kept in the gitignored `corpus/` with their source recorded. Screenshots of Adobe apps live only in the gitignored `plan/` and are never committed or published.
 - **Enforced:** `cargo xtask assets` (in `ci`) fails when an image/icon/font/sound/video/raw/ICC/XMP file is not matched
   by a path pattern in the first column of `assets/ATTRIBUTION.md`, when a referenced licence file is missing, when a
   file name suggests Adobe material, or when an Adobe profile/template format (`.dcp`, `.lcp`, `.lrtemplate`, …) appears.
@@ -116,7 +115,7 @@ of it.
 - When in doubt about an asset's licence: don't use it.
 
 ## Running and looking at the app
-- `cargo run --release -p lightcraft -- --control 7980` opens the desktop app with the JSON-lines control server (see `docs/control-protocol.md`).
+- `cargo run --release -p luz -- --control 7980` opens the desktop app with the JSON-lines control server (see `docs/control-protocol.md`).
 - **Never send OS-level synthetic input** (osascript/System Events keystrokes or clicks, `cliclick`, accessibility
   automation): it goes to whatever window is frontmost — the user's terminal or other apps. Drive Luz only
   through its control channel (`ui.key`, `ui.pointer`, `ui.clickWidget`, `ui.menu.invoke`) or headless snapshots.
@@ -124,12 +123,12 @@ of it.
   `plan/lightroom/screenshots/` when available. Without that optional notebook, verify the result against the
   task's requirements, committed documentation and regression tests; do not request the notebook or block work.
 - **Unattended (display asleep/locked, CI, nightly runs): prefer headless snapshots** — no window needed:
-  `lightcraft-cli snapshot --demo --script tour.jsonl -o out.png --size 1600x1000` (control-protocol requests,
+  `luz-cli snapshot --demo --script tour.jsonl -o out.png --size 1600x1000` (control-protocol requests,
   one per line; see `docs/control-protocol.md` → Headless rendering). In a running app use
   `ui.screenshot {"path": …, "headless": true}`; windowed screenshots fall back to headless after 2 s.
-- MCP: `lightcraft-cli mcp` (headless, `--demo` for the procedural library) or `lightcraft-cli mcp --connect` (drives
-  the running app). See `docs/mcp.md`. Quick non-UI checks: `lightcraft-cli render in.jpg -o out.jpg --set light.exposure=1`.
-- Export goes through `lightcraft_engine::export` (one encoder for app, CLI, MCP and web); UI-only commands live in
+- MCP: `luz-cli mcp` (headless, `--demo` for the procedural library) or `luz-cli mcp --connect` (drives
+  the running app). See `docs/mcp.md`. Quick non-UI checks: `luz-cli render in.jpg -o out.jpg --set light.exposure=1`.
+- Export goes through `luz_engine::export` (one encoder for app, CLI, MCP and web); UI-only commands live in
   `crates/ui-egui/src/menus.rs`.
 - Text boxes use `crates/ui-egui/src/widgets/text_field.rs` (`TextField`), not `egui::TextEdit`: it gives every field the
   Cut / Copy / Paste / Select All menu, Esc restoring the text, and reports how an edit ended. Give each a widget id
@@ -140,28 +139,28 @@ of it.
 
 ## Testing & performance (do this often)
 - Unit/property tests next to the code; end-to-end tests drive real binaries (`crates/mcp/tests/e2e.rs`,
-  `apps/lightcraft-cli/tests/`). New features need at least one test that would fail without them.
+  `apps/luz-cli/tests/`). New features need at least one test that would fail without them.
 - **Run the app after every user-visible change**: launch with `--control 7980`, drive it with a JSON-lines script
   (`docs/showcase/run.py file.jsonl`), take `ui.screenshot`, and look at it. Check `ui.inspect` → `perf`.
 - **Benchmarks:** `cargo xtask bench` (24 MP raw from corpus; CPU and GPU columns) appends to `target/bench/history.jsonl`
   and flags CPU-time regressions > 20 % vs the previous run (`--strict` to fail). Run it before and after perf work.
-- **Measure, don't guess**: `LIGHTCRAFT_PROFILE=1` prints per-stage pipeline timings to stderr; time CLI renders
+- **Measure, don't guess**: `LUZ_PROFILE=1` prints per-stage pipeline timings to stderr; time CLI renders
   with `/usr/bin/time`. Timings may go in the optional `plan/` notebook. Budgets: slider update ≤ 16 ms (draft) / loupe
   ≤ 60 ms on ~2.5 MP; export ≤ 1 s per 24 MP JPEG.
-- Never commit media: test images are procedural (`lightcraft-scenes`) or CC0 downloads in the gitignored `corpus/`.
+- Never commit media: test images are procedural (`luz-scenes`) or CC0 downloads in the gitignored `corpus/`.
 - **Flaky tests:** a test that fails, then passes on a rerun of the same commit, is flaky. Don't rerun until it
   passes and move on: open an issue with the failing log, and if it failed on two unrelated PRs, quarantine it with
   `#[ignore = "flaky: #<issue>"]` (a doctest: an `ignore` code fence and a comment naming the issue) in a PR of its
   own until the issue is fixed. Never quarantine a test that fails every time; fix the code or the test. A test that
   hangs is a failure too: under `cargo test`, libtest's "has been running for over 60 seconds" line names it; under
-  nextest (`LIGHTCRAFT_NEXTEST=1`), its `SLOW` lines do.
-- A test that can't run here (no GPU, corpus file, craft-fonts face, model) calls `lightcraft_testkit::skip!(Gpu, "why")`
+  nextest (`LUZ_NEXTEST=1`), its `SLOW` lines do.
+- A test that can't run here (no GPU, corpus file, craft-fonts face, model) calls `luz_testkit::skip!(Gpu, "why")`
   before it returns, not a bare `eprintln!`. `cargo xtask ci` then lists the skips and the machine's GPU adapters and
   data, and writes `target/ci/report.json` and `target/ci/summary.md` (Markdown for a PR).
 
 ## Map of the code
 `geom`, `color`, `raster`, `tiff` (L0) → `raw`, `codecs`, `meta`, `develop` (L1) → `pipeline` → `catalog` → `engine`
-→ `ui-egui`, `mcp` (L5) → apps `lightcraft` (desktop), `lightcraft-cli` (render/commands/MCP). `scenes` generates demo
+→ `ui-egui`, `mcp` (L5) → apps `luz` (desktop), `luz-cli` (render/commands/MCP). `scenes` generates demo
 photos. `xtask` = tooling (`ci`, `layers`, `assets`, `parity`, `wasm`, `corpus`, `stats`); `testkit` = test helpers
 (dev-dependency only). `flake.nix` +
 `nix/package.nix` = the Nix package (`nix build` builds both binaries with the craft-fonts input, installs the

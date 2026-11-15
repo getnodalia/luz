@@ -22,8 +22,8 @@
 //! When too few patches match, or the fit isn't a plausible handheld motion, the alignment found
 //! on the small versions stays: refining never makes an alignment worse than not refining.
 
-use lightcraft_geom::{Homography, Point};
-use lightcraft_raster::{Plane, Rgb32f};
+use luz_geom::{Homography, Point};
+use luz_raster::{Plane, Rgb32f};
 use rayon::prelude::*;
 
 use crate::align::{Alignment, Models, choose_model, luma as lum};

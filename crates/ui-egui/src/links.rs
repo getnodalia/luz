@@ -1,31 +1,31 @@
 //! Community and project links (Help menu, About dialog, top-bar Discord button).
 
-/// The app's id in ArtCraft URLs.
-pub const APP: &str = "lightcraft";
-/// The ArtCraft community Discord.
-pub const DISCORD: &str = "https://discord.gg/artcraft";
-/// The ArtCraft website.
-pub const WEBSITE: &str = "https://getartcraft.com";
-/// This app's page on the ArtCraft website.
-pub const APP_PAGE: &str = "https://getartcraft.com/apps/lightcraft";
+/// The app's id in Nodalia URLs.
+pub const APP: &str = "luz";
+/// The Nodalia community Discord.
+pub const DISCORD: &str = "https://github.com/getnodalia/luz/issues";
+/// The Nodalia website.
+pub const WEBSITE: &str = "https://getnodalia.com";
+/// This app's page on the Nodalia website.
+pub const APP_PAGE: &str = "https://getnodalia.com/luz";
 /// This app's source repository.
-pub const GITHUB: &str = "https://github.com/storytold/lightcraft";
+pub const GITHUB: &str = "https://github.com/getnodalia/luz";
 
 /// (UI command id, menu label, URL) for each link, in Help-menu order.
 /// The user documentation (docs/ in the repository).
-pub const HELP: &str = "https://github.com/storytold/lightcraft/tree/main/docs";
+pub const HELP: &str = "https://github.com/getnodalia/luz/tree/main/docs";
 
 pub const LINKS: &[(&str, &str, &str)] = &[
-    ("app.help", "LightCraft Help", HELP),
-    ("app.discord", "Join the ArtCraft Discord…", DISCORD),
-    ("app.website", "LightCraft Website", APP_PAGE),
-    ("app.github", "LightCraft on GitHub", GITHUB),
-    ("app.artcraft", "ArtCraft Website", WEBSITE),
+    ("app.help", "Luz Help", HELP),
+    ("app.discord", "Join the Nodalia Discord…", DISCORD),
+    ("app.website", "Luz Website", APP_PAGE),
+    ("app.github", "Luz on GitHub", GITHUB),
+    ("app.nodalia", "Nodalia Website", WEBSITE),
     ("app.feedback", "Send Feedback…", FEEDBACK),
 ];
 
 /// Where feedback and bug reports go.
-pub const FEEDBACK: &str = "https://github.com/storytold/lightcraft/issues/new";
+pub const FEEDBACK: &str = "https://github.com/getnodalia/luz/issues/new";
 
 /// The URL behind a link command id.
 pub fn url_of(cmd: &str) -> Option<&'static str> {
@@ -33,7 +33,7 @@ pub fn url_of(cmd: &str) -> Option<&'static str> {
 }
 
 /// Open `url` in the user's browser (through the host's `open_url` service).
-pub fn open(app: &mut crate::LightcraftApp, url: &str) -> Result<serde_json::Value, String> {
+pub fn open(app: &mut crate::LuzApp, url: &str) -> Result<serde_json::Value, String> {
     let open = app.services.open_url.as_mut().ok_or("can't open links here")?;
     open(url)?;
     Ok(serde_json::json!({ "url": url }))

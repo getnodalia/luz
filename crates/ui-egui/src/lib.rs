@@ -1,18 +1,18 @@
-//! LightCraft's egui frontend: a Lightroom-style UI over `lightcraft-engine`.
+//! Luz's egui frontend: a Lightroom-style UI over `luz-engine`.
 //!
-//! The UI is thin: every action goes through [`LightcraftApp::run`], which handles UI commands
+//! The UI is thin: every action goes through [`LuzApp::run`], which handles UI commands
 //! (views, panels, zoom — see [`menus::ui_commands`]) and forwards everything else to the engine.
 //! The same entry point serves menus, shortcuts, buttons and the control channel ([`control`]).
 #![forbid(unsafe_code)]
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
-/// LightCraft as craft-update knows it, with its 128 px icon and accent colour: the update
+/// Luz as craft-update knows it, with its 128 px icon and accent colour: the update
 /// prompt shows both, and an AppImage's menu entry gets the icon.
 #[cfg(not(target_arch = "wasm32"))]
 pub const UPDATE_APP: craft_update::app::App = craft_update::app::App {
-    icon_png: Some(include_bytes!("../../../assets/app-icon/hicolor/128x128/apps/ai.storyteller.lightcraft.png")),
+    icon_png: Some(include_bytes!("../../../assets/app-icon/hicolor/128x128/apps/dev.danielmiguelt.Luz.png")),
     accent: Some([0xf2, 0xa5, 0x16]),
-    ..craft_update::suite::LIGHTCRAFT
+    ..craft_update::suite::LUZ
 };
 
 pub mod brush_live;
@@ -65,7 +65,7 @@ use tests::{fixtures as tests_fixtures, render_fixtures as tests_render_fixtures
 
 use std::sync::mpsc::{Receiver, Sender};
 
-use lightcraft_engine::{AiModel, ErrorKind, Session};
+use luz_engine::{AiModel, ErrorKind, Session};
 use serde_json::Value;
 
 pub use command_error::CommandError;
@@ -113,9 +113,9 @@ pub const SCREEN_PROFILE: &str = "screen";
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Perf {
-    /// Layout of the last frame ([`LightcraftApp::ui`], including commands run from widgets).
+    /// Layout of the last frame ([`LuzApp::ui`], including commands run from widgets).
     pub frame_ms: f64,
-    /// Per-frame logic before layout ([`LightcraftApp::logic`]: control channel, shortcuts,
+    /// Per-frame logic before layout ([`LuzApp::logic`]: control channel, shortcuts,
     /// render polling, pending catalog persistence).
     pub logic_ms: f64,
     /// The whole update of the last frame: logic + layout.
@@ -146,7 +146,7 @@ impl QuitPrompt {
     }
 }
 
-pub struct LightcraftApp {
+pub struct LuzApp {
     /// Per-catalog-revision caches of library-wide results the panels show every frame
     /// (expensive on big libraries).
     pub caches: Caches,
@@ -292,7 +292,7 @@ pub struct LightcraftApp {
     pub brush_live: Option<brush_live::LiveStroke>,
     /// What the loupe drew last frame: photo and source ("render", "cached", "embedded", "small",
     /// "thumb", "none").
-    pub loupe_shown: Option<(lightcraft_catalog::PhotoId, &'static str)>,
+    pub loupe_shown: Option<(luz_catalog::PhotoId, &'static str)>,
     /// When each photo stepped to in the loupe first showed (`ui.inspect` → `perf.loupeSteps`).
     pub loupe_timing: loupe_timing::LoupeTiming,
     /// The app-wide background preparation settings were handed from the saved app settings to
@@ -311,7 +311,7 @@ pub struct LightcraftApp {
     /// The size of a slider drag's whole-frame drafts (full size where they keep up, issue #330).
     pub(crate) drag_scale: region::DragScale,
     /// (photo, look, window frame size) a window was refused for: it reads more than one render holds.
-    pub(crate) window_refused: Option<(lightcraft_catalog::PhotoId, u64, usize)>,
+    pub(crate) window_refused: Option<(luz_catalog::PhotoId, u64, usize)>,
     pub(crate) region_tiles: std::collections::HashMap<(bool, u64), region::RegionView>,
     /// The window render each pane of Compare / Reference asked for last (left, right), as
     /// [`Self::region_view`] is for the loupe.
@@ -369,9 +369,9 @@ pub struct LightcraftApp {
     /// ([`panels::notices::disk_space_notice`]). The desktop app sets it; headless sessions and tests
     /// don't (their drive is whatever the machine has).
     pub disk_space_notice: bool,
-    /// The low-disk notice's text while it is queued in [`LightcraftApp::notices`]: it is shown with a
+    /// The low-disk notice's text while it is queued in [`LuzApp::notices`]: it is shown with a
     /// button to Settings ▸ Performance. With the library it was raised for
-    /// ([`lightcraft_engine::Session::library_generation`]): another library open drops it.
+    /// ([`luz_engine::Session::library_generation`]): another library open drops it.
     pub(crate) disk_notice: Option<(u64, String)>,
     /// The memory budget setting last applied (MB, 0 = automatic).
     memory_applied: Option<u32>,
@@ -456,7 +456,7 @@ struct ShotGeometry {
     pixels_per_point: f32,
     /// The UI zoom factor.
     zoom: f32,
-    /// [`LightcraftApp::shot_geometry_epoch`] at issue.
+    /// [`LuzApp::shot_geometry_epoch`] at issue.
     epoch: u64,
 }
 
@@ -500,13 +500,13 @@ struct PendingGesture {
     method: String,
     params: Value,
     reply: Sender<ControlResponse>,
-    /// [`LightcraftApp::layout_epoch`] at admission; resolution needs a later one.
+    /// [`LuzApp::layout_epoch`] at admission; resolution needs a later one.
     admitted_epoch: u64,
     frame: GestureFrame,
     /// Monotonic stall deadline (milliseconds): delivery refreshes it whenever the UI consumes a
     /// batch, so a long but progressing drag is not a timeout.
     deadline_ms: f64,
-    /// [`LightcraftApp::ui_passes`] when the events were queued (`None`: not resolved yet).
+    /// [`LuzApp::ui_passes`] when the events were queued (`None`: not resolved yet).
     resolved_pass: Option<u64>,
     /// Synthetic events queued for this gesture that the host has not injected yet.
     remaining_events: usize,
@@ -529,7 +529,7 @@ struct PendingGesture {
 struct PendingShot {
     token: u64,
     /// Destination identity pinned at admission (revalidated immediately before the write).
-    target: Option<lightcraft_engine::originals::WriteTarget>,
+    target: Option<luz_engine::originals::WriteTarget>,
     reply: Sender<ControlResponse>,
     headless: bool,
     /// Admitted UI pass count and monotonic deadlines (milliseconds).
@@ -557,11 +557,11 @@ pub struct HoverPreview {
     /// What is previewed (e.g. "Preset: Warm Glow").
     pub label: String,
     /// The photo's settings with the look applied.
-    pub settings: lightcraft_develop::DevelopSettings,
+    pub settings: luz_develop::DevelopSettings,
 }
 
-pub fn is_bw(d: &lightcraft_develop::DevelopSettings) -> bool {
-    d.treatment == lightcraft_develop::Treatment::Bw || d.profile.id == "lc.mono" || d.profile.id.starts_with("lc.bw.")
+pub fn is_bw(d: &luz_develop::DevelopSettings) -> bool {
+    d.treatment == luz_develop::Treatment::Bw || d.profile.id == "lc.mono" || d.profile.id.starts_with("lc.bw.")
 }
 
 /// A dropped face model file (`.onnx`).
@@ -600,7 +600,7 @@ pub fn split_presets(dropped: Vec<String>) -> (Vec<String>, Vec<String>) {
 /// Results recomputed only when the catalog (or their inputs) change.
 #[derive(Default)]
 pub struct Caches {
-    keyword_tree: Option<(u64, std::sync::Arc<Vec<lightcraft_catalog::KeywordNode>>)>,
+    keyword_tree: Option<(u64, std::sync::Arc<Vec<luz_catalog::KeywordNode>>)>,
     /// The Keywording box's read-only names (with containing keywords, or Will Export), by library
     /// revision, selection and view.
     keyword_names: Option<(u64, u64, std::sync::Arc<Vec<panels::keywording::Chip>>)>,
@@ -613,19 +613,18 @@ pub struct Caches {
     keyword_groups: Option<(u64, u64, std::sync::Arc<Vec<panels::keywording::Group>>)>,
     /// The Keyword List's tick boxes, by library revision and selection.
     keyword_ticks: Option<(u64, u64, std::sync::Arc<panels::keyword_list::Ticks>)>,
-    folder_tree: Option<(u64, std::sync::Arc<Vec<lightcraft_catalog::FolderNode>>)>,
-    people: Option<(u64, lightcraft_catalog::Filter, std::sync::Arc<Vec<lightcraft_catalog::Person>>)>,
+    folder_tree: Option<(u64, std::sync::Arc<Vec<luz_catalog::FolderNode>>)>,
+    people: Option<(u64, luz_catalog::Filter, std::sync::Arc<Vec<luz_catalog::Person>>)>,
     suggestions: Option<(u64, std::sync::Arc<Vec<String>>)>,
     /// What the Add keyword box offers for the text typed in it, by library revision, the
     /// selection's keywords and that text.
     completions: Option<(u64, std::sync::Arc<panels::keywording::Offers>)>,
     counts: Option<(u64, LibraryCounts)>,
-    date_groups: Option<(u64, std::sync::Arc<Vec<lightcraft_catalog::DateGroup>>)>,
+    date_groups: Option<(u64, std::sync::Arc<Vec<luz_catalog::DateGroup>>)>,
     filter_values: Option<(u64, std::sync::Arc<FilterValues>)>,
     /// The albums' counts: the minute they are of (while a smart album asks about "the last N days"), the tally
     /// that follows edits, and the counts as the panels take them.
-    album_counts:
-        Option<(String, lightcraft_catalog::tally::AlbumTally, std::sync::Arc<std::collections::HashMap<lightcraft_catalog::AlbumId, usize>>)>,
+    album_counts: Option<(String, luz_catalog::tally::AlbumTally, std::sync::Arc<std::collections::HashMap<luz_catalog::AlbumId, usize>>)>,
     /// How often the album counts were made from every photo (tests check that unchanged frames, and edits to a
     /// photo or a few, don't).
     pub album_count_scans: usize,
@@ -636,7 +635,7 @@ pub struct Caches {
     dialog_count: Option<(u64, usize)>,
     pub dialog_count_scans: usize,
     /// The problems of every saved smart album that has some ([`Caches::smart_album_problems`]).
-    smart_problems: Option<(u64, std::sync::Arc<std::collections::HashMap<lightcraft_catalog::AlbumId, Vec<lightcraft_catalog::rules::Problem>>>)>,
+    smart_problems: Option<(u64, std::sync::Arc<std::collections::HashMap<luz_catalog::AlbumId, Vec<luz_catalog::rules::Problem>>>)>,
     pub smart_problem_scans: usize,
     /// AI denoise: what the pump last saw, the model list and the downloads being watched.
     pub denoise: panels::denoise::Ui,

@@ -5,7 +5,7 @@
 
 use std::sync::Arc;
 
-use lightcraft_develop::{DevelopSettings, Mask, MaskComponent, MaskOp, MaskShape, SegMask};
+use luz_develop::{DevelopSettings, Mask, MaskComponent, MaskOp, MaskShape, SegMask};
 
 use crate::journal::{LOG, SNAPSHOT, VERSION};
 use crate::*;
@@ -29,13 +29,7 @@ fn settings_with_seg(seg: SegMask, exposure: f64) -> DevelopSettings {
             name: None,
             op: MaskOp::Add,
             invert: false,
-            shape: MaskShape::Object {
-                hint: vec![lightcraft_geom::Point::new(0.5, 0.5)],
-                exclude: vec![],
-                seg: Some(seg),
-                detail: vec![],
-                edge: 0.0,
-            },
+            shape: MaskShape::Object { hint: vec![luz_geom::Point::new(0.5, 0.5)], exclude: vec![], seg: Some(seg), detail: vec![], edge: 0.0 },
         }],
         ..Default::default()
     });
@@ -50,13 +44,7 @@ fn object_mask(id: u32, seg: SegMask) -> Mask {
             name: None,
             op: MaskOp::Add,
             invert: false,
-            shape: MaskShape::Object {
-                hint: vec![lightcraft_geom::Point::new(0.5, 0.5)],
-                exclude: vec![],
-                seg: Some(seg),
-                detail: vec![],
-                edge: 0.0,
-            },
+            shape: MaskShape::Object { hint: vec![luz_geom::Point::new(0.5, 0.5)], exclude: vec![], seg: Some(seg), detail: vec![], edge: 0.0 },
         }],
         ..Default::default()
     }

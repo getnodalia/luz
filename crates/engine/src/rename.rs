@@ -25,8 +25,8 @@
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 
-use lightcraft_catalog::dates::MONTHS;
-use lightcraft_catalog::{Op, Photo, PhotoId, Source};
+use luz_catalog::dates::MONTHS;
+use luz_catalog::{Op, Photo, PhotoId, Source};
 use serde::Serialize;
 
 use crate::sidecar::SidecarNaming;

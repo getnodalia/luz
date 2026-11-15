@@ -1,18 +1,18 @@
 <p align="center">
-  <a href="https://getartcraft.com/">
+  <a href="https://getnodalia.com/">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="docs/brand/artcraft-logo-white.svg">
-      <img alt="ArtCraft" src="docs/brand/artcraft-logo.svg" width="200">
+      <img alt="Nodalia" src="docs/brand/artcraft-logo.svg" width="200">
     </picture>
   </a>
 </p>
 
 
 <p align="center">
-  <img src="assets/app-icon/hicolor/256x256/apps/ai.storyteller.lightcraft.png" width="128" height="128" alt="LightCraft icon: an engraved lynx on an amber tile">
+  <img src="assets/app-icon/hicolor/256x256/apps/dev.danielmiguelt.Luz.png" width="128" height="128" alt="Luz icon: an engraved lynx on an amber tile">
 </p>
 
-<h1 align="center">LightCraft</h1>
+<h1 align="center">Luz</h1>
 
 <h3 align="center">Your photos. Your pixels. Your machine.</h3>
 
@@ -34,31 +34,31 @@
   <img alt="License: MIT OR Apache-2.0" src="https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-8a5800?style=flat-square">
   <a href="ROADMAP.md"><img alt="Status: young and moving fast" src="https://img.shields.io/badge/status-young%20%26%20moving%20fast-f2a516?style=flat-square"></a>
   <br>
-  <a href="https://sonarcloud.io/project/overview?id=storytold_lightcraft"><img alt="Scanned by SonarCloud" src="https://img.shields.io/badge/Scanned_by-SonarCloud-4b9fd5?style=flat-square&logo=sonarqubecloud&logoColor=white"></a>
-  <a href="https://coderabbit.ai"><img alt="Reviewed by CodeRabbit" src="https://img.shields.io/coderabbit/prs/github/storytold/lightcraft?style=flat-square&label=Reviewed%20by%20CodeRabbit&logo=coderabbit"></a>
+  <a href="https://sonarcloud.io/project/overview?id=storytold_luz"><img alt="Scanned by SonarCloud" src="https://img.shields.io/badge/Scanned_by-SonarCloud-4b9fd5?style=flat-square&logo=sonarqubecloud&logoColor=white"></a>
+  <a href="https://coderabbit.ai"><img alt="Reviewed by CodeRabbit" src="https://img.shields.io/coderabbit/prs/github/getnodalia/luz?style=flat-square&label=Reviewed%20by%20CodeRabbit&logo=coderabbit"></a>
 </p>
 
 <p align="center">
-  <a href="https://discord.gg/artcraft"><img alt="Join the ArtCraft community on Discord" src="https://img.shields.io/badge/Join%20us%20on%20Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" height="40"></a>
+  <a href="https://github.com/getnodalia/luz/issues"><img alt="Join the Nodalia community on Discord" src="https://img.shields.io/badge/Join%20us%20on%20Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" height="40"></a>
 </p>
 
 <p align="center">
-  <a href="https://getartcraft.com/apps/lightcraft"><b>LightCraft on getartcraft.com</b></a> ·
-  <a href="https://getartcraft.com/">ArtCraft</a> ·
-  <a href="https://getartcraft.com/apps">All Crafting Apps</a>
+  <a href="https://getnodalia.com/luz"><b>Luz on getnodalia.com</b></a> ·
+  <a href="https://getnodalia.com/">Nodalia</a> ·
+  <a href="https://getnodalia.com/apps">All Crafting Apps</a>
 </p>
 
 <br>
 
 <p align="center">
-  <img src="docs/images/hero-tetons.jpg" alt="LightCraft's Edit view with Ansel Adams' The Tetons and the Snake River in the loupe, the Light and Effects panels open on the right, and the four showcase photos in the filmstrip" width="100%">
+  <img src="docs/images/hero-tetons.jpg" alt="Luz's Edit view with Ansel Adams' The Tetons and the Snake River in the loupe, the Light and Effects panels open on the right, and the four showcase photos in the filmstrip" width="100%">
   <br>
-  <sub><i>Ansel Adams, "The Tetons and the Snake River" (1942). Public domain, U.S. National Archives. Developed in LightCraft.</i></sub>
+  <sub><i>Ansel Adams, "The Tetons and the Snake River" (1942). Public domain, U.S. National Archives. Developed in Luz.</i></sub>
 </p>
 
 > [!NOTE]
-> **ArtCraft is a community of artists from all walks of life.** Digital, generative, music,
-> games &mdash; if you make things, you're one of us. **[Come say hi on Discord](https://discord.gg/artcraft).**
+> **Nodalia is a community of artists from all walks of life.** Digital, generative, music,
+> games &mdash; if you make things, you're one of us. **[Come say hi on Discord](https://github.com/getnodalia/luz/issues).**
 
 <p align="center">
   <a href="#edit-like-you-mean-it">Editing</a> ·
@@ -80,7 +80,7 @@
 
 ## Edit like you mean it
 
-LightCraft is a complete darkroom in a single native app. Every adjustment is **non-destructive**, so your originals
+Luz is a complete darkroom in a single native app. Every adjustment is **non-destructive**, so your originals
 are never touched. Every slider renders through a **scene-referred, wide-gamut, 32-bit float pipeline**: highlights
 roll off like film, shadows open up without halos, and colour stays clean from capture to export.
 
@@ -138,7 +138,7 @@ Split-tone shadows, midtones and highlights independently with drag-anywhere col
 ## Before & after
 
 Press <kbd>\\</kbd> to toggle the Before view, <kbd>Y</kbd> for side by side, or <kbd>Shift</kbd>+<kbd>Y</kbd> for a
-split view. Every image below is a real screenshot of LightCraft, captured automatically by an agent through the
+split view. Every image below is a real screenshot of Luz, captured automatically by an agent through the
 [control channel](#built-for-agents).
 
 <table>
@@ -169,7 +169,7 @@ classical heuristics. Existing model-generated masks render and export without t
 <p align="center">
   <img src="docs/images/masking.jpg" alt="Masking panel with a linear Sky mask and a radial Sun glow mask; the radial gradient is drawn as a red overlay around the sun on a lake scene" width="100%">
   <br>
-  <sub>A radial "Sun glow" mask (Temp +40, Exposure +0.50) layered over a linear "Sky" mask. <i>Photo from LightCraft's procedurally generated demo library.</i></sub>
+  <sub>A radial "Sun glow" mask (Temp +40, Exposure +0.50) layered over a linear "Sky" mask. <i>Photo from Luz's procedurally generated demo library.</i></sub>
 </p>
 
 <br>
@@ -240,12 +240,12 @@ bundled. See [face models and setup](docs/faces.md).
 
 ## Built for agents
 
-Every menu item, slider, brush stroke, crop handle and keystroke in LightCraft is a **command** with a stable id and
+Every menu item, slider, brush stroke, crop handle and keystroke in Luz is a **command** with a stable id and
 JSON parameters. The UI, the keyboard, the CLI, a JSON-lines control channel and an **MCP server** all dispatch
 through the same entry point. An agent can cull a shoot, develop it, mask a sky and export it, and *see* the result.
 
 ```sh
-lightcraft --control 7980 ~/Pictures/trip
+luz --control 7980 ~/Pictures/trip
 ```
 ```jsonc
 {"method": "engine.execute", "params": {"command": "photo.flag",  "params": {"flag": "pick"}}}
@@ -258,19 +258,19 @@ lightcraft --control 7980 ~/Pictures/trip
 
 - **Command registry.** `engine.commands` lists the available commands; `develop.controls` lists every slider's
   range, default and current value.
-- **MCP server.** `lightcraft-cli mcp` exposes the command registry to Claude (or any MCP client), alongside
+- **MCP server.** `luz-cli mcp` exposes the command registry to Claude (or any MCP client), alongside
   helpers for import, query, develop, render (returned as an image) and export. Masks have no helper of their own:
   create and edit them through `run_command` (e.g. `mask.add`). It runs headless, or attached
   to the running app with screenshots, clicks and gestures. See [docs/mcp.md](docs/mcp.md).
 
   ```sh
-  cargo build --release -p lightcraft-cli
-  claude mcp add lightcraft -- "$PWD/target/release/lightcraft-cli" mcp ~/Pictures/shoot          # headless
-  claude mcp add lightcraft-app -- "$PWD/target/release/lightcraft-cli" mcp --connect 127.0.0.1:7980  # live app
+  cargo build --release -p luz-cli
+  claude mcp add luz -- "$PWD/target/release/luz-cli" mcp ~/Pictures/shoot          # headless
+  claude mcp add luz-app -- "$PWD/target/release/luz-cli" mcp --connect 127.0.0.1:7980  # live app
   ```
-- **Scriptable CLI:** `lightcraft-cli run --import in.dng develop.set control=light.exposure value=0.7 app.export
+- **Scriptable CLI:** `luz-cli run --import in.dng develop.set control=light.exposure value=0.7 app.export
   path=out.jpg longEdge=2048` runs any chain of commands (headless, on a saved library, or against the running app)
-  and prints one JSON result per command; `lightcraft-cli render in.dng -o out.jpg --set light.exposure=0.7 --preset …`.
+  and prints one JSON result per command; `luz-cli render in.dng -o out.jpg --set light.exposure=0.7 --preset …`.
 - **Undo for everything**, including agent actions: a slider drag (or a scripted burst of updates) is one undo step.
 - **Contact sheets (native app / CLI):** select photos, then **File → Contact Sheet PDF…**. Choose A4 or Letter, landscape,
   rows/columns and filename captions; save a paginated PDF and print it from your PDF viewer. Exports use the
@@ -278,7 +278,7 @@ lightcraft --control 7980 ~/Pictures/trip
   supports cancellation and protects originals and XMP sidecars. From the CLI:
 
   ```sh
-  lightcraft-cli run --import ~/Pictures/shoot library.selectAll export.contactSheet path=Contact.pdf paper=a4 columns=3 rows=4 captions=true
+  luz-cli run --import ~/Pictures/shoot library.selectAll export.contactSheet path=Contact.pdf paper=a4 columns=3 rows=4 captions=true
   ```
 
   `export.contactSheet` also accepts explicit `ids`, `landscape=true`, and `paper=letter`. It replaces an existing
@@ -295,7 +295,7 @@ lightcraft --control 7980 ~/Pictures/trip
   `print.template.save`…), so the CLI and MCP drive it too:
 
   ```sh
-  lightcraft-cli run --import ~/Pictures/shoot print.set 'layout={"style":"picturePackage","page":{"paper":"8x10"}}' \
+  luz-cli run --import ~/Pictures/shoot print.set 'layout={"style":"picturePackage","page":{"paper":"8x10"}}' \
       print.cell.add width=5 height=7 print.cell.add width=2.5 height=3.5 print.layout.autoLayout print.exportPdf path=Package.pdf
   ```
 
@@ -318,7 +318,7 @@ lightcraft --control 7980 ~/Pictures/trip
 - **Pure Rust, no C.** Our own RAW decoders (DNG, Canon CR2/CR3, Sony ARW, Nikon NEF, Fujifilm RAF incl. X-Trans,
   Panasonic RW2 / Leica RWL, Pentax PEF, Olympus ORF), our own colour science, our own pipeline. JPEG, PNG, TIFF, WebP,
   PSD composites, JPEG XL, GIF (first frame) and BMP open today; HEIC/HEIF photos too with `--features heif` (HEVC is a build-time choice,
-  as in PhotoCraft).
+  as in Lienzo).
 - **Scene-referred & wide-gamut.** Linear Rec.2020 float internally, Bradford-adapted white balance, gamut mapping
   instead of clipping, a filmic shoulder for raw and pixel-exact pass-through for JPEGs you haven't touched.
 - **Resolution-independent edits.** Radii and brush sizes are relative to the image, so a 400 px preview, your
@@ -340,7 +340,7 @@ lightcraft --control 7980 ~/Pictures/trip
 
 ## Feature status
 
-LightCraft is young and moving fast: **alpha**. **Where we honestly stand** (details in the [roadmap](ROADMAP.md) and
+Luz is young and moving fast: **alpha**. **Where we honestly stand** (details in the [roadmap](ROADMAP.md) and
 [docs/target-app-parity.md](docs/target-app-parity.md)):
 
 - **By feature count we're at ~82%** (core features 98%), tracked row by row in
@@ -398,13 +398,13 @@ LightCraft is young and moving fast: **alpha**. **Where we honestly stand** (det
 Workspace builds, including the desktop, web and CLI applications, require Rust 1.95 or newer.
 
 ```sh
-git clone https://github.com/storytold/lightcraft && cd lightcraft
-cargo run --release -p lightcraft                       # opens your library (~/Pictures/LightCraft Library; a new one starts with demo photos)
-cargo run --release -p lightcraft -- ~/Pictures/trip    # import your photos (folders are scanned, duplicates skipped)
-cargo run --release -p lightcraft -- --memory           # a throwaway in-memory demo session (writes nothing)
-cargo run --release -p lightcraft -- --control 7980     # with the automation channel
+git clone https://github.com/getnodalia/luz && cd luz
+cargo run --release -p luz                       # opens your library (~/Pictures/Luz Library; a new one starts with demo photos)
+cargo run --release -p luz -- ~/Pictures/trip    # import your photos (folders are scanned, duplicates skipped)
+cargo run --release -p luz -- --memory           # a throwaway in-memory demo session (writes nothing)
+cargo run --release -p luz -- --control 7980     # with the automation channel
 cargo xtask web --serve                                 # the same app in the browser: http://127.0.0.1:8080/
-cargo run --release -p lightcraft-cli -- render photo.jpg -o out.jpg --set light.exposure=0.5
+cargo run --release -p luz-cli -- render photo.jpg -o out.jpg --set light.exposure=0.5
 cargo xtask ci                                          # fmt, clippy, HEIF, tests, parity, layers, assets, WASM
 cargo xtask ci --quick                                  # only what your branch's changes can break (minutes)
 ```
@@ -415,7 +415,7 @@ the wasm check when the changes touch them; a change to `Cargo.toml`, `Cargo.loc
 config tests everything. GitHub runs the full `cargo xtask ci` on every pull request
 (`.github/workflows/ci.yml`). Only one `ci` runs at a time per machine: a second one, from another
 worktree say, waits for the first and names it, since several at once take longer in total than in
-turn. `LIGHTCRAFT_CI_SLOTS=2` allows two; `LIGHTCRAFT_CI_LOCK=off` skips the lock.
+turn. `LUZ_CI_SLOTS=2` allows two; `LUZ_CI_LOCK=off` skips the lock.
 
 CI defaults to line-table debug information and one build job per 1.5 GB of RAM
 available when it starts (at most one per CPU; 4 if memory can't be read), so an
@@ -424,7 +424,7 @@ builds with fewer. Test threads follow, capped at 4.
 Full-debuginfo linkers, one per CPU, otherwise exhaust RAM before any test runs. GPU coverage is
 unchanged. Explicit `CARGO_PROFILE_DEV_DEBUG`, `CARGO_BUILD_JOBS`, `RUST_TEST_THREADS` and
 `NEXTEST_TEST_THREADS` settings override these defaults. The tests run under
-`cargo test`; `LIGHTCRAFT_NEXTEST=1` runs them under [cargo-nextest](https://nexte.st) instead (one
+`cargo test`; `LUZ_NEXTEST=1` runs them under [cargo-nextest](https://nexte.st) instead (one
 process per test, slower here because each regenerates the demo scenes). Ordinary development commands keep their own settings.
 
 **Release builds on memory-constrained machines:** [#1196](https://github.com/storytold/lightcraft/issues/1196)
@@ -433,15 +433,15 @@ with full debug information, thin LTO and one codegen unit. The CI defaults abov
 ordinary `cargo build --release`. Start with one job; two may be suitable if enough memory is available:
 
 ```sh
-CARGO_BUILD_JOBS=1 cargo build --release -p lightcraft -p lightcraft-cli
-# Alternatively: CARGO_BUILD_JOBS=2 cargo build --release -p lightcraft -p lightcraft-cli
+CARGO_BUILD_JOBS=1 cargo build --release -p luz -p luz-cli
+# Alternatively: CARGO_BUILD_JOBS=2 cargo build --release -p luz -p luz-cli
 ```
 
 If a packaging environment enables full debug information or memory-heavy LTO settings, use
 command-local overrides for a lower-memory source build:
 
 ```sh
-CARGO_BUILD_JOBS=1 CARGO_PROFILE_RELEASE_DEBUG=0 CARGO_PROFILE_RELEASE_LTO=false CARGO_PROFILE_RELEASE_CODEGEN_UNITS=16 cargo build --release -p lightcraft -p lightcraft-cli
+CARGO_BUILD_JOBS=1 CARGO_PROFILE_RELEASE_DEBUG=0 CARGO_PROFILE_RELEASE_LTO=false CARGO_PROFILE_RELEASE_CODEGEN_UNITS=16 cargo build --release -p luz -p luz-cli
 ```
 
 These POSIX-shell assignments affect only this command, not global Cargo configuration or the
@@ -454,7 +454,7 @@ contact its maintainer rather than assuming an environment prefix on `makepkg` w
 
 **Linux/Arch build troubleshooting: rustc SIGILL with ThinLTO.**
 In [#2811](https://github.com/storytold/lightcraft/issues/2811), an Arch Linux x86_64 build on an
-AMD Ryzen 9 7900X3D with 64 GB RAM failed with rustc 1.99.0 / LLVM 23.1.1, AUR `lightcraft`
+AMD Ryzen 9 7900X3D with 64 GB RAM failed with rustc 1.99.0 / LLVM 23.1.1, AUR `luz`
 `0.7.1-1` and `0.13.0-1`, `RUSTFLAGS="-C opt-level=3 -C target-cpu=native"`, and release settings
 `opt-level=3`, `lto=thin`, `codegen-units=1`. `cargo build --frozen --release` reached the executable
 crates before rustc crashed with signal 4 (`SIGILL` / `ILL_ILLOPN`). The core dumps point into LLVM's
@@ -484,7 +484,7 @@ performance, binary size and build behavior.
 
 Tests that need a GPU, the corpus, the craft-fonts faces or a model pass without checking anything when
 those are missing (libtest has no "skipped" status), so `cargo xtask ci` lists them: tests record a skip
-with `lightcraft_testkit::skip!`, and the run ends with what the machine offered (OS, CPUs, RAM, GPU
+with `luz_testkit::skip!`, and the run ends with what the machine offered (OS, CPUs, RAM, GPU
 adapters per backend, corpus, fonts) and every skip by reason. It writes `target/ci/report.json` and
 `target/ci/summary.md`, a block to paste into a PR (`--summary-md` prints it); `--hardware` also runs the
 GPU tests on every backend that has a hardware adapter. Nothing is uploaded.
@@ -493,41 +493,41 @@ GPU tests on every backend that has a hardware adapter. Nothing is uploaded.
 
 ```sh
 git clone https://github.com/storytold/craft-fonts ../craft-fonts
-CRAFT_FONTS_DIR=../craft-fonts cargo run --release -p lightcraft
+CRAFT_FONTS_DIR=../craft-fonts cargo run --release -p luz
 ```
 
-Without it LightCraft builds and runs the same, but Chinese and Japanese text have no glyphs. Fonts are never committed to this
+Without it Luz builds and runs the same, but Chinese and Japanese text have no glyphs. Fonts are never committed to this
 repo — what goes there is described in the [craft-fonts README](https://github.com/storytold/craft-fonts#readme).
 
 **Interface language:** **Edit → Language** (English, 简体中文, 繁體中文（台灣）, 日本語, Português (Brasil), Español, Deutsch, Русский, Français, Українська, Polski, Čeština, Italiano, ქართული, Svenska, Suomi, Bahasa Indonesia, Tiếng Việt) or **Settings → General →
 Language**; the choice applies immediately and persists. See [docs/localization.md](docs/localization.md).
 
-**Logs:** the desktop app writes its log to standard error and to `logs/lightcraft.log` in its settings folder
-(Linux `$XDG_CONFIG_HOME/lightcraft/logs/`, by default `~/.config/lightcraft/logs/`; macOS
-`~/Library/Application Support/LightCraft/logs/`; Windows `%APPDATA%\LightCraft\logs\`), never in the library.
-**Portable mode:** a file named `portable.txt` (or `LightCraft.portable`) next to the executable moves the settings
-folder to `LightCraftData` beside it. A
+**Logs:** the desktop app writes its log to standard error and to `logs/luz.log` in its settings folder
+(Linux `$XDG_CONFIG_HOME/luz/logs/`, by default `~/.config/luz/logs/`; macOS
+`~/Library/Application Support/Luz/logs/`; Windows `%APPDATA%\Luz\logs\`), never in the library.
+**Portable mode:** a file named `portable.txt` (or `Luz.portable`) next to the executable moves the settings
+folder to `LuzData` beside it. A
 launch from a desktop menu or the Dock has no terminal, so attach this file to a bug report (**Help ▸ Open Log
 Folder** shows it in the file manager). Each start moves the
-previous log to `lightcraft.1.log` and that one to `lightcraft.2.log`, so the log of a run that crashed survives the
+previous log to `luz.1.log` and that one to `luz.2.log`, so the log of a run that crashed survives the
 next start; the file stops growing at 16 MiB, `--version` and `--help` write none, and runs with
-`LIGHTCRAFT_NO_PREFS` log to standard error only. By default LightCraft's own crates log at `info` and everything else
-at `warn`. `LIGHTCRAFT_LOG=info` or `debug` works as before (that level for LightCraft's own crates, warnings and
+`LUZ_NO_PREFS` log to standard error only. By default Luz's own crates log at `info` and everything else
+at `warn`. `LUZ_LOG=info` or `debug` works as before (that level for Luz's own crates, warnings and
 errors from the rest; any other value: warnings and errors only) and wins over `RUST_LOG`, which otherwise replaces
-the default with env_logger-style directives such as `RUST_LOG=debug` or `RUST_LOG=warn,lightcraft_pipeline=trace` (a
-directive ending in `*` covers every target starting with it, as in `lightcraft*=debug`). Panics are recorded there
-too, and still in `lightcraft-panics.log` in the temp folder. The logger is `apps/lightcraft/src/logging.rs`.
+the default with env_logger-style directives such as `RUST_LOG=debug` or `RUST_LOG=warn,luz_pipeline=trace` (a
+directive ending in `*` covers every target starting with it, as in `luz*=debug`). Panics are recorded there
+too, and still in `luz-panics.log` in the temp folder. The logger is `apps/luz/src/logging.rs`.
 
 The web build needs the `wasm32-unknown-unknown` target and the matching `wasm-bindgen` CLI
 (`cargo xtask web` prints the exact install command); see [docs/web.md](docs/web.md).
 
-**Nix** builds the desktop app and `lightcraft-cli` (the Nix build always includes the craft-fonts input, so Japanese
+**Nix** builds the desktop app and `luz-cli` (the Nix build always includes the craft-fonts input, so Japanese
 text has glyphs):
 
 ```sh
-nix run github:storytold/lightcraft                    # the desktop app
-nix build github:storytold/lightcraft                  # → ./result/bin/{lightcraft,lightcraft-cli}
-nix develop github:storytold/lightcraft                # rust toolchain + native deps + fonts
+nix run github:getnodalia/luz                    # the desktop app
+nix build github:getnodalia/luz                  # → ./result/bin/{luz,luz-cli}
+nix develop github:getnodalia/luz                # rust toolchain + native deps + fonts
 ```
 
 On NixOS, run a `cargo` build from `nix develop`: outside it the app can't find `libvulkan.so.1`, finds no GPU and
@@ -537,17 +537,17 @@ In a flake configuration (NixOS, home-manager, nix-darwin):
 
 ```nix
 # flake.nix
-inputs.lightcraft.url = "github:storytold/lightcraft";
-# optional: build against your own nixpkgs instead of the one LightCraft pins
-# inputs.lightcraft.inputs.nixpkgs.follows = "nixpkgs";
+inputs.luz.url = "github:getnodalia/luz";
+# optional: build against your own nixpkgs instead of the one Luz pins
+# inputs.luz.inputs.nixpkgs.follows = "nixpkgs";
 
 # then, in a NixOS or home-manager module (where `inputs` is in scope):
-nixpkgs.overlays = [ inputs.lightcraft.overlays.default ];   # makes `pkgs.lightcraft` available
-environment.systemPackages = [ pkgs.lightcraft ];           # home-manager: home.packages = [ pkgs.lightcraft ];
+nixpkgs.overlays = [ inputs.luz.overlays.default ];   # makes `pkgs.luz` available
+environment.systemPackages = [ pkgs.luz ];           # home-manager: home.packages = [ pkgs.luz ];
 ```
 
 `nix build` installs the same desktop file, hicolor icons and AppStream metadata as the .deb/.rpm, and runs
-`cargo test --workspace` as its check phase (skip it with `pkgs.lightcraft.overrideAttrs { doCheck = false; }`).
+`cargo test --workspace` as its check phase (skip it with `pkgs.luz.overrideAttrs { doCheck = false; }`).
 
 **Keyboard:** <kbd>G</kbd> grid · <kbd>D</kbd> detail · <kbd>E</kbd> edit · <kbd>C</kbd> crop · <kbd>M</kbd> masking ·
 <kbd>Shift</kbd>+<kbd>P</kbd> presets · <kbd>\\</kbd> original · <kbd>Y</kbd> before/after · <kbd>Z</kbd> zoom ·
@@ -557,8 +557,8 @@ environment.systemPackages = [ pkgs.lightcraft ];           # home-manager: home
 
 An engine-first Cargo workspace of small, tested crates with enforced layering (`cargo xtask layers`): `geom`,
 `color`, `raster`, `tiff` → `raw`, `codecs`, `meta`, `develop` → `pipeline` → `catalog` → `engine` → `ui-egui`. The
-egui frontend is one swappable crate; nothing below it knows a UI exists. `mcp` and the apps (`lightcraft`,
-`lightcraft-cli`) sit on top of `engine`.
+egui frontend is one swappable crate; nothing below it knows a UI exists. `mcp` and the apps (`luz`,
+`luz-cli`) sit on top of `engine`.
 
 ## Contributing
 
@@ -576,35 +576,35 @@ Humans and agents follow the same rules, so read [AGENTS.md](AGENTS.md) first. T
   `unsafe`, checked indexing on anything derived from input, and a regression test with every crash fix. Details in
   [AGENTS.md](AGENTS.md#never-crash-outranks-feature-work).
 
-Questions, ideas or a bug you'd like to talk through first? Bring them to [Discord](https://discord.gg/artcraft).
+Questions, ideas or a bug you'd like to talk through first? Bring them to [Discord](https://github.com/getnodalia/luz/issues).
 
 <br>
 
 ## Downloads
 
-**New to LightCraft?** Download it from the [LightCraft page on getartcraft.com](https://getartcraft.com/apps/lightcraft). That's the easiest way to install it.
+**New to Luz?** Download it from the [Luz page on getnodalia.com](https://getnodalia.com/luz). That's the easiest way to install it.
 
-**Want a specific build or format?** On GitHub, the [latest release](https://github.com/storytold/lightcraft/releases/latest) has every build listed below, and [all releases](https://github.com/storytold/lightcraft/releases) has earlier versions and their notes. `<ver>` in the file names is the version number, and `SHA256SUMS.txt` lists a checksum for every file.
+**Want a specific build or format?** On GitHub, the [latest release](https://github.com/getnodalia/luz/releases/latest) has every build listed below, and [all releases](https://github.com/getnodalia/luz/releases) has earlier versions and their notes. `<ver>` in the file names is the version number, and `SHA256SUMS.txt` lists a checksum for every file.
 
 ### Windows
 
 | Build | Installer | Portable |
 |---|---|---|
-| x64 (64-bit Intel/AMD) | `lightcraft-<ver>-windows-x64.msi` | `lightcraft-<ver>-windows-x64-portable.zip` |
-| arm64 (Snapdragon and other ARM PCs) | `lightcraft-<ver>-windows-arm64.msi` | `lightcraft-<ver>-windows-arm64-portable.zip` |
-| x86 (32-bit) | `lightcraft-<ver>-windows-x86.msi` | `lightcraft-<ver>-windows-x86-portable.zip` |
+| x64 (64-bit Intel/AMD) | `luz-<ver>-windows-x64.msi` | `luz-<ver>-windows-x64-portable.zip` |
+| arm64 (Snapdragon and other ARM PCs) | `luz-<ver>-windows-arm64.msi` | `luz-<ver>-windows-arm64-portable.zip` |
+| x86 (32-bit) | `luz-<ver>-windows-x86.msi` | `luz-<ver>-windows-x86-portable.zip` |
 
 Installers and executables are code-signed. The installer asks who to install for and where (for your account only, in
-`%LOCALAPPDATA%\Programs\ArtCraft\LightCraft`, by default; "Everyone on this computer" uses
-`C:\Program Files\ArtCraft\LightCraft` (`Program Files (x86)` for the 32-bit build); upgrades stay in the folder you chose) and ends on a page confirming LightCraft was installed, with an
-option to start it. For unattended installs: `msiexec /i lightcraft-<ver>-windows-x64.msi /qn INSTALLFOLDER="D:\Apps\LightCraft\"`.
+`%LOCALAPPDATA%\Programs\Nodalia\Luz`, by default; "Everyone on this computer" uses
+`C:\Program Files\Nodalia\Luz` (`Program Files (x86)` for the 32-bit build); upgrades stay in the folder you chose) and ends on a page confirming Luz was installed, with an
+option to start it. For unattended installs: `msiexec /i luz-<ver>-windows-x64.msi /qn INSTALLFOLDER="D:\Apps\Luz\"`.
 A silent install is per-user by default. `INSTALLFOLDER` chooses the folder, not who it is installed for;
 add `ALLUSERS=1`, from an elevated terminal or deployment tool, for an all-users install.
 
 **Update or uninstall asks for an old `.msi`, or stops with error 1612 or 1714?** Windows removes the installed version
 with its own cached copy of that version's installer; if the copy is gone, it asks for the original file and stops
 (an update then ends with error 1603). Download the release MSI of the version and build you have installed from
-[all releases](https://github.com/storytold/lightcraft/releases) and run
+[all releases](https://github.com/getnodalia/luz/releases) and run
 `msiexec /fv "<path to that .msi>" /qb+ /norestart`, approving the permission prompt if Windows shows one. That restores
 the cached copy; then retry the update or uninstall. Opening the MSI, or choosing Repair or Uninstall on it, may still
 fail. Error 1603 has other causes too; if this doesn't help, open an issue with the error message.
@@ -613,69 +613,69 @@ fail. Error 1603 has other causes too; if this doesn't help, open an issue with 
 
 | Build | File | Notes |
 |---|---|---|
-| App, universal (Apple silicon + Intel) | `lightcraft-<ver>-macos-universal.dmg` | Signed and notarized |
-| Command-line tool, universal | `lightcraft-cli-<ver>-macos-universal.zip` | Signed and notarized |
+| App, universal (Apple silicon + Intel) | `luz-<ver>-macos-universal.dmg` | Signed and notarized |
+| Command-line tool, universal | `luz-cli-<ver>-macos-universal.zip` | Signed and notarized |
 
 ### Linux
 
 | Format | x86_64 | aarch64 (ARM64) | Notes |
 |---|---|---|---|
-| AppImage | `lightcraft-<ver>-linux-x86_64.AppImage` | `lightcraft-<ver>-linux-aarch64.AppImage` | Portable; updates with [AppImageUpdate](https://github.com/AppImageCommunity/AppImageUpdate) (`.zsync` files) |
-| Flatpak | `lightcraft-<ver>-linux-x86_64.flatpak` | `lightcraft-<ver>-linux-aarch64.flatpak` | Sandboxed; `flatpak install --user <file>` |
-| Debian/Ubuntu | `lightcraft-<ver>-linux-x86_64.deb` | `lightcraft-<ver>-linux-aarch64.deb` | |
-| Fedora/RHEL/openSUSE | `lightcraft-<ver>-linux-x86_64.rpm` | `lightcraft-<ver>-linux-aarch64.rpm` | |
-| Tarball | `lightcraft-<ver>-linux-x86_64.tar.gz` | `lightcraft-<ver>-linux-aarch64.tar.gz` | Unpack anywhere |
+| AppImage | `luz-<ver>-linux-x86_64.AppImage` | `luz-<ver>-linux-aarch64.AppImage` | Portable; updates with [AppImageUpdate](https://github.com/AppImageCommunity/AppImageUpdate) (`.zsync` files) |
+| Flatpak | `luz-<ver>-linux-x86_64.flatpak` | `luz-<ver>-linux-aarch64.flatpak` | Sandboxed; `flatpak install --user <file>` |
+| Debian/Ubuntu | `luz-<ver>-linux-x86_64.deb` | `luz-<ver>-linux-aarch64.deb` | |
+| Fedora/RHEL/openSUSE | `luz-<ver>-linux-x86_64.rpm` | `luz-<ver>-linux-aarch64.rpm` | |
+| Tarball | `luz-<ver>-linux-x86_64.tar.gz` | `luz-<ver>-linux-aarch64.tar.gz` | Unpack anywhere |
 
-RISC-V (riscv64): `lightcraft-<ver>-linux-riscv64.tar.gz`, a tarball only (glibc 2.39 or newer, e.g. Ubuntu 24.04+).
+RISC-V (riscv64): `luz-<ver>-linux-riscv64.tar.gz`, a tarball only (glibc 2.39 or newer, e.g. Ubuntu 24.04+).
 
-On a Wayland desktop LightCraft runs through XWayland when it is available, because only X11 gives
-windows file drag-and-drop; set `LIGHTCRAFT_WAYLAND=1` to use native Wayland (sharper fractional scaling, no drop).
+On a Wayland desktop Luz runs through XWayland when it is available, because only X11 gives
+windows file drag-and-drop; set `LUZ_WAYLAND=1` to use native Wayland (sharper fractional scaling, no drop).
 
 ### FreeBSD
 
 | Build | File |
 |---|---|
-| x86_64 | `lightcraft-<ver>-freebsd-x86_64.tar.gz` |
+| x86_64 | `luz-<ver>-freebsd-x86_64.tar.gz` |
 
 ### Web (WebAssembly)
 
 | Build | File | Notes |
 |---|---|---|
-| Static site | `lightcraft-web-<ver>.zip` | Runs in a modern browser; host it on any static server |
+| Static site | `luz-web-<ver>.zip` | Runs in a modern browser; host it on any static server |
 
 <br>
 
 ## The Crafting Apps
 
-LightCraft is one of the **Crafting Apps**: free, open-source creative tools from the
-[ArtCraft](https://getartcraft.com/) team, each written from scratch in Rust and each able to
+Luz is one of the **Crafting Apps**: free, open-source creative tools from the
+[Nodalia](https://getnodalia.com/) team, each written from scratch in Rust and each able to
 stand on its own.
 
 | | App | What it's for | Code | Learn more |
 |:-:|---|---|---|---|
-| <img src="https://raw.githubusercontent.com/storytold/photocraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.photocraft.png" alt="" width="32" height="32"> | **PhotoCraft** | Image editing: layers, masks, type and real PSD files | [GitHub](https://github.com/storytold/photocraft) | [Website](https://getartcraft.com/apps/photocraft) |
-| <img src="https://raw.githubusercontent.com/storytold/vectorcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.vectorcraft.png" alt="" width="32" height="32"> | **VectorCraft** | Vector illustration | [GitHub](https://github.com/storytold/vectorcraft) | [Website](https://getartcraft.com/apps/vectorcraft) |
-| <img src="https://raw.githubusercontent.com/storytold/filmcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.filmcraft.png" alt="" width="32" height="32"> | **FilmCraft** | Video editing, color and sound | [GitHub](https://github.com/storytold/filmcraft) | [Website](https://getartcraft.com/apps/filmcraft) |
-| <img src="https://raw.githubusercontent.com/storytold/lightcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.lightcraft.png" alt="" width="32" height="32"> | **LightCraft** | Photo library and raw development | [GitHub](https://github.com/storytold/lightcraft) | [Website](https://getartcraft.com/apps/lightcraft) |
-| <img src="https://raw.githubusercontent.com/storytold/pdfcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.pdfcraft.png" alt="" width="32" height="32"> | **PdfCraft** | Reading, organizing and protecting PDFs | [GitHub](https://github.com/storytold/pdfcraft) | [Website](https://getartcraft.com/apps/pdfcraft) |
-| <img src="https://raw.githubusercontent.com/storytold/effectcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.effectcraft.png" alt="" width="32" height="32"> | **EffectCraft** | Motion graphics and visual effects | [GitHub](https://github.com/storytold/effectcraft) | [Website](https://getartcraft.com/apps/effectcraft) |
-| <img src="https://raw.githubusercontent.com/storytold/designcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.designcraft.png" alt="" width="32" height="32"> | **DesignCraft** | Page layout and publishing | [GitHub](https://github.com/storytold/designcraft) | [Website](https://getartcraft.com/apps/designcraft) |
-| <img src="https://raw.githubusercontent.com/storytold/figcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.figcraft.png" alt="" width="32" height="32"> | **FigCraft** | Interface design and prototyping | [GitHub](https://github.com/storytold/figcraft) | [Website](https://getartcraft.com/apps/figcraft) |
-| <img src="https://raw.githubusercontent.com/storytold/wordcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.wordcraft.png" alt="" width="32" height="32"> | **WordCraft** | Word processing and documents | [GitHub](https://github.com/storytold/wordcraft) | [Website](https://getartcraft.com/apps/wordcraft) |
-| <img src="https://raw.githubusercontent.com/storytold/soundcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.soundcraft.png" alt="" width="32" height="32"> | **SoundCraft** | Audio recording and editing | [GitHub](https://github.com/storytold/soundcraft) | [Website](https://getartcraft.com/apps/soundcraft) |
-| <img src="https://raw.githubusercontent.com/storytold/deckcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.deckcraft.png" alt="" width="32" height="32"> | **DeckCraft** | Presentations and slide decks | [GitHub](https://github.com/storytold/deckcraft) | [Website](https://getartcraft.com/apps/deckcraft) |
-| <img src="https://raw.githubusercontent.com/storytold/cadcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.cadcraft.png" alt="" width="32" height="32"> | **CADCraft** | Computer-aided design | [GitHub](https://github.com/storytold/cadcraft) | [Website](https://getartcraft.com/apps/cadcraft) |
-| <img src="https://raw.githubusercontent.com/storytold/gridcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.gridcraft.png" alt="" width="32" height="32"> | **GridCraft** | Spreadsheets and data | [GitHub](https://github.com/storytold/gridcraft) | [Website](https://getartcraft.com/apps/gridcraft) |
-| <img src="https://raw.githubusercontent.com/storytold/texturecraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.texturecraft.png" alt="" width="32" height="32"> | **TextureCraft** | 3D texture painting | [GitHub](https://github.com/storytold/texturecraft) | [Website](https://getartcraft.com/apps/texturecraft) |
-| <img src="https://raw.githubusercontent.com/storytold/craft-anything/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.craft-anything.png" alt="" width="32" height="32"> | **Craft Anything** | See how any software works, then build your own | [GitHub](https://github.com/storytold/craft-anything) | [Website](https://getartcraft.com/apps/craft-anything) |
+| <img src="https://raw.githubusercontent.com/storytold/photocraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.photocraft.png" alt="" width="32" height="32"> | **Lienzo** | Image editing: layers, masks, type and real PSD files | [GitHub](https://github.com/storytold/photocraft) | [Website](https://getnodalia.com/lienzo) |
+| <img src="https://raw.githubusercontent.com/storytold/vectorcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.vectorcraft.png" alt="" width="32" height="32"> | **Pluma** | Vector illustration | [GitHub](https://github.com/storytold/vectorcraft) | [Website](https://getnodalia.com/apps/vectorcraft) |
+| <img src="https://raw.githubusercontent.com/storytold/filmcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.filmcraft.png" alt="" width="32" height="32"> | **Toma** | Video editing, color and sound | [GitHub](https://github.com/storytold/filmcraft) | [Website](https://getnodalia.com/apps/filmcraft) |
+| <img src="https://raw.githubusercontent.com/getnodalia/luz/main/assets/app-icon/hicolor/64x64/apps/dev.danielmiguelt.Luz.png" alt="" width="32" height="32"> | **Luz** | Photo library and raw development | [GitHub](https://github.com/getnodalia/luz) | [Website](https://getnodalia.com/luz) |
+| <img src="https://raw.githubusercontent.com/storytold/pdfcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.pdfcraft.png" alt="" width="32" height="32"> | **Papel** | Reading, organizing and protecting PDFs | [GitHub](https://github.com/storytold/pdfcraft) | [Website](https://getnodalia.com/apps/pdfcraft) |
+| <img src="https://raw.githubusercontent.com/storytold/effectcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.effectcraft.png" alt="" width="32" height="32"> | **Pulso** | Motion graphics and visual effects | [GitHub](https://github.com/storytold/effectcraft) | [Website](https://getnodalia.com/apps/effectcraft) |
+| <img src="https://raw.githubusercontent.com/storytold/designcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.designcraft.png" alt="" width="32" height="32"> | **DesignCraft** | Page layout and publishing | [GitHub](https://github.com/storytold/designcraft) | [Website](https://getnodalia.com/apps/designcraft) |
+| <img src="https://raw.githubusercontent.com/storytold/figcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.figcraft.png" alt="" width="32" height="32"> | **Trama** | Interface design and prototyping | [GitHub](https://github.com/storytold/figcraft) | [Website](https://getnodalia.com/apps/figcraft) |
+| <img src="https://raw.githubusercontent.com/storytold/wordcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.wordcraft.png" alt="" width="32" height="32"> | **Letra** | Word processing and documents | [GitHub](https://github.com/storytold/wordcraft) | [Website](https://getnodalia.com/apps/wordcraft) |
+| <img src="https://raw.githubusercontent.com/storytold/soundcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.soundcraft.png" alt="" width="32" height="32"> | **SoundCraft** | Audio recording and editing | [GitHub](https://github.com/storytold/soundcraft) | [Website](https://getnodalia.com/apps/soundcraft) |
+| <img src="https://raw.githubusercontent.com/storytold/deckcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.deckcraft.png" alt="" width="32" height="32"> | **Lámina** | Presentations and slide decks | [GitHub](https://github.com/storytold/deckcraft) | [Website](https://getnodalia.com/apps/deckcraft) |
+| <img src="https://raw.githubusercontent.com/storytold/cadcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.cadcraft.png" alt="" width="32" height="32"> | **CADCraft** | Computer-aided design | [GitHub](https://github.com/storytold/cadcraft) | [Website](https://getnodalia.com/apps/cadcraft) |
+| <img src="https://raw.githubusercontent.com/storytold/gridcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.gridcraft.png" alt="" width="32" height="32"> | **Celdas** | Spreadsheets and data | [GitHub](https://github.com/storytold/gridcraft) | [Website](https://getnodalia.com/apps/gridcraft) |
+| <img src="https://raw.githubusercontent.com/storytold/texturecraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.texturecraft.png" alt="" width="32" height="32"> | **TextureCraft** | 3D texture painting | [GitHub](https://github.com/storytold/texturecraft) | [Website](https://getnodalia.com/apps/texturecraft) |
+| <img src="https://raw.githubusercontent.com/storytold/craft-anything/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.craft-anything.png" alt="" width="32" height="32"> | **Craft Anything** | See how any software works, then build your own | [GitHub](https://github.com/storytold/craft-anything) | [Website](https://getnodalia.com/apps/craft-anything) |
 | <img src="https://raw.githubusercontent.com/tangency-labs/solidcraft/main/assets/icons/app/linux/exports/hicolor/64x64/apps/io.tangencylabs.solidcraft.png" alt="" width="32" height="32"> | **SolidCraft** | Parametric 3D CAD by Tangency Labs (community app) | [GitHub](https://github.com/tangency-labs/solidcraft) | |
 
-And [**ArtCraft**](https://getartcraft.com/) itself, our AI image and video studio for artists who want real control.
+And [**Nodalia**](https://getnodalia.com/) itself, our AI image and video studio for artists who want real control.
 
 <br>
 
 <p align="center">
-  <a href="https://discord.gg/artcraft"><img alt="Join the ArtCraft community on Discord" src="https://img.shields.io/badge/Join%20us%20on%20Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" height="40"></a>
+  <a href="https://github.com/getnodalia/luz/issues"><img alt="Join the Nodalia community on Discord" src="https://img.shields.io/badge/Join%20us%20on%20Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" height="40"></a>
 </p>
 
 <h3 align="center">Come make things with us</h3>
@@ -688,17 +688,17 @@ And [**ArtCraft**](https://getartcraft.com/) itself, our AI image and video stud
 </p>
 
 <p align="center">
-  <a href="https://discord.gg/artcraft"><b>discord.gg/artcraft</b></a> ·
-  <a href="https://getartcraft.com/">getartcraft.com</a> ·
-  <a href="https://getartcraft.com/apps">The Crafting Apps</a> ·
-  <a href="https://getartcraft.com/apps/lightcraft">LightCraft</a>
+  <a href="https://github.com/getnodalia/luz/issues"><b>discord.gg/artcraft</b></a> ·
+  <a href="https://getnodalia.com/">getnodalia.com</a> ·
+  <a href="https://getnodalia.com/apps">The Crafting Apps</a> ·
+  <a href="https://getnodalia.com/luz">Luz</a>
 </p>
 
 <br>
 
 ## License and credits
 
-LightCraft is dual-licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE), at your option.
+Luz is dual-licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE), at your option.
 Copyright (c) 2026 ArtCraft Team and the LightCraft contributors. Required notices are in [NOTICE](NOTICE).
 
 Bundled fonts, icons, images and other assets keep their own open licenses; each one is listed
@@ -706,23 +706,23 @@ with its author, source and license in [assets/ATTRIBUTION.md](assets/ATTRIBUTIO
 
 Showcase photographs are public-domain works, used via Wikimedia Commons: Ansel Adams, *The Tetons and the Snake River*
 (1942, U.S. National Archives); Dorothea Lange, *Migrant Mother* (1936, Library of Congress); Bill Anders / NASA,
-*Earthrise* (1968); NASA, *The Blue Marble* (1972). The demo library is procedurally generated by LightCraft. UI font:
+*Earthrise* (1968); NASA, *The Blue Marble* (1972). The demo library is procedurally generated by Luz. UI font:
 Inter (SIL OFL 1.1). Builds made with [craft-fonts](https://github.com/storytold/craft-fonts) (all official releases)
 also embed its Chinese and Japanese fonts (Noto Sans CJK SC, BIZ UDPGothic, BIZ UDMincho, Shippori Mincho; SIL OFL 1.1), listed in its
 [ATTRIBUTION.md](https://github.com/storytold/craft-fonts/blob/main/ATTRIBUTION.md). All icons are original.
 
-The ArtCraft name, wordmark and logos in [`docs/brand/`](docs/brand/) are trademarks of the
+The Nodalia name, wordmark and logos in [`docs/brand/`](docs/brand/) are trademarks of the
 ArtCraft Team and are not covered by this license. They may be used only unmodified, and only as
-part of this repository and LightCraft, under [`docs/brand/LICENSE-brand.txt`](docs/brand/LICENSE-brand.txt).
+part of this repository and Luz, under [`docs/brand/LICENSE-brand.txt`](docs/brand/LICENSE-brand.txt).
 Forks and modified versions must remove them.
 
 <p align="center">
-  <a href="https://getartcraft.com/"><img alt="ArtCraft" src="docs/brand/artcraft-mark.svg" width="28"></a><br>
-  <sub>Made by the <a href="https://getartcraft.com/">ArtCraft</a> team and community.</sub>
+  <a href="https://getnodalia.com/"><img alt="Nodalia" src="docs/brand/artcraft-mark.svg" width="28"></a><br>
+  <sub>Made by the <a href="https://getnodalia.com/">Nodalia</a> team and community.</sub>
 </p>
 
 ## Star history
 
-[![Star History Chart](https://api.star-history.com/svg?repos=storytold/lightcraft&type=Date&legend=top-left)](https://www.star-history.com/?repos=storytold%2Flightcraft&type=date&legend=top-left)
+[![Star History Chart](https://api.star-history.com/svg?repos=getnodalia/luz&type=Date&legend=top-left)](https://www.star-history.com/?repos=storytold%2Fluz&type=date&legend=top-left)
 
 Library, Tools, and Presets panels can be regrouped, split, floated within the app window, closed, and reopened. Tools keeps the current Edit/Crop/Masking mode; the photo view and filmstrip stay together. Drag a panel header to a target edge or another header. Its context menu offers Float panel, Move to group, and Close panel. Existing panel toggles reopen panels at their saved location; Reset Panel Layout restores the app layout. Floating panels remain inside the current app window.

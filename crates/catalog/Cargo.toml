@@ -1,17 +1,17 @@
 [package]
-name = "lightcraft-catalog"
+name = "luz-catalog"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "LightCraft library: photos, albums, ratings/flags, search/filter/sort, op-log persistence (L3)"
+description = "Luz library: photos, albums, ratings/flags, search/filter/sort, op-log persistence (L3)"
 
 [lints]
 workspace = true
 
 [dependencies]
-lightcraft-develop = { workspace = true }
-lightcraft-meta = { workspace = true }
-lightcraft-raw = { workspace = true }
+luz-develop = { workspace = true }
+luz-meta = { workspace = true }
+luz-raw = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
@@ -25,6 +25,6 @@ winapi-util = { workspace = true }
 
 [dev-dependencies]
 dhat = { workspace = true }
-lightcraft-geom = { workspace = true }
-lightcraft-testkit = { workspace = true }
+luz-geom = { workspace = true }
+luz-testkit = { workspace = true }
 proptest = { workspace = true }

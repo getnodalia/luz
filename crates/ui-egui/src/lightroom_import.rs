@@ -8,11 +8,11 @@ use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, mpsc};
 
-use lightcraft_engine::activity::{Cancel, TaskGuard};
-use lightcraft_engine::lightroom_job::{LightroomProgress, LightroomStep};
+use luz_engine::activity::{Cancel, TaskGuard};
+use luz_engine::lightroom_job::{LightroomProgress, LightroomStep};
 use serde_json::{Value, json};
 
-use crate::LightcraftApp;
+use crate::LuzApp;
 
 #[derive(Clone, Copy)]
 enum Kind {
@@ -22,7 +22,7 @@ enum Kind {
 
 enum Message {
     Inspected(Result<Value, String>),
-    Prepared(Result<Box<lightcraft_engine::lightroom_job::PreparedLightroom>, String>),
+    Prepared(Result<Box<luz_engine::lightroom_job::PreparedLightroom>, String>),
     Finalized(Result<(), String>),
 }
 
@@ -48,7 +48,7 @@ pub struct LightroomTask {
 impl LightroomTask {
     #[cfg(not(target_arch = "wasm32"))]
     fn new(
-        s: &lightcraft_engine::Session,
+        s: &luz_engine::Session,
         kind: Kind,
         path: PathBuf,
         cancel: Arc<AtomicBool>,
@@ -137,12 +137,12 @@ impl Drop for LightroomTask {
 
 #[cfg(target_arch = "wasm32")]
 fn unsupported_wasm() -> Result<Value, String> {
-    Err("Lightroom catalog import is unavailable in browser builds; open the catalog in the native LightCraft app".into())
+    Err("Lightroom catalog import is unavailable in browser builds; open the catalog in the native Luz app".into())
 }
 
 /// Tests: a catalog import that never ends while the returned value lives, so a drop meets it pending.
 #[cfg(all(test, not(target_arch = "wasm32")))]
-pub(crate) fn stall_import(app: &mut LightcraftApp) -> Box<dyn std::any::Any> {
+pub(crate) fn stall_import(app: &mut LuzApp) -> Box<dyn std::any::Any> {
     let (tx, rx) = mpsc::channel::<Message>();
     let task = LightroomTask::new(
         &app.session,
@@ -157,12 +157,12 @@ pub(crate) fn stall_import(app: &mut LightcraftApp) -> Box<dyn std::any::Any> {
 }
 
 /// Whether a Lightroom task currently owns the catalog transition.
-pub fn is_running(app: &LightcraftApp) -> bool {
+pub fn is_running(app: &LuzApp) -> bool {
     app.lightroom.is_some()
 }
 
 #[cfg(not(target_arch = "wasm32"))]
-fn busy(app: &LightcraftApp) -> Result<(), String> {
+fn busy(app: &LuzApp) -> Result<(), String> {
     if app.lightroom.is_some() {
         return Err("a Lightroom catalog task is already running".into());
     }
@@ -184,8 +184,8 @@ fn spawn_inspect(
     std::thread::Builder::new()
         .name("lc-lightroom-inspect".into())
         .spawn(move || {
-            let result = lightcraft_engine::guard::catch("Lightroom inspect", || {
-                lightcraft_engine::lightroom_catalog::read_source(&path, temp.as_deref(), &cancel, &progress.catalog_total, &progress.catalog_done)
+            let result = luz_engine::guard::catch("Lightroom inspect", || {
+                luz_engine::lightroom_catalog::read_source(&path, temp.as_deref(), &cancel, &progress.catalog_total, &progress.catalog_done)
             })
             .and_then(|r| r.map(inspect_report));
             let _ = tx.send(Message::Inspected(result));
@@ -197,7 +197,7 @@ fn spawn_inspect(
 
 #[cfg(not(target_arch = "wasm32"))]
 fn spawn_prepare(
-    mut job: lightcraft_engine::lightroom_job::LightroomJob,
+    mut job: luz_engine::lightroom_job::LightroomJob,
     cancel: Arc<AtomicBool>,
     tx: mpsc::Sender<Message>,
     ctx: egui::Context,
@@ -206,7 +206,7 @@ fn spawn_prepare(
         .name("lc-lightroom-import".into())
         .spawn(move || {
             let result =
-                lightcraft_engine::guard::catch("Lightroom import", || job.prepare(&cancel)).and_then(|r| r.map(Box::new).map_err(|e| e.to_string()));
+                luz_engine::guard::catch("Lightroom import", || job.prepare(&cancel)).and_then(|r| r.map(Box::new).map_err(|e| e.to_string()));
             if let Err(mpsc::SendError(Message::Prepared(Ok(prepared)))) = tx.send(Message::Prepared(result)) {
                 // The owner dropped the task (for example while closing): staged copies/moves
                 // must be put back even though no UI receiver remains to accept the result.
@@ -220,15 +220,15 @@ fn spawn_prepare(
 
 #[cfg(not(target_arch = "wasm32"))]
 fn spawn_finalize(
-    finalization: lightcraft_engine::lightroom_job::LightroomArchiveFinalization,
+    finalization: luz_engine::lightroom_job::LightroomArchiveFinalization,
     tx: mpsc::Sender<Message>,
     ctx: egui::Context,
 ) -> Result<(), String> {
     std::thread::Builder::new()
         .name("lc-lightroom-finalize".into())
         .spawn(move || {
-            let result = lightcraft_engine::guard::catch("Lightroom archive finalization", || finalization.finish())
-                .and_then(|r| r.map_err(|e| e.to_string()));
+            let result =
+                luz_engine::guard::catch("Lightroom archive finalization", || finalization.finish()).and_then(|r| r.map_err(|e| e.to_string()));
             let _ = tx.send(Message::Finalized(result));
             ctx.request_repaint();
         })
@@ -238,7 +238,7 @@ fn spawn_finalize(
 
 #[cfg(target_arch = "wasm32")]
 fn spawn_finalize(
-    _finalization: lightcraft_engine::lightroom_job::LightroomArchiveFinalization,
+    _finalization: luz_engine::lightroom_job::LightroomArchiveFinalization,
     _tx: mpsc::Sender<Message>,
     _ctx: egui::Context,
 ) -> Result<(), String> {
@@ -248,7 +248,7 @@ fn spawn_finalize(
 /// What `status` and the result window show for an inspected catalog: counts, missing originals,
 /// warnings and skipped images.
 #[cfg(not(target_arch = "wasm32"))]
-fn inspect_report(data: lightcraft_engine::lightroom_catalog::CatalogImport) -> Value {
+fn inspect_report(data: luz_engine::lightroom_catalog::CatalogImport) -> Value {
     json!({
         "photos": data.photos.len(),
         "collections": data.collections.iter().filter(|r| r.get("systemOnly").and_then(Value::as_f64).unwrap_or(0.0) == 0.0).count(),
@@ -259,7 +259,7 @@ fn inspect_report(data: lightcraft_engine::lightroom_catalog::CatalogImport) -> 
 }
 
 /// The task is over: keep its result (with the catalog's `path`) for `status` and say how it went.
-fn terminal(app: &mut LightcraftApp, ctx: &egui::Context, task: &LightroomTask, mut value: Value) {
+fn terminal(app: &mut LuzApp, ctx: &egui::Context, task: &LightroomTask, mut value: Value) {
     let kind = task.kind;
     if let Some(o) = value.as_object_mut() {
         o.entry("path").or_insert_with(|| json!(task.path));
@@ -312,7 +312,7 @@ fn terminal(app: &mut LightcraftApp, ctx: &egui::Context, task: &LightroomTask, 
     app.toast_for(ctx, message, 6.0);
 }
 
-fn show_result(app: &mut LightcraftApp) {
+fn show_result(app: &mut LuzApp) {
     if app.ui.dialog.is_none() {
         app.ui.dialog = app.lightroom_result.take();
     }
@@ -321,7 +321,7 @@ fn show_result(app: &mut LightcraftApp) {
 /// The lasting result window for an inspect or import: counts, failures, missing originals, the
 /// skipped images (one line, in the UI language) and at most eight warnings. Show in Library goes
 /// to the lowest mapped photo that is not in Recently Deleted, where All Photos can show it.
-fn result_dialog(value: &Value, summary: &str, catalog: &lightcraft_catalog::Catalog) -> crate::state::Dialog {
+fn result_dialog(value: &Value, summary: &str, catalog: &luz_catalog::Catalog) -> crate::state::Dialog {
     let report = value.get("report").unwrap_or(value);
     let mut details = Vec::new();
     if let Some(photos) = report["photos"].as_u64() {
@@ -370,7 +370,7 @@ fn result_dialog(value: &Value, summary: &str, catalog: &lightcraft_catalog::Cat
     }
     // a catalog photo can map to a library photo left in Recently Deleted (#2589), which All
     // Photos doesn't show
-    let live = |id: &u64| catalog.photo(lightcraft_catalog::PhotoId(*id)).is_some_and(|p| !p.deleted);
+    let live = |id: &u64| catalog.photo(luz_catalog::PhotoId(*id)).is_some_and(|p| !p.deleted);
     let first = value.get("error").is_none().then(|| report["mapping"].as_object()?.values().filter_map(Value::as_u64).filter(live).min()).flatten();
     crate::state::Dialog::LightroomResult {
         summary: summary.to_string(),
@@ -381,12 +381,12 @@ fn result_dialog(value: &Value, summary: &str, catalog: &lightcraft_catalog::Cat
 }
 
 #[cfg(not(target_arch = "wasm32"))]
-fn start_inspect(app: &mut LightcraftApp, path: PathBuf, ctx: &egui::Context) -> Result<Value, String> {
+fn start_inspect(app: &mut LuzApp, path: PathBuf, ctx: &egui::Context) -> Result<Value, String> {
     busy(app)?;
     let cancel = Arc::new(AtomicBool::new(false));
     let progress = LightroomProgress::default();
     let (tx, rx) = mpsc::channel();
-    let temp = lightcraft_engine::lightroom_catalog::backup_temp_root(&app.session);
+    let temp = luz_engine::lightroom_catalog::backup_temp_root(&app.session);
     spawn_inspect(path.clone(), temp, cancel.clone(), progress.clone(), tx, ctx.clone())?;
     app.lightroom_last = None;
     app.lightroom = Some(LightroomTask::new(&app.session, Kind::Inspect, path.clone(), cancel, progress, rx));
@@ -394,9 +394,9 @@ fn start_inspect(app: &mut LightcraftApp, path: PathBuf, ctx: &egui::Context) ->
 }
 
 #[cfg(not(target_arch = "wasm32"))]
-fn start_import(app: &mut LightcraftApp, path: PathBuf, update_existing: bool, ctx: &egui::Context) -> Result<Value, String> {
+fn start_import(app: &mut LuzApp, path: PathBuf, update_existing: bool, ctx: &egui::Context) -> Result<Value, String> {
     busy(app)?;
-    let job = lightcraft_engine::lightroom_job::LightroomJob::new(&mut app.session, path.clone(), update_existing).map_err(|e| e.to_string())?;
+    let job = luz_engine::lightroom_job::LightroomJob::new(&mut app.session, path.clone(), update_existing).map_err(|e| e.to_string())?;
     let cancel = Arc::new(AtomicBool::new(false));
     let progress = job.progress();
     let (tx, rx) = mpsc::channel();
@@ -407,7 +407,7 @@ fn start_import(app: &mut LightcraftApp, path: PathBuf, update_existing: bool, c
 }
 
 /// Run Lightroom UI commands before the generic engine dispatcher.
-pub fn command(app: &mut LightcraftApp, id: &str, p: &Value, ctx: &egui::Context) -> Result<Value, String> {
+pub fn command(app: &mut LuzApp, id: &str, p: &Value, ctx: &egui::Context) -> Result<Value, String> {
     #[cfg(target_arch = "wasm32")]
     {
         let _ = (app, id, p, ctx);
@@ -443,7 +443,7 @@ pub fn command(app: &mut LightcraftApp, id: &str, p: &Value, ctx: &egui::Context
 }
 
 /// Poll owner-thread work, commit a prepared import, and finish its archive index.
-pub fn tick(app: &mut LightcraftApp, ctx: &egui::Context) {
+pub fn tick(app: &mut LuzApp, ctx: &egui::Context) {
     show_result(app);
     let Some(mut task) = app.lightroom.take() else { return };
     let message = match task.rx.try_recv() {
@@ -497,7 +497,7 @@ pub fn tick(app: &mut LightcraftApp, ctx: &egui::Context) {
             let mut finalization = None;
             let mut report = None;
             let committed = app.session.execute_fn("library.importLightroom", |s| {
-                let completion = lightcraft_engine::lightroom_job::commit_prepared(s, *prepared)?;
+                let completion = luz_engine::lightroom_job::commit_prepared(s, *prepared)?;
                 report = Some(completion.report.clone());
                 finalization = Some(completion.finalization);
                 Ok(completion.report)
@@ -548,7 +548,7 @@ pub fn tick(app: &mut LightcraftApp, ctx: &egui::Context) {
 
 /// Wait for a task in control/headless mode while still applying owner-thread completion.
 #[cfg(not(target_arch = "wasm32"))]
-pub fn wait_for(app: &mut LightcraftApp, ctx: &egui::Context, timeout: std::time::Duration) -> Result<Value, String> {
+pub fn wait_for(app: &mut LuzApp, ctx: &egui::Context, timeout: std::time::Duration) -> Result<Value, String> {
     let start = std::time::Instant::now();
     while app.lightroom.is_some() {
         tick(app, ctx);
@@ -561,14 +561,14 @@ pub fn wait_for(app: &mut LightcraftApp, ctx: &egui::Context, timeout: std::time
 }
 
 #[cfg(target_arch = "wasm32")]
-pub fn wait_for(_app: &mut LightcraftApp, _ctx: &egui::Context, _timeout: std::time::Duration) -> Result<Value, String> {
+pub fn wait_for(_app: &mut LuzApp, _ctx: &egui::Context, _timeout: std::time::Duration) -> Result<Value, String> {
     unsupported_wasm()
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use lightcraft_engine::lightroom_catalog::CatalogImport;
+    use luz_engine::lightroom_catalog::CatalogImport;
 
     /// A task as `start_import` makes it, fed by a channel the test holds instead of a worker.
     fn fake_import(h: &crate::headless::Headless) -> (LightroomTask, mpsc::Sender<Message>, Arc<AtomicBool>, LightroomProgress) {
@@ -579,7 +579,7 @@ mod tests {
     }
 
     fn demo() -> crate::headless::Headless {
-        let app = crate::LightcraftApp::new(lightcraft_engine::Session::with_demo(), crate::Services { png: None, ..Default::default() });
+        let app = crate::LuzApp::new(luz_engine::Session::with_demo(), crate::Services { png: None, ..Default::default() });
         let mut h = crate::headless::Headless::new(app, [1200.0, 800.0], 1.0);
         // no render left running at exit (see tests_activity::demo)
         h.settle(std::time::Duration::from_secs(20));
@@ -654,24 +654,24 @@ mod tests {
     fn lightroom_result_stays_readable_and_shows_photos_hidden_by_a_filter() {
         let mut h = demo();
         let id = h.app.session.catalog.photos().next().unwrap().id.0;
-        h.app.session.source = lightcraft_engine::LibrarySource::Picks;
+        h.app.session.source = luz_engine::LibrarySource::Picks;
         h.app.session.filter.text = "no-photo-has-this-name".into();
-        h.app.session.filter.only = vec![lightcraft_catalog::PhotoId(u64::MAX)];
-        h.app.session.filter.labels = vec![lightcraft_catalog::ColorLabel::Red];
-        h.app.session.filter.flags = vec![lightcraft_catalog::Flag::Reject];
-        h.app.session.filter.rule_set = Some(lightcraft_catalog::RuleSet {
-            mode: lightcraft_catalog::rules::Match::All,
-            rules: vec![lightcraft_catalog::rules::Rule::Field { field: "rating".into(), op: "is".into(), value: json!(5) }],
+        h.app.session.filter.only = vec![luz_catalog::PhotoId(u64::MAX)];
+        h.app.session.filter.labels = vec![luz_catalog::ColorLabel::Red];
+        h.app.session.filter.flags = vec![luz_catalog::Flag::Reject];
+        h.app.session.filter.rule_set = Some(luz_catalog::RuleSet {
+            mode: luz_catalog::rules::Match::All,
+            rules: vec![luz_catalog::rules::Rule::Field { field: "rating".into(), op: "is".into(), value: json!(5) }],
         });
         let (task, _tx, _, _) = fake_import(&h);
-        let value = json!({"photos": 1, "imported": 1, "collections": 0, "missing": ["D:/Photos/a.NEF"], "mapping": {"1": id}, "library": "C:/Pictures/LightCraft Library"});
+        let value = json!({"photos": 1, "imported": 1, "collections": 0, "missing": ["D:/Photos/a.NEF"], "mapping": {"1": id}, "library": "C:/Pictures/Luz Library"});
         terminal(&mut h.app, &h.view.ctx, &task, value);
         assert!(h.app.ui.toast.as_ref().unwrap().0.contains("1 photos added"));
         h.step();
         h.step();
         let text = h.painted_text().join(" ");
         assert!(text.contains("Destination library"), "{text}");
-        assert!(text.contains("C:/Pictures/LightCraft Library"), "{text}");
+        assert!(text.contains("C:/Pictures/Luz Library"), "{text}");
         assert!(text.contains("1 originals are missing"), "{text}");
         assert!(text.contains("Show in Library"), "{text}");
         // The activity and toast can go away; the modal result remains until dismissed.
@@ -680,8 +680,8 @@ mod tests {
         assert!(h.app.ui.dialog.is_some());
         let dialog = h.app.ui.dialog.clone().unwrap();
         crate::panels::dialogs::confirm_dialog(&mut h.app, &dialog).unwrap();
-        assert_eq!(h.app.session.source, lightcraft_engine::LibrarySource::All);
-        assert_eq!(h.app.session.filter, lightcraft_catalog::Filter::default());
+        assert_eq!(h.app.session.source, luz_engine::LibrarySource::All);
+        assert_eq!(h.app.session.filter, luz_catalog::Filter::default());
         assert_eq!(h.app.session.selection.active.map(|p| p.0), Some(id));
         assert_eq!(h.app.ui.view, crate::state::ViewMode::PhotoGrid);
         assert!(!h.app.session.visible().is_empty());
@@ -691,8 +691,8 @@ mod tests {
     /// whose new virtual copy the import added (#2589), and nowhere when no mapped photo is shown.
     #[test]
     fn show_in_library_skips_photos_in_recently_deleted() {
-        use lightcraft_catalog::{Op, Photo, Source};
-        let mut s = lightcraft_engine::Session::new();
+        use luz_catalog::{Op, Photo, Source};
+        let mut s = luz_engine::Session::new();
         let mut add = |deleted: bool| {
             let id = s.catalog.alloc_photo_id();
             let mut p = Photo::new(id, Source::File { path: format!("/p/{}.jpg", id.0) }, "a.jpg", "JPEG", 2, 2, "now");

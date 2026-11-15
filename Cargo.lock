@@ -3586,20 +3586,20 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightcraft"
+name = "luz"
 version = "0.18.0"
 dependencies = [
  "chrono",
  "craft-update",
  "eframe",
  "egui",
- "lightcraft-codecs",
- "lightcraft-engine",
- "lightcraft-raster",
- "lightcraft-sysmem",
- "lightcraft-testkit",
- "lightcraft-ui-egui",
- "lightcraft-wincolor",
+ "luz-codecs",
+ "luz-engine",
+ "luz-raster",
+ "luz-sysmem",
+ "luz-testkit",
+ "luz-ui-egui",
+ "luz-wincolor",
  "log",
  "muda",
  "objc2 0.6.5",
@@ -3615,17 +3615,17 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightcraft-catalog"
+name = "luz-catalog"
 version = "0.18.0"
 dependencies = [
  "chrono",
  "crc32fast",
  "dhat",
- "lightcraft-develop",
- "lightcraft-geom",
- "lightcraft-meta",
- "lightcraft-raw",
- "lightcraft-testkit",
+ "luz-develop",
+ "luz-geom",
+ "luz-meta",
+ "luz-raw",
+ "luz-testkit",
  "log",
  "proptest",
  "serde",
@@ -3636,24 +3636,24 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightcraft-cli"
+name = "luz-cli"
 version = "0.18.0"
 dependencies = [
  "dhat",
- "lightcraft-codecs",
- "lightcraft-denoise",
- "lightcraft-engine",
- "lightcraft-mcp",
- "lightcraft-merge",
- "lightcraft-raster",
- "lightcraft-sysmem",
- "lightcraft-testkit",
- "lightcraft-ui-egui",
+ "luz-codecs",
+ "luz-denoise",
+ "luz-engine",
+ "luz-mcp",
+ "luz-merge",
+ "luz-raster",
+ "luz-sysmem",
+ "luz-testkit",
+ "luz-ui-egui",
  "serde_json",
 ]
 
 [[package]]
-name = "lightcraft-codecs"
+name = "luz-codecs"
 version = "0.18.0"
 dependencies = [
  "avif-serialize",
@@ -3665,11 +3665,11 @@ dependencies = [
  "jpeg-decoder",
  "jpeg-encoder",
  "jxl-oxide",
- "lightcraft-color",
- "lightcraft-geom",
- "lightcraft-heif",
- "lightcraft-raster",
- "lightcraft-testkit",
+ "luz-color",
+ "luz-geom",
+ "luz-heif",
+ "luz-raster",
+ "luz-testkit",
  "moxcms 0.9.1",
  "png",
  "proptest",
@@ -3684,21 +3684,21 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightcraft-color"
+name = "luz-color"
 version = "0.18.0"
 dependencies = [
- "lightcraft-geom",
+ "luz-geom",
  "proptest",
  "serde",
 ]
 
 [[package]]
-name = "lightcraft-denoise"
+name = "luz-denoise"
 version = "0.18.0"
 dependencies = [
  "faer-core",
- "lightcraft-denoise-core",
- "lightcraft-raster",
+ "luz-denoise-core",
+ "luz-raster",
  "miniz_oxide 0.9.1",
  "proptest",
  "rayon",
@@ -3710,11 +3710,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightcraft-denoise-core"
+name = "luz-denoise-core"
 version = "0.18.0"
 dependencies = [
  "dhat",
- "lightcraft-raster",
+ "luz-raster",
  "miniz_oxide 0.9.1",
  "proptest",
  "rayon",
@@ -3726,11 +3726,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightcraft-develop"
+name = "luz-develop"
 version = "0.18.0"
 dependencies = [
- "lightcraft-color",
- "lightcraft-geom",
+ "luz-color",
+ "luz-geom",
  "miniz_oxide 0.9.1",
  "proptest",
  "serde",
@@ -3738,7 +3738,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightcraft-engine"
+name = "luz-engine"
 version = "0.18.0"
 dependencies = [
  "ab_glyph",
@@ -3749,30 +3749,30 @@ dependencies = [
  "harfrust 0.13.3",
  "jxl-oxide",
  "libc",
- "lightcraft-catalog",
- "lightcraft-codecs",
- "lightcraft-color",
- "lightcraft-denoise",
- "lightcraft-denoise-core",
- "lightcraft-develop",
- "lightcraft-faces",
- "lightcraft-fetch",
- "lightcraft-geocode",
- "lightcraft-geom",
- "lightcraft-gpu",
- "lightcraft-heif",
- "lightcraft-lensdb",
- "lightcraft-merge",
- "lightcraft-meta",
- "lightcraft-pipeline",
- "lightcraft-preview",
- "lightcraft-raster",
- "lightcraft-raw",
- "lightcraft-scenes",
- "lightcraft-segment",
- "lightcraft-slideshow",
- "lightcraft-testkit",
- "lightcraft-tiff",
+ "luz-catalog",
+ "luz-codecs",
+ "luz-color",
+ "luz-denoise",
+ "luz-denoise-core",
+ "luz-develop",
+ "luz-faces",
+ "luz-fetch",
+ "luz-geocode",
+ "luz-geom",
+ "luz-gpu",
+ "luz-heif",
+ "luz-lensdb",
+ "luz-merge",
+ "luz-meta",
+ "luz-pipeline",
+ "luz-preview",
+ "luz-raster",
+ "luz-raw",
+ "luz-scenes",
+ "luz-segment",
+ "luz-slideshow",
+ "luz-testkit",
+ "luz-tiff",
  "log",
  "miniz_oxide 0.9.1",
  "rayon",
@@ -3785,10 +3785,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightcraft-faces"
+name = "luz-faces"
 version = "0.18.0"
 dependencies = [
- "lightcraft-testkit",
+ "luz-testkit",
  "matrixmultiply",
  "ndarray",
  "proptest",
@@ -3800,7 +3800,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightcraft-fetch"
+name = "luz-fetch"
 version = "0.18.0"
 dependencies = [
  "log",
@@ -3811,14 +3811,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightcraft-film"
+name = "luz-film"
 version = "0.18.0"
 dependencies = [
  "libm",
 ]
 
 [[package]]
-name = "lightcraft-geocode"
+name = "luz-geocode"
 version = "0.18.0"
 dependencies = [
  "miniz_oxide 0.9.1",
@@ -3826,7 +3826,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightcraft-geom"
+name = "luz-geom"
 version = "0.18.0"
 dependencies = [
  "proptest",
@@ -3834,27 +3834,27 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightcraft-gpu"
+name = "luz-gpu"
 version = "0.18.0"
 dependencies = [
  "bytemuck",
- "lightcraft-color",
- "lightcraft-denoise",
- "lightcraft-develop",
- "lightcraft-faces",
- "lightcraft-geom",
- "lightcraft-pipeline",
- "lightcraft-raster",
- "lightcraft-raw",
- "lightcraft-scenes",
- "lightcraft-testkit",
+ "luz-color",
+ "luz-denoise",
+ "luz-develop",
+ "luz-faces",
+ "luz-geom",
+ "luz-pipeline",
+ "luz-raster",
+ "luz-raw",
+ "luz-scenes",
+ "luz-testkit",
  "log",
  "pollster 1.0.1",
  "wgpu",
 ]
 
 [[package]]
-name = "lightcraft-heif"
+name = "luz-heif"
 version = "0.18.0"
 dependencies = [
  "heic-rs",
@@ -3862,56 +3862,56 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightcraft-inpaint"
+name = "luz-inpaint"
 version = "0.18.0"
 dependencies = [
  "rayon",
 ]
 
 [[package]]
-name = "lightcraft-lensdb"
+name = "luz-lensdb"
 version = "0.18.0"
 dependencies = [
- "lightcraft-develop",
- "lightcraft-geom",
+ "luz-develop",
+ "luz-geom",
  "quick-xml 0.41.0",
 ]
 
 [[package]]
-name = "lightcraft-mcp"
+name = "luz-mcp"
 version = "0.18.0"
 dependencies = [
- "lightcraft-codecs",
- "lightcraft-engine",
- "lightcraft-raster",
+ "luz-codecs",
+ "luz-engine",
+ "luz-raster",
  "log",
  "serde_json",
 ]
 
 [[package]]
-name = "lightcraft-merge"
+name = "luz-merge"
 version = "0.18.0"
 dependencies = [
- "lightcraft-codecs",
- "lightcraft-color",
- "lightcraft-geom",
- "lightcraft-meta",
- "lightcraft-raster",
- "lightcraft-raw",
- "lightcraft-scenes",
+ "luz-codecs",
+ "luz-color",
+ "luz-geom",
+ "luz-meta",
+ "luz-raster",
+ "luz-raw",
+ "luz-scenes",
  "rayon",
  "serde",
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "lightcraft-meta"
+name = "luz-meta"
 version = "0.18.0"
 dependencies = [
  "chrono",
- "lightcraft-geom",
- "lightcraft-heif",
- "lightcraft-tiff",
+ "luz-geom",
+ "luz-heif",
+ "luz-tiff",
  "proptest",
  "quick-xml 0.41.0",
  "serde",
@@ -3919,18 +3919,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightcraft-pipeline"
+name = "luz-pipeline"
 version = "0.18.0"
 dependencies = [
  "dhat",
  "image",
- "lightcraft-color",
- "lightcraft-develop",
- "lightcraft-geom",
- "lightcraft-inpaint",
- "lightcraft-raster",
- "lightcraft-raw",
- "lightcraft-scenes",
+ "luz-color",
+ "luz-develop",
+ "luz-geom",
+ "luz-inpaint",
+ "luz-raster",
+ "luz-raw",
+ "luz-scenes",
  "proptest",
  "rayon",
  "serde",
@@ -3938,11 +3938,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightcraft-preview"
+name = "luz-preview"
 version = "0.18.0"
 dependencies = [
  "jpeg-encoder",
- "lightcraft-raster",
+ "luz-raster",
  "log",
  "siphasher",
  "zune-core",
@@ -3950,19 +3950,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightcraft-raster"
+name = "luz-raster"
 version = "0.18.0"
 dependencies = [
  "libc",
- "lightcraft-color",
- "lightcraft-geom",
+ "luz-color",
+ "luz-geom",
  "proptest",
  "rayon",
  "serde",
 ]
 
 [[package]]
-name = "lightcraft-raw"
+name = "luz-raw"
 version = "0.18.0"
 dependencies = [
  "chrono",
@@ -3970,12 +3970,12 @@ dependencies = [
  "dhat",
  "jpeg-encoder",
  "jxl-oxide",
- "lightcraft-color",
- "lightcraft-geom",
- "lightcraft-meta",
- "lightcraft-raster",
- "lightcraft-testkit",
- "lightcraft-tiff",
+ "luz-color",
+ "luz-geom",
+ "luz-meta",
+ "luz-raster",
+ "luz-testkit",
+ "luz-tiff",
  "miniz_oxide 0.9.1",
  "proptest",
  "rayon",
@@ -3988,24 +3988,24 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightcraft-scenes"
+name = "luz-scenes"
 version = "0.18.0"
 dependencies = [
  "image",
- "lightcraft-color",
- "lightcraft-raster",
+ "luz-color",
+ "luz-raster",
  "rayon",
  "serde",
 ]
 
 [[package]]
-name = "lightcraft-segment"
+name = "luz-segment"
 version = "0.18.0"
 dependencies = [
  "candle-core",
  "candle-nn",
- "lightcraft-fetch",
- "lightcraft-testkit",
+ "luz-fetch",
+ "luz-testkit",
  "log",
  "serde",
  "serde_json",
@@ -4013,24 +4013,24 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightcraft-slideshow"
+name = "luz-slideshow"
 version = "0.18.0"
 dependencies = [
- "lightcraft-raster",
+ "luz-raster",
  "serde",
  "serde_json",
 ]
 
 [[package]]
-name = "lightcraft-sysmem"
+name = "luz-sysmem"
 version = "0.18.0"
 
 [[package]]
-name = "lightcraft-testkit"
+name = "luz-testkit"
 version = "0.18.0"
 
 [[package]]
-name = "lightcraft-tiff"
+name = "luz-tiff"
 version = "0.18.0"
 dependencies = [
  "proptest",
@@ -4039,7 +4039,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightcraft-ui-egui"
+name = "luz-ui-egui"
 version = "0.18.0"
 dependencies = [
  "craft-ui",
@@ -4048,21 +4048,21 @@ dependencies = [
  "egui",
  "egui_extras",
  "egui_kittest",
- "lightcraft-catalog",
- "lightcraft-codecs",
- "lightcraft-color",
- "lightcraft-denoise",
- "lightcraft-develop",
- "lightcraft-engine",
- "lightcraft-faces",
- "lightcraft-geom",
- "lightcraft-merge",
- "lightcraft-meta",
- "lightcraft-pipeline",
- "lightcraft-preview",
- "lightcraft-raster",
- "lightcraft-slideshow",
- "lightcraft-testkit",
+ "luz-catalog",
+ "luz-codecs",
+ "luz-color",
+ "luz-denoise",
+ "luz-develop",
+ "luz-engine",
+ "luz-faces",
+ "luz-geom",
+ "luz-merge",
+ "luz-meta",
+ "luz-pipeline",
+ "luz-preview",
+ "luz-raster",
+ "luz-slideshow",
+ "luz-testkit",
  "log",
  "pollster 1.0.1",
  "serde",
@@ -4072,20 +4072,20 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightcraft-web"
+name = "luz-web"
 version = "0.18.0"
 dependencies = [
  "crc32fast",
  "eframe",
  "egui",
  "js-sys",
- "lightcraft-codecs",
- "lightcraft-color",
- "lightcraft-engine",
- "lightcraft-preview",
- "lightcraft-raster",
- "lightcraft-raw",
- "lightcraft-ui-egui",
+ "luz-codecs",
+ "luz-color",
+ "luz-engine",
+ "luz-preview",
+ "luz-raster",
+ "luz-raw",
+ "luz-ui-egui",
  "log",
  "serde",
  "serde_json",
@@ -4095,10 +4095,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightcraft-wincolor"
+name = "luz-wincolor"
 version = "0.18.0"
 dependencies = [
- "lightcraft-testkit",
+ "luz-testkit",
  "windows-sys 0.61.2",
 ]
 

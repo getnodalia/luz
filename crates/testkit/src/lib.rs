@@ -9,7 +9,7 @@
 //! ```no_run
 //! # let gpu_available = false;
 //! if !gpu_available {
-//!     lightcraft_testkit::skip!(Gpu, "no GPU adapter");
+//!     luz_testkit::skip!(Gpu, "no GPU adapter");
 //!     return;
 //! }
 //! ```
@@ -28,12 +28,12 @@ use std::io::Write as _;
 use std::path::Path;
 
 /// The environment variable naming the file skips are appended to (JSON lines).
-pub const SKIP_LOG_ENV: &str = "LIGHTCRAFT_SKIP_LOG";
+pub const SKIP_LOG_ENV: &str = "LUZ_SKIP_LOG";
 
 /// What a skipped test needed and didn't find.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Need {
-    /// A usable GPU adapter (`lightcraft_gpu::available()`).
+    /// A usable GPU adapter (`luz_gpu::available()`).
     Gpu,
     /// A file from the gitignored `corpus/` (`cargo xtask corpus --download`) or a private corpus.
     Corpus,
@@ -155,7 +155,7 @@ mod tests {
     #[test]
     fn binary_names_lose_cargos_hash_only() {
         assert_eq!(binary_name("equivalence-0f3a9c2b1d4e5f60"), "equivalence");
-        assert_eq!(binary_name("lightcraft_engine-0f3a9c2b1d4e5f60"), "lightcraft_engine");
+        assert_eq!(binary_name("luz_engine-0f3a9c2b1d4e5f60"), "luz_engine");
         assert_eq!(binary_name("sparse_corpus"), "sparse_corpus");
         assert_eq!(binary_name("cr3-corpus"), "cr3-corpus");
         assert_eq!(binary_name("-0f3a9c2b1d4e5f60"), "-0f3a9c2b1d4e5f60");
@@ -166,7 +166,7 @@ mod tests {
     fn appended_lines_accumulate() {
         // Exclusive, private: the pid-derived name in a shared /tmp can be planted by another account
         // (CWE-59), so an existing directory fails the test instead of it symlinking inside.
-        let dir = std::env::temp_dir().join(format!("lightcraft-testkit-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("luz-testkit-{}", std::process::id()));
         std::fs::create_dir(&dir).unwrap();
         let log = dir.join("skips.jsonl");
         if std::fs::symlink_metadata(&log).is_ok() {
@@ -189,6 +189,6 @@ mod tests {
 
     #[test]
     fn a_missing_log_directory_does_not_fail_the_test() {
-        append(Path::new("/nonexistent-lightcraft-dir/skips.jsonl"), "{}\n");
+        append(Path::new("/nonexistent-luz-dir/skips.jsonl"), "{}\n");
     }
 }

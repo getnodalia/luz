@@ -1,5 +1,5 @@
 # Release pipeline: every push to `release` builds signed installers for every platform and
-# creates or updates the draft GitHub Release "LightCraft v<version>". See docs/releasing.md.
+# creates or updates the draft GitHub Release "Luz v<version>". See docs/releasing.md.
 name: Release
 
 on:
@@ -71,8 +71,8 @@ jobs:
     # Intentionally tracked at @main (not SHA-pinned) so org-wide CI improvements, security fixes, and build optimizations propagate without PR churn across all craftapp repos.
     uses: storytold/craft-common-actions/.github/workflows/release.yml@main
     with:
-      app-name: lightcraft
-      app-title: LightCraft
+      app-name: luz
+      app-title: Luz
       craft-fonts-ref: b076417b5880bd4154bd22f00695b1d28c6bea83
       web-craft-fonts: true
       version: ${{ inputs.version }}

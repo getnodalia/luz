@@ -3,9 +3,9 @@
 //! skipped for want of hardware or data. Written to `target/ci/report.json` and
 //! `target/ci/summary.md` (a block to paste into a PR) and printed after the CI summary.
 //!
-//! Tests record skips with `lightcraft_testkit::skip!`; each test step points
-//! `LIGHTCRAFT_SKIP_LOG` at `target/ci/skips-<step>.jsonl`. The GPU adapters come from the ignored
-//! `gpu_probe` test of `lightcraft-gpu` (xtask has no wgpu). Nothing here is sent anywhere.
+//! Tests record skips with `luz_testkit::skip!`; each test step points
+//! `LUZ_SKIP_LOG` at `target/ci/skips-<step>.jsonl`. The GPU adapters come from the ignored
+//! `gpu_probe` test of `luz-gpu` (xtask has no wgpu). Nothing here is sent anywhere.
 //!
 //! The report holds no host name, user name or absolute path: the workspace root and the home
 //! directory are cut from skip reasons.
@@ -20,8 +20,8 @@ use serde_json::{Value, json};
 /// Bumped when a field changes meaning.
 pub const SCHEMA: u64 = 1;
 
-/// The environment variable `lightcraft-testkit` appends skips to.
-pub const SKIP_LOG_ENV: &str = "LIGHTCRAFT_SKIP_LOG";
+/// The environment variable `luz-testkit` appends skips to.
+pub const SKIP_LOG_ENV: &str = "LUZ_SKIP_LOG";
 
 /// `target/ci` under the workspace root (not `CARGO_TARGET_DIR`: one place to look, like
 /// `target/bench`).
@@ -104,13 +104,13 @@ pub fn toolchain() -> Option<String> {
 
 /// Test data present: how many of the pinned raw samples, other corpus files, craft-fonts.
 pub fn data(root: &Path, pinned_raw: &[&str]) -> Value {
-    let corpus = std::env::var_os("LIGHTCRAFT_CORPUS").map(PathBuf::from).unwrap_or_else(|| root.join("corpus"));
+    let corpus = std::env::var_os("LUZ_CORPUS").map(PathBuf::from).unwrap_or_else(|| root.join("corpus"));
     let count = |sub: &str| -> usize { std::fs::read_dir(corpus.join(sub)).map(|d| d.flatten().filter(|e| e.path().is_file()).count()).unwrap_or(0) };
     let pinned = pinned_raw.iter().filter(|name| corpus.join("raw").join(name).is_file()).count();
     let fonts = std::env::var_os("CRAFT_FONTS_DIR").filter(|d| !d.is_empty()).map(PathBuf::from);
     json!({
         "corpus": {
-            "custom_dir": std::env::var_os("LIGHTCRAFT_CORPUS").is_some(),
+            "custom_dir": std::env::var_os("LUZ_CORPUS").is_some(),
             "raw_pinned": pinned,
             "raw_pinned_total": pinned_raw.len(),
             "raw_files": count("raw"),
@@ -451,7 +451,7 @@ pub fn summary_md(report: &Value) -> String {
     let mut s = String::new();
     let result = report["result"].as_str().unwrap_or("?");
     let command = report["command"].as_str().unwrap_or("cargo xtask ci");
-    let _ = writeln!(s, "<!-- lightcraft ci report, schema {SCHEMA} -->");
+    let _ = writeln!(s, "<!-- luz ci report, schema {SCHEMA} -->");
     let _ = writeln!(s, "**`{command}`: {result}** at {}\n", commit_line(report));
     let _ = writeln!(s, "| | |\n|---|---|");
     let _ = writeln!(s, "| Machine | {} |", cell(&machine_line(report)));
@@ -512,10 +512,10 @@ mod tests {
 
     #[test]
     fn skips_are_read_per_step_deduplicated_and_cut_free_of_the_root() {
-        let root = Path::new("/work/lightcraft");
+        let root = Path::new("/work/luz");
         let dir = tmp("skips");
         let gpu = r#"{"need":"gpu","reason":"no GPU adapter","test":"equivalence::camera_tone","binary":"it","location":"crates/gpu/tests/it/equivalence.rs:22"}"#;
-        let corpus = r#"{"need":"corpus","reason":"skip /work/lightcraft/crates/raw/../../corpus/raw absent","test":"corpus::decodes","binary":"it","location":"crates/raw/tests/it/corpus.rs:28"}"#;
+        let corpus = r#"{"need":"corpus","reason":"skip /work/luz/crates/raw/../../corpus/raw absent","test":"corpus::decodes","binary":"it","location":"crates/raw/tests/it/corpus.rs:28"}"#;
         std::fs::write(dir.join("skips-heif.jsonl"), format!("{corpus}\n")).unwrap();
         std::fs::write(dir.join("skips-test.jsonl"), format!("{gpu}\n{corpus}\nnot json\n")).unwrap();
         std::fs::write(dir.join("other.jsonl"), format!("{gpu}\n")).unwrap();
@@ -540,12 +540,9 @@ mod tests {
             steps: Vec::new(),
         };
         assert_eq!(test_name(&skip("equivalence::camera_tone", "it", "crates/gpu/tests/it/equivalence.rs:22")), "gpu/it::equivalence::camera_tone");
-        assert_eq!(
-            test_name(&skip("main", "it", "apps/lightcraft-cli/tests/it/cli.rs:9")),
-            "lightcraft-cli/it (apps/lightcraft-cli/tests/it/cli.rs:9)"
-        );
+        assert_eq!(test_name(&skip("main", "it", "apps/luz-cli/tests/it/cli.rs:9")), "luz-cli/it (apps/luz-cli/tests/it/cli.rs:9)");
         assert_eq!(test_name(&skip("memory", "memory", "crates/gpu/tests/memory.rs:12")), "memory::memory");
-        assert_eq!(test_name(&skip("tests::a", "lightcraft_engine", "crates/engine/src/tests.rs:3")), "lightcraft_engine::tests::a");
+        assert_eq!(test_name(&skip("tests::a", "luz_engine", "crates/engine/src/tests.rs:3")), "luz_engine::tests::a");
     }
 
     #[test]

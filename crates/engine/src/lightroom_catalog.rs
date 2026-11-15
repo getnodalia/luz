@@ -9,8 +9,8 @@ use std::sync::{
 };
 
 use crate::lightroom_sqlite::{Database, FileSource, LiveTable, Value as SqlValue};
-use lightcraft_catalog::{Album, Flag, Op, Photo, PhotoId, Source};
-use lightcraft_geom::{Affine, Orientation, Point, Rect};
+use luz_catalog::{Album, Flag, Op, Photo, PhotoId, Source};
+use luz_geom::{Affine, Orientation, Point, Rect};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
@@ -716,7 +716,7 @@ fn is_catalog_video(p: &CatalogPhoto) -> bool {
         && Path::new(&p.path).extension().and_then(|e| e.to_str()).is_some_and(|e| EXTENSIONS.iter().any(|x| e.eq_ignore_ascii_case(x)))
 }
 
-/// Drop the catalog's images whose original is not a file type LightCraft reads, saying so in the
+/// Drop the catalog's images whose original is not a file type Luz reads, saying so in the
 /// import's warnings.
 ///
 /// The catalog decides these paths, and a record it leaves behind is one click from the system
@@ -753,7 +753,7 @@ pub(crate) fn refuse_non_media(data: &mut CatalogImport) {
         if !refused.contains(&p.source_id) {
             return true;
         }
-        warnings.push(format!("image {}: not imported; {} isn't one of the file types LightCraft reads", p.source_id, p.path));
+        warnings.push(format!("image {}: not imported; {} isn't one of the file types Luz reads", p.source_id, p.path));
         false
     });
     data.warnings.extend(warnings);
@@ -786,7 +786,7 @@ fn mapped_settings(
         props.insert("crs:HasCrop".into(), vec!["True".into()]);
     }
     // Mask edges are fractions of the stored image, like the crop's, so radii go to long-edge units
-    // with its aspect: `aspect` is the photo's in LightCraft, which is the shown one for a photo
+    // with its aspect: `aspect` is the photo's in Luz, which is the shown one for a photo
     // already in the library and only stands in when the catalog has no file size.
     let mask_aspect = if stored_aspect.is_finite() && stored_aspect > 0.0 { stored_aspect } else { aspect };
     let (mut partial, mut unknown) = crate::crs::to_partial_report(&props, Some(&values), target, mask_aspect);
@@ -821,10 +821,10 @@ fn lightroom_orientation(code: &str) -> Option<Orientation> {
     ALL.into_iter().find(|&o| code.chars().eq([corner(o, 0.0, 0.0), corner(o, 1.0, 0.0)]))
 }
 
-/// Lightroom's crop in LightCraft's frame. `crs` gives the crop's top-left (`CropLeft`, `CropTop`)
+/// Lightroom's crop in Luz's frame. `crs` gives the crop's top-left (`CropLeft`, `CropTop`)
 /// and bottom-right (`CropRight`, `CropBottom`) corners on the stored image (before orientation and
 /// straightening), normalized to its size, plus a straighten angle that turns the other way to
-/// LightCraft's. LightCraft's crop is a rectangle in the oriented image rotated by `angle` about its
+/// Luz's. Luz's crop is a rectangle in the oriented image rotated by `angle` about its
 /// centre, normalized to the oriented image's size, so the corners go through the orientation and
 /// then the rotation; `stored_aspect` (width / height of the stored image) matters once the
 /// rectangle turns. On a real catalog this reproduced the frame aspect of all 223 straightened crops
@@ -852,8 +852,8 @@ fn catalog_crop(partial: &mut Value, orientation: Orientation, stored_aspect: f6
 }
 
 /// The catalog's orientation (the stored image to the photo as Lightroom shows it), then the
-/// photo's own Rotate Left / Right and Flip in LightCraft (`user`), which an update of a photo
-/// already in the library keeps: the frame LightCraft draws masks in.
+/// photo's own Rotate Left / Right and Flip in Luz (`user`), which an update of a photo
+/// already in the library keeps: the frame Luz draws masks in.
 fn in_photo_frame(catalog: Orientation, user: Orientation) -> Orientation {
     let (flip, turns) = user.to_parts();
     let o = if flip { catalog.flipped_h() } else { catalog };
@@ -862,8 +862,8 @@ fn in_photo_frame(catalog: Orientation, user: Orientation) -> Orientation {
 
 /// Rename a catalog Lua component's `Inverted` to XMP's `MaskInverted` (see [`mapped_settings`]);
 /// a `crs:MaskInverted` already present wins, and this does not touch `Flipped`.
-fn alias_catalog_inverted(v: &mut lightcraft_meta::XmpValue) {
-    use lightcraft_meta::XmpValue;
+fn alias_catalog_inverted(v: &mut luz_meta::XmpValue) {
+    use luz_meta::XmpValue;
     match v {
         XmpValue::Array(items) => items.iter_mut().for_each(alias_catalog_inverted),
         XmpValue::Struct(map) => {
@@ -878,8 +878,8 @@ fn alias_catalog_inverted(v: &mut lightcraft_meta::XmpValue) {
     }
 }
 
-/// Lightroom's masks in LightCraft's frame. Like the crop's corners, their positions are on the
-/// stored image (before orientation), normalized to its size; LightCraft's are on the oriented
+/// Lightroom's masks in Luz's frame. Like the crop's corners, their positions are on the
+/// stored image (before orientation), normalized to its size; Luz's are on the oriented
 /// image. So the points go through the orientation, a radial's radii (in long-edge units, from the
 /// stored image's aspect) swap when the axes do, and a mirror turns its angle the other way. A
 /// quarter turn keeps the angle: the ellipse turned 90° is the same ellipse with its radii swapped.
@@ -920,7 +920,7 @@ fn catalog_masks(partial: &mut Value, orientation: Orientation) {
     }
 }
 
-/// The catalog's XMP masks in LightCraft's frame, as [`catalog_masks`] puts the develop row's: they
+/// The catalog's XMP masks in Luz's frame, as [`catalog_masks`] puts the develop row's: they
 /// are on the same stored image, and they stay when the row has no masks of its own. The packet's
 /// radials come fitted to the sidecar default aspect and `sidecar::merge_into` re-fits them to the
 /// photo's size, so they are fitted to the stored image to be turned (a quarter turn swaps the
@@ -1012,7 +1012,7 @@ fn apply(s: &mut crate::Session, data: CatalogImport, update_existing: bool) -> 
     if let Some(path) = index_path {
         s.persist()?;
         let bytes = serde_json::to_vec(&applied.index).map_err(|e| error(e.to_string()))?;
-        lightcraft_catalog::safe_file::write_atomic(&path, &bytes).map_err(|e| error(e.to_string()))?;
+        luz_catalog::safe_file::write_atomic(&path, &bytes).map_err(|e| error(e.to_string()))?;
     }
     Ok(applied.report)
 }
@@ -1099,7 +1099,7 @@ fn stage_collections(
             .flatten()
             .filter(|k| mine(k))
             .filter_map(|k| index.collections.get(k).copied())
-            .map(lightcraft_catalog::AlbumId)
+            .map(luz_catalog::AlbumId)
             .find(|id| s.catalog.album(*id).is_some() && !assigned.contains(id));
         let id = match id {
             Some(id) => id,
@@ -1233,7 +1233,7 @@ fn stage_collections(
 /// (added, missing, failed, warnings and skipped images).
 pub(crate) fn apply_prepared(s: &mut crate::Session, mut data: CatalogImport, context: ApplyPrepared<'_>) -> crate::Result<AppliedImport> {
     let ApplyPrepared { update_existing, files, index, archive_path, missing_sources, undo0 } = context;
-    // nothing but a file type LightCraft reads becomes a record, whichever route got here (#2135)
+    // nothing but a file type Luz reads becomes a record, whichever route got here (#2135)
     refuse_non_media(&mut data);
     validate(&data).map_err(error)?;
     let mut warnings = data.warnings.clone();
@@ -1355,13 +1355,13 @@ pub(crate) fn apply_prepared(s: &mut crate::Session, mut data: CatalogImport, co
                 &now,
             );
             if ["RAW", "DNG", "ARW", "CR2", "CR3", "CRW", "NEF", "NRW", "RAF", "ORF", "RW2", "PEF"].contains(&p.format.to_uppercase().as_str()) {
-                p.kind = lightcraft_catalog::MediaKind::Raw;
+                p.kind = luz_catalog::MediaKind::Raw;
             }
             p
         };
         // Offline videos bypass file probing; Lightroom's format still identifies their kind.
         if text(&src.image, "fileFormat").eq_ignore_ascii_case("VIDEO") {
-            p.kind = lightcraft_catalog::MediaKind::Video;
+            p.kind = luz_catalog::MediaKind::Video;
         }
         ids.insert(src.source_id, p.id);
         index.photos.insert(identity(&data, src), p.id.0);
@@ -1407,7 +1407,7 @@ pub(crate) fn apply_prepared(s: &mut crate::Session, mut data: CatalogImport, co
                 p.develop.orientation,
             ) {
                 Ok((partial, unknown)) => {
-                    p.develop = Arc::new(lightcraft_develop::apply_partial(&p.develop, &partial, 1.0));
+                    p.develop = Arc::new(luz_develop::apply_partial(&p.develop, &partial, 1.0));
                     p.edited = Some(now.clone());
                     if !unknown.is_empty() {
                         unmapped.insert(src.source_id, unknown);
@@ -1467,7 +1467,7 @@ pub(crate) fn apply_prepared(s: &mut crate::Session, mut data: CatalogImport, co
 }
 
 /// The collection set a Lightroom collection's album goes into (`None`: the top level), and whether that isn't its
-/// Lightroom parent. A LightCraft album nests only in a folder, but Lightroom also keeps a print, book, slideshow or
+/// Lightroom parent. A Luz album nests only in a folder, but Lightroom also keeps a print, book, slideshow or
 /// web gallery (or, in an odd catalog, a collection) inside a plain or smart collection, and a parent can be
 /// system-only (not imported) or gone from the catalog. Such an album joins the nearest collection set above it.
 fn collection_parent(collection: &Row, collections: &HashMap<i64, &Row>, sets: &HashSet<i64>) -> (Option<i64>, bool) {

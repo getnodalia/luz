@@ -10,7 +10,7 @@ pub type WriteFn = Box<dyn FnMut(&str, &[u8]) -> Result<(), String>>;
 /// A writer other threads can use (background export).
 pub type SharedWrite = std::sync::Arc<dyn Fn(&str, &[u8]) -> Result<(), String> + Send + Sync>;
 
-pub type PngEncode = Box<dyn Fn(&lightcraft_raster::Rgba8) -> Vec<u8>>;
+pub type PngEncode = Box<dyn Fn(&luz_raster::Rgba8) -> Vec<u8>>;
 
 /// A folder chooser (`None` = cancelled).
 pub type PickFolder = Box<dyn FnMut() -> Option<String>>;
@@ -36,7 +36,7 @@ pub type OpenModelFolderFn = std::sync::Arc<dyn Fn(&str) -> Result<(), String> +
 pub type ScreenProfileFn = Box<dyn FnMut() -> Option<Vec<u8>>>;
 
 /// Whether an external editor can be started (its name as in [`Services::open_with`]); the
-/// error says why not and what to do (e.g. PhotoCraft isn't installed).
+/// error says why not and what to do (e.g. Lienzo isn't installed).
 pub type CheckEditorFn = Box<dyn Fn(&str) -> Result<(), String>>;
 
 /// Something the host does with the session (web: back up or restore the library in browser
@@ -102,8 +102,8 @@ pub struct Services {
     pub png: Option<PngEncode>,
     /// Show a file in the system file manager (desktop only).
     pub reveal: Option<RevealFn>,
-    /// The host's current log file (`<settings>/logs/lightcraft.log`), which Help ▸ Open Log
-    /// Folder reveals (#260). None where no log is kept: the web, `--memory`, `LIGHTCRAFT_NO_PREFS`.
+    /// The host's current log file (`<settings>/logs/luz.log`), which Help ▸ Open Log
+    /// Folder reveals (#260). None where no log is kept: the web, `--memory`, `LUZ_NO_PREFS`.
     pub log_file: Option<String>,
     /// Choose a folder (Settings → General → Open Library…; desktop only).
     pub pick_folder: Option<PickFolder>,

@@ -31,9 +31,9 @@
 use std::f64::consts::TAU;
 use std::sync::{Arc, Condvar, Mutex, OnceLock, PoisonError};
 
-use lightcraft_color::transfer::srgb_to_linear;
-use lightcraft_develop::Grain;
-use lightcraft_raster::par_rows;
+use luz_color::transfer::srgb_to_linear;
+use luz_develop::Grain;
+use luz_raster::par_rows;
 
 /// Long edge (output pixels) at which grain sizes and strengths are specified: a 24 MP export.
 pub const REF_LONG: f64 = 6000.0;
@@ -651,7 +651,7 @@ impl CrystalTile {
     /// Draws the emulsion of `look` with `seed`, or `None` if it has no grain (no variance).
     pub fn new(look: CrystalLook, seed: u32) -> Option<CrystalTile> {
         let [t0, t1] = TORI;
-        let (c0, c1) = lightcraft_raster::par_join(|| draw_torus(0, t0, seed, &look), || draw_torus(1, t1, seed, &look));
+        let (c0, c1) = luz_raster::par_join(|| draw_torus(0, t0, seed, &look), || draw_torus(1, t1, seed, &look));
         let mut var = 0.0;
         let mut tori = Vec::with_capacity(2);
         for (count, t) in [(c0, t0), (c1, t1)] {

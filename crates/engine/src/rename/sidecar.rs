@@ -17,12 +17,12 @@ pub(crate) struct SidecarMove {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) struct PacketVersion {
     pub(super) len: u64,
-    pub(super) hash: lightcraft_preview::Hash128,
+    pub(super) hash: luz_preview::Hash128,
 }
 
 impl PacketVersion {
     pub(super) fn of(bytes: &[u8]) -> Self {
-        Self { len: bytes.len() as u64, hash: lightcraft_preview::hash_bytes(bytes) }
+        Self { len: bytes.len() as u64, hash: luz_preview::hash_bytes(bytes) }
     }
 }
 

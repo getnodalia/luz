@@ -1,5 +1,5 @@
 use super::*;
-use lightcraft_geom::CropGeometry;
+use luz_geom::CropGeometry;
 fn row(v: Value) -> Row {
     serde_json::from_value(v).unwrap()
 }
@@ -78,7 +78,7 @@ fn a_catalog_original_that_is_not_a_photo_file_is_not_imported() {
     assert_eq!(r["photos"], 2, "only the real master and its copy: {r}");
     assert!(s.catalog.photos().all(|p| !matches!(&p.source, Source::File { path } if path.ends_with(".exe"))), "the program was catalogued");
     let warnings = r["warnings"].to_string();
-    assert!(warnings.contains("payload.exe") && warnings.contains("file types LightCraft reads"), "{warnings}");
+    assert!(warnings.contains("payload.exe") && warnings.contains("file types Luz reads"), "{warnings}");
     assert!(warnings.contains("image 4: not imported"), "the virtual copy of the refused original goes with it: {warnings}");
 }
 
@@ -188,8 +188,8 @@ fn a_content_duplicate_of_a_trashed_photo_or_virtual_copy_is_a_new_live_photo() 
             d.light.shadows = 77.0;
             p.develop = std::sync::Arc::new(d);
             p.edited = Some("earlier".into());
-            p.history.push(lightcraft_catalog::HistoryStep { label: "Other photo's edit".into(), settings: p.develop.clone() });
-            p.versions.push(lightcraft_catalog::Version {
+            p.history.push(luz_catalog::HistoryStep { label: "Other photo's edit".into(), settings: p.develop.clone() });
+            p.versions.push(luz_catalog::Version {
                 name: "Other photo's version".into(),
                 created: "before".into(),
                 settings: p.develop.clone(),
@@ -212,7 +212,7 @@ fn a_content_duplicate_of_a_trashed_photo_or_virtual_copy_is_a_new_live_photo() 
                 existing_deleted: case == "trashed",
                 // what the file itself carries
                 file: Some(Box::new(crate::import::FileFacts {
-                    meta: lightcraft_catalog::Meta { camera: "Same Camera".into(), ..Default::default() },
+                    meta: luz_catalog::Meta { camera: "Same Camera".into(), ..Default::default() },
                     captured: None,
                 })),
             }],
@@ -261,9 +261,9 @@ fn a_content_duplicate_raw_starts_from_its_camera_defaults() {
     let other = library_photo(&mut s, "/elsewhere/a.DNG", |p| {
         p.deleted = true;
         p.format = "DNG".into();
-        p.kind = lightcraft_catalog::MediaKind::Raw;
+        p.kind = luz_catalog::MediaKind::Raw;
         p.as_shot_wb = Some((5200.0, 4.0));
-        p.embedded_lens = Some(lightcraft_develop::EmbeddedLens::default());
+        p.embedded_lens = Some(luz_develop::EmbeddedLens::default());
     });
     let mut data = sample();
     data.photos.retain(|p| number(&p.image, "masterImage") == 0);
@@ -304,7 +304,7 @@ fn a_content_duplicate_raw_starts_from_its_camera_defaults() {
 /// them; it reads the file's, not the other photo's, which a person may have edited (#2589).
 #[test]
 fn a_content_duplicate_keeps_the_rights_metadata_and_capture_time_in_its_file() {
-    let dir = std::env::temp_dir().join(format!("lightcraft-lrcat-duplicate-rights-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("luz-lrcat-duplicate-rights-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(dir.join("Photos")).unwrap();
     let source = dir.join("source.lrcat");
@@ -319,10 +319,10 @@ fn a_content_duplicate_keeps_the_rights_metadata_and_capture_time_in_its_file() 
         p.meta.gps = Some((1.0, 2.0));
         p.captured = Some("1999-12-31T23:00:00".into());
     });
-    let file_meta = lightcraft_catalog::Meta {
+    let file_meta = luz_catalog::Meta {
         camera: "Same Camera".into(),
         copyright: "© Jo Example".into(),
-        copyright_status: lightcraft_catalog::CopyrightStatus::Copyrighted,
+        copyright_status: luz_catalog::CopyrightStatus::Copyrighted,
         usage_terms: "No reuse".into(),
         creator: "Jo Example".into(),
         ..Default::default()
@@ -411,10 +411,10 @@ fn a_reimport_counts_each_trashed_match_once() {
 fn warnings_naming(r: &Value, album: &str) -> Vec<String> {
     r["warnings"].as_array().unwrap().iter().filter_map(Value::as_str).filter(|w| w.starts_with(&format!("{album}:"))).map(String::from).collect()
 }
-fn album_named<'a>(s: &'a crate::Session, name: &str) -> &'a lightcraft_catalog::Album {
+fn album_named<'a>(s: &'a crate::Session, name: &str) -> &'a luz_catalog::Album {
     s.catalog.albums().find(|a| a.name == name).unwrap_or_else(|| panic!("no album {name}"))
 }
-/// A LightCraft album nests only in a folder. A collection Lightroom keeps inside a plain collection used to fail the
+/// A Luz album nests only in a folder. A collection Lightroom keeps inside a plain collection used to fail the
 /// whole batch with "parent must be an existing folder", taking every album with it (#2165, #2532).
 #[test]
 fn a_collection_inside_a_plain_collection_joins_the_set_above_it() {
@@ -583,7 +583,7 @@ fn sets_nested_under_a_plain_collection_keep_their_own_nesting() {
 #[test]
 fn an_exhausted_album_counter_stops_the_import_naming_the_collection() {
     let mut s = crate::Session::new();
-    s.commit("New Album", Op::AddAlbum { album: Album::new(lightcraft_catalog::AlbumId(u64::MAX - 1), "Last") }).unwrap();
+    s.commit("New Album", Op::AddAlbum { album: Album::new(luz_catalog::AlbumId(u64::MAX - 1), "Last") }).unwrap();
     let err = apply(&mut s, sample(), false).unwrap_err().to_string();
     assert!(err.contains("“Keepers”") && err.contains("no unused album id"), "{err}");
     assert_eq!(s.catalog.albums().count(), 1);
@@ -662,7 +662,7 @@ fn preserves_existing_edits_and_rejects_invalid_structure_before_mutation() {
     let data = sample();
     apply(&mut s, data.clone(), false).unwrap();
     let id = s.catalog.photos().find(|p| p.copy_of.is_none()).unwrap().id;
-    s.set_develop(id, lightcraft_develop::DevelopSettings::default(), "Personal edit").unwrap();
+    s.set_develop(id, luz_develop::DevelopSettings::default(), "Personal edit").unwrap();
     let r = apply(&mut s, data.clone(), false).unwrap();
     assert!(r["preservedExistingEdits"].as_u64().unwrap() > 0);
     assert_eq!(s.catalog.photo(id).unwrap().develop.light.exposure, 0.0);
@@ -740,7 +740,7 @@ fn catalog_crops_without_has_crop_are_imported() {
     assert_eq!(crop["rect"]["y1"], 1.0);
     assert_eq!(crop["angle"], 0.0);
     assert!(!unknown.iter().any(|k| k.starts_with("CropLeft")), "{unknown:?}");
-    // an angle alone still means a crop (Lightroom's angle turns the other way to LightCraft's)
+    // an angle alone still means a crop (Lightroom's angle turns the other way to Luz's)
     let (partial, unknown) =
         mapped_settings("s = { CropAngle = -1.5 }", crate::crs::Target::RawAbsolute, 1.5, Orientation::Normal, 1.5, Orientation::Normal).unwrap();
     assert_eq!(partial["crop"]["geometry"]["angle"], 1.5);
@@ -868,7 +868,7 @@ fn inverted_radial_mask_keeps_its_inversion_on_import() {
     assert!(c["invert"].as_bool().unwrap_or(false) || shape["invert"].as_bool().unwrap_or(false), "{c}");
 }
 
-/// The `crs` corners and angle Lightroom would store for LightCraft crop `g` on a stored image
+/// The `crs` corners and angle Lightroom would store for Luz crop `g` on a stored image
 /// of aspect `w` (height 1) shown with orientation `o`.
 fn lightroom_crop(g: CropGeometry, o: Orientation, w: f64) -> String {
     let (ow, oh) = if o.swaps_axes() { (1.0, w) } else { (w, 1.0) };
@@ -988,7 +988,7 @@ fn catalog_xmp_masks_follow_the_photo_orientation() {
 }
 
 /// A photo already in the library keeps its Rotate Left / Right on update, so the catalog's masks
-/// go through it too: an upright (`AB`) photo turned right in LightCraft gets its gradient turned.
+/// go through it too: an upright (`AB`) photo turned right in Luz gets its gradient turned.
 #[test]
 fn updated_masks_follow_the_rotation_kept_from_the_library() {
     let mut data = sample();
@@ -1003,7 +1003,7 @@ fn updated_masks_follow_the_rotation_kept_from_the_library() {
     let mut s = crate::Session::new();
     apply(&mut s, data.clone(), false).unwrap();
     let id = s.catalog.photos().next().unwrap().id;
-    let turned = lightcraft_develop::DevelopSettings { orientation: Orientation::Rotate90, ..Default::default() };
+    let turned = luz_develop::DevelopSettings { orientation: Orientation::Rotate90, ..Default::default() };
     s.set_develop(id, turned, "Rotate Right").unwrap();
     apply(&mut s, data, true).unwrap();
     let p = s.catalog.photo(id).unwrap();
@@ -1126,7 +1126,7 @@ fn albums(s: &crate::Session) -> usize {
 /// The zip imports the same photos and collections as its catalog, with the zip as source, no temp files and the zip unchanged.
 #[test]
 fn a_backup_zip_imports_like_its_catalog_and_leaves_no_temporary_files() {
-    let root = std::env::temp_dir().join(format!("lightcraft-lrbackup-zip-{}", std::process::id()));
+    let root = std::env::temp_dir().join(format!("luz-lrbackup-zip-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&root);
     let (live, zip) = backup_fixture(&root, "968AF29B-EEE2-481E-8AF9-55DD82965F49");
     let zip_before = std::fs::read(&zip).unwrap();
@@ -1154,7 +1154,7 @@ fn a_backup_zip_imports_like_its_catalog_and_leaves_no_temporary_files() {
 /// Issue #2606: the backup of an imported catalog matches its collections by the catalog id.
 #[test]
 fn importing_a_backup_after_its_catalog_adds_no_album_twice() {
-    let root = std::env::temp_dir().join(format!("lightcraft-lrbackup-twice-{}", std::process::id()));
+    let root = std::env::temp_dir().join(format!("luz-lrbackup-twice-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&root);
     let (live, zip) = backup_fixture(&root, "968AF29B-EEE2-481E-8AF9-55DD82965F49");
     let mut s = crate::Session::new();
@@ -1171,7 +1171,7 @@ fn importing_a_backup_after_its_catalog_adds_no_album_twice() {
 /// `.lrcat` path, no catalog id) finds those albums through the path it was backed up from.
 #[test]
 fn a_backup_finds_collections_an_earlier_release_keyed_on_the_live_catalog_path() {
-    let root = std::env::temp_dir().join(format!("lightcraft-lrbackup-legacy-{}", std::process::id()));
+    let root = std::env::temp_dir().join(format!("luz-lrbackup-legacy-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&root);
     let (live, zip) = backup_fixture(&root, "968AF29B-EEE2-481E-8AF9-55DD82965F49");
     let mut s = crate::Session::new();
@@ -1192,7 +1192,7 @@ fn a_backup_finds_collections_an_earlier_release_keyed_on_the_live_catalog_path(
 /// catalog (no id either) finds the same albums through the live path the backup recorded.
 #[test]
 fn the_live_catalog_after_a_backup_without_an_id_adds_no_album_twice() {
-    let root = std::env::temp_dir().join(format!("lightcraft-lrbackup-noid-{}", std::process::id()));
+    let root = std::env::temp_dir().join(format!("luz-lrbackup-noid-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&root);
     let (live, zip) = backup_fixture(&root, "968AF29B-EEE2-481E-8AF9-55DD82965F49");
     let mut s = crate::Session::new();
@@ -1212,7 +1212,7 @@ fn the_live_catalog_after_a_backup_without_an_id_adds_no_album_twice() {
 /// without one, is rejected rather than risk matching a different catalog at the same path.
 #[test]
 fn the_live_catalog_without_an_id_after_a_backup_with_one_adds_no_album_twice() {
-    let root = std::env::temp_dir().join(format!("lightcraft-lrbackup-idthennone-{}", std::process::id()));
+    let root = std::env::temp_dir().join(format!("luz-lrbackup-idthennone-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&root);
     let (live, zip) = backup_fixture(&root, "968AF29B-EEE2-481E-8AF9-55DD82965F49");
     let mut s = crate::Session::new();
@@ -1231,7 +1231,7 @@ fn the_live_catalog_without_an_id_after_a_backup_with_one_adds_no_album_twice() 
 /// same collection `id_local`.
 #[test]
 fn two_catalogs_at_the_same_path_keep_their_own_albums() {
-    let root = std::env::temp_dir().join(format!("lightcraft-lrcat-samepath-{}", std::process::id()));
+    let root = std::env::temp_dir().join(format!("luz-lrcat-samepath-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&root);
     let (live, _) = backup_fixture(&root, "AAAAAAAA-0000-0000-0000-000000000001");
     let mut s = crate::Session::new();
@@ -1248,7 +1248,7 @@ fn two_catalogs_at_the_same_path_keep_their_own_albums() {
 /// Libraries imported by earlier releases (path keys) still find their albums.
 #[test]
 fn collections_imported_before_the_catalog_id_was_read_are_still_matched_by_path() {
-    let dir = std::env::temp_dir().join(format!("lightcraft-lrcat-pathkey-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("luz-lrcat-pathkey-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dir);
     let mut s = crate::Session::new();
     s.open_library(&dir, false).unwrap();
@@ -1264,7 +1264,7 @@ fn collections_imported_before_the_catalog_id_was_read_are_still_matched_by_path
 
 #[test]
 fn persistent_reimport_keeps_copy_and_collection_ids_and_capture_time() {
-    let dir = std::env::temp_dir().join(format!("lightcraft-lrcat-reimport-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("luz-lrcat-reimport-{}", std::process::id()));
     let mut s = crate::Session::new();
     s.open_library(&dir, false).unwrap();
     let mut data = sample();
@@ -1397,7 +1397,7 @@ fn photo_tables(root: (&str, &str)) -> Vec<(&'static str, &'static str, Vec<SqlV
 
 #[test]
 fn native_video_import_is_visible_in_video_filter() {
-    let dir = std::env::temp_dir().join(format!("lightcraft-lrcat-video-filter-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("luz-lrcat-video-filter-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
     let path = dir.join("videos.lrcat");
     let mut tables = photo_tables((dir.to_str().unwrap(), ""));
@@ -1407,7 +1407,7 @@ fn native_video_import_is_visible_in_video_filter() {
     let mut s = crate::Session::new();
     let imported = s.execute("library.importLightroom", &json!({"path": path})).unwrap();
     let id = PhotoId(imported["mapping"]["1"].as_u64().unwrap());
-    assert_eq!(s.catalog.photo(id).unwrap().kind, lightcraft_catalog::MediaKind::Video);
+    assert_eq!(s.catalog.photo(id).unwrap().kind, luz_catalog::MediaKind::Video);
     s.execute("library.filter", &json!({"kind": "video"})).unwrap();
     assert_eq!(s.visible(), &[id]);
     s.execute("library.filter", &json!({"kind": "image"})).unwrap();
@@ -1422,7 +1422,7 @@ fn native_video_import_is_visible_in_video_filter() {
 
 #[test]
 fn native_video_reimport_repairs_kind_without_losing_edits_or_memberships() {
-    let dir = std::env::temp_dir().join(format!("lightcraft-lrcat-video-reimport-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("luz-lrcat-video-reimport-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
     let path = dir.join("videos.lrcat");
     let mut tables = photo_tables((dir.to_str().unwrap(), ""));
@@ -1438,7 +1438,7 @@ fn native_video_reimport_repairs_kind_without_losing_edits_or_memberships() {
     photo.file_size = 1234;
     photo.content_hash = Some("existing-content".into());
     s.commit("Previous import", Op::AddPhoto { photo: Box::new(photo) }).unwrap();
-    let mut settings = lightcraft_develop::DevelopSettings::default();
+    let mut settings = luz_develop::DevelopSettings::default();
     settings.light.exposure = 0.75;
     s.set_develop(id, settings, "Personal edit").unwrap();
     let peer_id = s.catalog.alloc_photo_id();
@@ -1447,11 +1447,11 @@ fn native_video_reimport_repairs_kind_without_losing_edits_or_memberships() {
     let mut album = Album::new(s.catalog.alloc_album_id(), "Personal album");
     album.photos = vec![id, peer_id];
     s.commit("Album", Op::AddAlbum { album: album.clone() }).unwrap();
-    let stack = lightcraft_catalog::Stack { id: s.catalog.alloc_stack_id(), photos: vec![id, peer_id], collapsed: false };
+    let stack = luz_catalog::Stack { id: s.catalog.alloc_stack_id(), photos: vec![id, peer_id], collapsed: false };
     s.commit("Stack", Op::AddStack { stack: stack.clone() }).unwrap();
     let before = s.catalog.to_snapshot();
     let mut expected = (**s.catalog.photo(id).unwrap()).clone();
-    expected.kind = lightcraft_catalog::MediaKind::Video;
+    expected.kind = luz_catalog::MediaKind::Video;
     s.execute("library.filter", &json!({"kind": "video"})).unwrap();
     assert!(s.visible().is_empty());
     let result = s.execute("library.importLightroom", &json!({"path": path})).unwrap();
@@ -1475,7 +1475,7 @@ fn native_video_reimport_repairs_kind_without_losing_edits_or_memberships() {
 #[test]
 fn reads_native_sqlite_tables_without_lightroom_or_external_processes() {
     let bytes = native_catalog(&photo_tables(("/catalog/", "")));
-    let path = std::env::temp_dir().join(format!("lightcraft-native-catalog-{}.lrcat", std::process::id()));
+    let path = std::env::temp_dir().join(format!("luz-native-catalog-{}.lrcat", std::process::id()));
     std::fs::write(&path, &bytes).unwrap();
     let catalog = read(&path).unwrap();
     assert_eq!(catalog.photos.len(), 1);
@@ -1512,7 +1512,7 @@ fn reads_native_sqlite_tables_without_lightroom_or_external_processes() {
 
 /// Reads `tables` as a catalog file and returns what the reader made of it.
 fn read_tables(tables: &[(&str, &str, Vec<Vec<SqlValue>>)], name: &str) -> CatalogImport {
-    let path = std::env::temp_dir().join(format!("lightcraft-{name}-{}.lrcat", std::process::id()));
+    let path = std::env::temp_dir().join(format!("luz-{name}-{}.lrcat", std::process::id()));
     std::fs::write(&path, native_catalog_rows(tables, None)).unwrap();
     let catalog = read(&path).unwrap();
     std::fs::remove_file(path).unwrap();
@@ -1582,7 +1582,7 @@ fn skipped_images_are_in_the_import_report() {
 
 #[test]
 fn preparation_skips_missing_original_probes_but_keeps_catalog_records() {
-    let dir = std::env::temp_dir().join(format!("lightcraft-lrcat-offline-probes-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("luz-lrcat-offline-probes-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
     let source = dir.join("source.lrcat");
     let root = dir.join("offline");
@@ -1612,7 +1612,7 @@ fn preparation_skips_missing_original_probes_but_keeps_catalog_records() {
 
 #[test]
 fn probed_original_is_counted_once_and_reimport_adds_nothing() {
-    let dir = std::env::temp_dir().join(format!("lightcraft-lrcat-present-probes-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("luz-lrcat-present-probes-{}", std::process::id()));
     std::fs::create_dir_all(dir.join("Photos")).unwrap();
     let source = dir.join("source.lrcat");
     std::fs::write(dir.join("Photos/test.ARW"), b"original").unwrap();
@@ -1639,7 +1639,7 @@ fn probed_original_is_counted_once_and_reimport_adds_nothing() {
 
 #[test]
 fn a_root_missing_here_is_found_relative_to_the_catalog() {
-    let dir = std::env::temp_dir().join(format!("lightcraft-relocated-catalog-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("luz-relocated-catalog-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(dir.join("Lightroom")).unwrap();
     std::fs::create_dir_all(dir.join("RAW")).unwrap();
@@ -1658,7 +1658,7 @@ fn a_root_missing_here_is_found_relative_to_the_catalog() {
 
 #[test]
 fn originals_on_other_computers_are_never_looked_at_or_added() {
-    let dir = std::env::temp_dir().join(format!("lightcraft-lrcat-remote-roots-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("luz-lrcat-remote-roots-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(dir.join("Photos")).unwrap();
     std::fs::write(dir.join("Photos/test.ARW"), b"original").unwrap();

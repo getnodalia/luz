@@ -34,10 +34,10 @@ jobs:
       # manifests and the lockfile (a dependency bump can break only Windows).
       paths: |
         .github/workflows/ci-windows.yml
-        apps/lightcraft/*
-        apps/lightcraft-cli/src/bench_cull.rs
-        apps/lightcraft-cli/tests/it/cli.rs
-        apps/lightcraft-cli/Cargo.toml
+        apps/luz/*
+        apps/luz-cli/src/bench_cull.rs
+        apps/luz-cli/tests/it/cli.rs
+        apps/luz-cli/Cargo.toml
         crates/wincolor/*
         crates/ui-egui/src/theme.rs
         crates/ui-egui/src/panels/left/local.rs
@@ -73,6 +73,6 @@ jobs:
       tools: ""
       timeout-minutes: 90
       windows-command: |
-        pkgs=(-p lightcraft-wincolor -p lightcraft-catalog -p lightcraft-engine -p lightcraft-ui-egui -p lightcraft -p lightcraft-cli)
+        pkgs=(-p luz-wincolor -p luz-catalog -p luz-engine -p luz-ui-egui -p luz -p luz-cli)
         cargo clippy "${pkgs[@]}" --all-targets --keep-going -- -D warnings
         cargo test "${pkgs[@]}" --lib --bins --tests --no-fail-fast

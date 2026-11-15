@@ -2,21 +2,21 @@
 //! xtask/src/main.rs; downloaded into the gitignored corpus/raw by `cargo xtask corpus --download`).
 //!
 //! No external decoder was run on these: the FNV-1a hashes over the decoded u16 samples (row-major,
-//! little-endian, masked borders included) pin LightCraft's own decode, and the check against the camera is
+//! little-endian, masked borders included) pin Luz's own decode, and the check against the camera is
 //! black-box: the green sites of the active area, on a 24 × 16 grid, must follow the camera's own embedded
 //! JPEG (gamma-encoded Pearson r; 0.70–1.00 on these files, a misread layout or stream gives r near 0). The E-10 is
 //! pinned only (its small JPEG gives r 0.59); its render was inspected by eye.
 //! Missing files are reported as skipped.
 
-use lightcraft_raw::{RawData, RawError, RawFormat, decode, embedded_preview, probe, probe_info};
+use luz_raw::{RawData, RawError, RawFormat, decode, embedded_preview, probe, probe_info};
 use std::path::{Path, PathBuf};
 
 fn corpus() -> PathBuf {
-    std::env::var_os("LIGHTCRAFT_CORPUS").map(PathBuf::from).unwrap_or_else(|| Path::new(env!("CARGO_MANIFEST_DIR")).join("../../corpus"))
+    std::env::var_os("LUZ_CORPUS").map(PathBuf::from).unwrap_or_else(|| Path::new(env!("CARGO_MANIFEST_DIR")).join("../../corpus"))
 }
 
 /// Green of the decoded mosaic against the camera's embedded JPEG on a `gw × gh` grid of the active area.
-fn green_vs_camera_jpeg(raw: &lightcraft_raw::RawImage, jpeg: &[u8], gw: usize, gh: usize) -> f64 {
+fn green_vs_camera_jpeg(raw: &luz_raw::RawImage, jpeg: &[u8], gw: usize, gh: usize) -> f64 {
     use zune_core::{bytestream::ZCursor, colorspace::ColorSpace, options::DecoderOptions};
     let opts = DecoderOptions::default().jpeg_set_out_colorspace(ColorSpace::RGB);
     let mut d = zune_jpeg::JpegDecoder::new_with_options(ZCursor::new(jpeg), opts);
@@ -120,7 +120,7 @@ fn compressed_olympus_bodies_are_unsupported_with_embedded_previews() {
     for name in ["orf-olympus-em1.orf", "orf-olympus-em10iii.orf"] {
         let path = corpus().join("raw").join(name);
         let Ok(bytes) = std::fs::read(&path) else {
-            lightcraft_testkit::skip!(Corpus, "{} absent", path.display());
+            luz_testkit::skip!(Corpus, "{} absent", path.display());
             continue;
         };
         assert_eq!(probe(&bytes), Some(RawFormat::Orf), "{name}");

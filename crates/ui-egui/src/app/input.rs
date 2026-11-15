@@ -1,6 +1,6 @@
-use super::{GESTURE_TIMEOUT_MS, InjectedDrop, InjectedPress, LightcraftApp, drop_overlay, import, panels};
+use super::{GESTURE_TIMEOUT_MS, InjectedDrop, InjectedPress, LuzApp, drop_overlay, import, panels};
 
-impl LightcraftApp {
+impl LuzApp {
     /// Preserve the currently queued handles while a prompt or blocking library window owns
     /// drops. Hosts call this in their UI phase even if the app is not ready to draw yet.
     pub fn defer_dropped_files(&mut self) {

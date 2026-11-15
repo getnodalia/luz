@@ -7,14 +7,14 @@ use egui::ViewportCommand;
 use serde_json::json;
 
 use crate::headless::Headless;
-use crate::{LightcraftApp, Services};
+use crate::{LuzApp, Services};
 
 const T: Duration = Duration::from_secs(20);
 
-/// Given LightCraft with the integrated title bar (macOS) in a 1200×800 window.
+/// Given Luz with the integrated title bar (macOS) in a 1200×800 window.
 fn integrated() -> Headless {
     let services = Services { png: None, ..Default::default() };
-    let mut app = LightcraftApp::new(lightcraft_engine::Session::with_demo(), services);
+    let mut app = LuzApp::new(luz_engine::Session::with_demo(), services);
     app.integrated_titlebar = true;
     let mut h = Headless::new(app, [1200.0, 800.0], 1.0);
     h.settle(Duration::from_secs(120));
@@ -122,7 +122,7 @@ fn dragging_within_search_does_not_move_the_window() {
 #[test]
 fn without_the_integrated_title_bar_the_bar_is_not_a_window_handle() {
     let services = Services { png: None, ..Default::default() };
-    let app = LightcraftApp::new(lightcraft_engine::Session::with_demo(), services);
+    let app = LuzApp::new(luz_engine::Session::with_demo(), services);
     let mut h = Headless::new(app, [1200.0, 800.0], 1.0);
     h.settle(Duration::from_secs(120));
     assert!(!h.app.integrated_titlebar);
@@ -225,7 +225,7 @@ fn a_dialog_leaves_the_integrated_title_bar_undimmed() {
 #[test]
 fn a_dialog_dims_the_top_bar_without_the_integrated_title_bar() {
     let services = Services { png: None, ..Default::default() };
-    let app = LightcraftApp::new(lightcraft_engine::Session::with_demo(), services);
+    let app = LuzApp::new(luz_engine::Session::with_demo(), services);
     let mut h = Headless::new(app, [1200.0, 800.0], 1.0);
     h.settle(Duration::from_secs(120));
     let spot = egui::pos2(20.0, 20.0);

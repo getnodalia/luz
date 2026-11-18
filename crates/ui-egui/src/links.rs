@@ -9,10 +9,10 @@ pub const APP_PAGE: &str = "https://getnodalia.com/luz";
 /// This app's source repository.
 pub const GITHUB: &str = "https://github.com/getnodalia/luz";
 
-/// (UI command id, menu label, URL) for each link, in Help-menu order.
 /// The user documentation (docs/ in the repository).
 pub const HELP: &str = "https://github.com/getnodalia/luz/tree/main/docs";
 
+/// (UI command id, menu label, URL) for each link, in Help-menu order.
 pub const LINKS: &[(&str, &str, &str)] = &[
     ("app.help", "Luz Help", HELP),
     ("app.website", "Luz Website", APP_PAGE),
@@ -47,7 +47,7 @@ mod tests {
             assert!(!label.is_empty());
             assert_eq!(url_of(id), Some(*url));
         }
-        assert!(APP_PAGE.ends_with(&format!("/apps/{APP}")));
-        assert!(GITHUB.ends_with(&format!("/storytold/{APP}")));
+        assert_eq!(APP_PAGE, format!("{WEBSITE}/{APP}"));
+        assert!(GITHUB.ends_with(&format!("/getnodalia/{APP}")));
     }
 }

@@ -3536,12 +3536,70 @@ dependencies = [
 ]
 
 [[package]]
+name = "linebender_resource_handle"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d4a5ff6bcca6c4867b1c4fd4ef63e4db7436ef363e0ad7531d1558856bae64f4"
+
+[[package]]
+name = "linux-raw-sys"
+version = "0.4.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d26c52dbd32dccf2d10cac7725f8eae5296885fb5703b261f7d0a0739ec807ab"
+
+[[package]]
+name = "linux-raw-sys"
+version = "0.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "32a66949e030da00e8c7d4434b251670a91556f4144941d37452769c25d58a53"
+
+[[package]]
+name = "litemap"
+version = "0.8.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "47d9d19d1d6efa0109d2f65ff4c85cddd50bd572e5a00127ab10987290bcefae"
+dependencies = [
+ "serde_core",
+]
+
+[[package]]
+name = "litrs"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "11d3d7f243d5c5a8b9bb5d6dd2b1602c0cb0b9db1621bafc7ed66e35ff9fe092"
+
+[[package]]
+name = "lock_api"
+version = "0.4.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "224399e74b87b5f3557511d98dff8b14089b3dadafcab6bb93eab67d3aace965"
+dependencies = [
+ "scopeguard",
+]
+
+[[package]]
+name = "log"
+version = "0.4.34"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f9f8bd3e56ce4dfc153cf470fffbfa98c7620958b312ca5c3a4b8d5181fd13c6"
+
+[[package]]
+name = "loop9"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0fae87c125b03c1d2c0150c90365d7d6bcc53fb73a9acaef207d2d065860f062"
+dependencies = [
+ "imgref",
+]
+
+[[package]]
 name = "luz"
 version = "0.18.0"
 dependencies = [
  "chrono",
  "eframe",
  "egui",
+ "log",
  "luz-codecs",
  "luz-engine",
  "luz-raster",
@@ -3549,7 +3607,6 @@ dependencies = [
  "luz-testkit",
  "luz-ui-egui",
  "luz-wincolor",
- "log",
  "muda",
  "objc2 0.6.5",
  "objc2-app-kit 0.3.2",
@@ -3570,12 +3627,12 @@ dependencies = [
  "chrono",
  "crc32fast",
  "dhat",
+ "log",
  "luz-develop",
  "luz-geom",
  "luz-meta",
  "luz-raw",
  "luz-testkit",
- "log",
  "proptest",
  "serde",
  "serde_json",
@@ -3698,6 +3755,7 @@ dependencies = [
  "harfrust 0.13.3",
  "jxl-oxide",
  "libc",
+ "log",
  "luz-catalog",
  "luz-codecs",
  "luz-color",
@@ -3722,7 +3780,6 @@ dependencies = [
  "luz-slideshow",
  "luz-testkit",
  "luz-tiff",
- "log",
  "miniz_oxide 0.9.1",
  "rayon",
  "serde",
@@ -3787,6 +3844,7 @@ name = "luz-gpu"
 version = "0.18.0"
 dependencies = [
  "bytemuck",
+ "log",
  "luz-color",
  "luz-denoise",
  "luz-develop",
@@ -3797,7 +3855,6 @@ dependencies = [
  "luz-raw",
  "luz-scenes",
  "luz-testkit",
- "log",
  "pollster 1.0.1",
  "wgpu",
 ]
@@ -3830,10 +3887,10 @@ dependencies = [
 name = "luz-mcp"
 version = "0.18.0"
 dependencies = [
+ "log",
  "luz-codecs",
  "luz-engine",
  "luz-raster",
- "log",
  "serde_json",
 ]
 
@@ -3891,8 +3948,8 @@ name = "luz-preview"
 version = "0.18.0"
 dependencies = [
  "jpeg-encoder",
- "luz-raster",
  "log",
+ "luz-raster",
  "siphasher",
  "zune-core",
  "zune-jpeg",
@@ -3953,9 +4010,9 @@ version = "0.18.0"
 dependencies = [
  "candle-core",
  "candle-nn",
+ "log",
  "luz-fetch",
  "luz-testkit",
- "log",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
@@ -3996,6 +4053,7 @@ dependencies = [
  "egui",
  "egui_extras",
  "egui_kittest",
+ "log",
  "luz-catalog",
  "luz-codecs",
  "luz-color",
@@ -4011,7 +4069,6 @@ dependencies = [
  "luz-raster",
  "luz-slideshow",
  "luz-testkit",
- "log",
  "nodalia-update",
  "pollster 1.0.1",
  "serde",
@@ -4028,6 +4085,7 @@ dependencies = [
  "eframe",
  "egui",
  "js-sys",
+ "log",
  "luz-codecs",
  "luz-color",
  "luz-engine",
@@ -4035,7 +4093,6 @@ dependencies = [
  "luz-raster",
  "luz-raw",
  "luz-ui-egui",
- "log",
  "serde",
  "serde_json",
  "wasm-bindgen",
@@ -4049,63 +4106,6 @@ version = "0.18.0"
 dependencies = [
  "luz-testkit",
  "windows-sys 0.61.2",
-]
-
-[[package]]
-name = "linebender_resource_handle"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d4a5ff6bcca6c4867b1c4fd4ef63e4db7436ef363e0ad7531d1558856bae64f4"
-
-[[package]]
-name = "linux-raw-sys"
-version = "0.4.15"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d26c52dbd32dccf2d10cac7725f8eae5296885fb5703b261f7d0a0739ec807ab"
-
-[[package]]
-name = "linux-raw-sys"
-version = "0.12.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "32a66949e030da00e8c7d4434b251670a91556f4144941d37452769c25d58a53"
-
-[[package]]
-name = "litemap"
-version = "0.8.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "47d9d19d1d6efa0109d2f65ff4c85cddd50bd572e5a00127ab10987290bcefae"
-dependencies = [
- "serde_core",
-]
-
-[[package]]
-name = "litrs"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "11d3d7f243d5c5a8b9bb5d6dd2b1602c0cb0b9db1621bafc7ed66e35ff9fe092"
-
-[[package]]
-name = "lock_api"
-version = "0.4.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "224399e74b87b5f3557511d98dff8b14089b3dadafcab6bb93eab67d3aace965"
-dependencies = [
- "scopeguard",
-]
-
-[[package]]
-name = "log"
-version = "0.4.34"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f9f8bd3e56ce4dfc153cf470fffbfa98c7620958b312ca5c3a4b8d5181fd13c6"
-
-[[package]]
-name = "loop9"
-version = "0.1.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0fae87c125b03c1d2c0150c90365d7d6bcc53fb73a9acaef207d2d065860f062"
-dependencies = [
- "imgref",
 ]
 
 [[package]]

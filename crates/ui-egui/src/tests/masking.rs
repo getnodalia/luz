@@ -665,7 +665,7 @@ fn remove_spots_by_pointer_and_keyboard() {
     let (sx, sy) = (sp.points[0].x + o.x, sp.points[0].y + o.y);
     pointer(
         &mut h,
-        json!([{"kind": "down", "x": sx, "y": sy}, {"kind": "drag", "x": sx + 0.01, "y": sy}, {"kind": "drag", "x": 0.5, "y": 0.8}, {"kind": "up", "x": 0.5, "y": 0.8}]),
+        json!([{"kind": "down", "x": sx, "y": sy}, {"kind": "drag", "x": sx + 0.03, "y": sy}, {"kind": "drag", "x": 0.5, "y": 0.8}, {"kind": "up", "x": 0.5, "y": 0.8}]),
     );
     let sp = spots(&h)[0].clone();
     let o = sp.source_offset.unwrap();

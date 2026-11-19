@@ -10,6 +10,7 @@ description = "Luz egui frontend (Lightroom-style UI); swappable — nothing bel
 workspace = true
 
 [dependencies]
+nodalia-theme = { workspace = true, features = ["creator"] }
 craft-ui = { workspace = true }
 craft-window = { workspace = true }
 luz-geom = { workspace = true }

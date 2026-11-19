@@ -355,6 +355,8 @@ pub fn show(app: &mut crate::LuzApp, ui: &mut egui::Ui) {
     cancel_replaced_gesture(app, Some(&workspace));
     // Tool/Canvas callbacks dispatch app commands and must see the real workspace.
     app.ui.docking = Some(workspace.clone());
+    let area = ui.max_rect();
+    let mut bodies: Vec<(egui::Rect, egui::LayerId)> = Vec::new();
     let mut style = DockStyle::from_ui(ui);
     style.min_pane = 96.0;
     // Free docking: a panel dropped at an empty window edge makes a dock, and the photo takes
@@ -383,9 +385,12 @@ pub fn show(app: &mut crate::LuzApp, ui: &mut egui::Ui) {
     style.move_window_label = crate::i18n::tr("Move panel window").into();
     style.close_window_label = crate::i18n::tr("Close panel window").into();
     style.float_hint_label = crate::i18n::tr("Hold {key} to undock").into();
+    // Nodalia's islands: each docked group sits apart from the next on the window colour
+    style.gap = crate::theme::ISLAND_GAP;
     style.background = t.chrome;
     style.tab_background = t.chrome;
-    style.active_background = t.canvas;
+    style.floating_background = t.chrome;
+    style.active_background = t.chrome;
     style.text = t.text;
     style.inactive_text = t.text_dim;
     style.border = egui::Stroke::new(1.0, t.divider);
@@ -400,25 +405,28 @@ pub fn show(app: &mut crate::LuzApp, ui: &mut egui::Ui) {
         |panel| crate::i18n::tr(panel.label()).into(),
         permissions,
         panel_limits,
-        |ui, panel| match panel {
-            Panel::Canvas => {
-                let child = ui.new_child(egui::UiBuilder::new().id_salt("photo-view").max_rect(ui.max_rect()));
-                crate::widgets::announce_region(&child, egui::accesskit::Role::Main, crate::i18n::tr(Panel::Canvas.label()));
-                canvas = Some(child);
-            }
-            Panel::Library => {
-                crate::widgets::announce_region(ui, egui::accesskit::Role::Navigation, crate::i18n::tr(Panel::Library.label()));
-                crate::widgets::register(ui, "panel:left_panel", ui.max_rect());
-                crate::panels::left::show(app, ui);
-            }
-            Panel::Tools => {
-                crate::widgets::announce_region(ui, egui::accesskit::Role::Complementary, crate::i18n::tr(Panel::Tools.label()));
-                crate::widgets::register(ui, "panel:right_panel", ui.max_rect());
-                crate::panels::right::show(app, ui);
-            }
-            Panel::Presets => {
-                crate::widgets::announce_region(ui, egui::accesskit::Role::Complementary, crate::i18n::tr(Panel::Presets.label()));
-                crate::panels::presets::show(app, ui);
+        |ui, panel| {
+            bodies.push((ui.max_rect(), ui.layer_id()));
+            match panel {
+                Panel::Canvas => {
+                    let child = ui.new_child(egui::UiBuilder::new().id_salt("photo-view").max_rect(ui.max_rect()));
+                    crate::widgets::announce_region(&child, egui::accesskit::Role::Main, crate::i18n::tr(Panel::Canvas.label()));
+                    canvas = Some(child);
+                }
+                Panel::Library => {
+                    crate::widgets::announce_region(ui, egui::accesskit::Role::Navigation, crate::i18n::tr(Panel::Library.label()));
+                    crate::widgets::register(ui, "panel:left_panel", ui.max_rect());
+                    crate::panels::left::show(app, ui);
+                }
+                Panel::Tools => {
+                    crate::widgets::announce_region(ui, egui::accesskit::Role::Complementary, crate::i18n::tr(Panel::Tools.label()));
+                    crate::widgets::register(ui, "panel:right_panel", ui.max_rect());
+                    crate::panels::right::show(app, ui);
+                }
+                Panel::Presets => {
+                    crate::widgets::announce_region(ui, egui::accesskit::Role::Complementary, crate::i18n::tr(Panel::Presets.label()));
+                    crate::panels::presets::show(app, ui);
+                }
             }
         },
     );
@@ -442,6 +450,17 @@ pub fn show(app: &mut crate::LuzApp, ui: &mut egui::Ui) {
             crate::state::ViewMode::Reference => crate::panels::compare::show_reference(app, ui),
             crate::state::ViewMode::People => crate::panels::people::show(app, ui),
         });
+    }
+    // Each docked group, its tab strip included, with rounded corners cut into the window colour
+    // round it. Floating windows keep their own frames.
+    let header = style.tab_height + style.column_bar_height + 2.0 * style.gap;
+    for (body, layer) in bodies {
+        if layer.order != ui.layer_id().order || !area.expand(1.0).contains_rect(body) {
+            continue;
+        }
+        let top = if body.top() - area.top() <= header { area.top() } else { body.top() - style.tab_height };
+        let group = egui::Rect::from_min_max(egui::pos2(body.left(), top), body.max);
+        crate::theme::round_island_corners(&ui.ctx().layer_painter(layer).with_clip_rect(area), &t, group);
     }
 
     let rendered = workspace;

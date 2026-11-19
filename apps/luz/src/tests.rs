@@ -8,6 +8,8 @@ fn desktop_clear_color_stays_opaque_with_a_modal_open() {
         None,
         #[cfg(target_os = "macos")]
         None,
+        #[cfg(target_os = "linux")]
+        None,
     );
     app.0.run("app.settings", serde_json::json!({})).unwrap();
     assert!(app.0.ui.dialog.is_some());
@@ -606,6 +608,8 @@ fn on_exit_ends_the_process_on_macos() {
             None,
             #[cfg(target_os = "macos")]
             None,
+            #[cfg(target_os = "linux")]
+            None,
         );
         println!("calling on_exit");
         eframe::App::on_exit(&mut app, None);
@@ -638,6 +642,8 @@ fn on_exit_removes_the_lock_owner_note() {
             PrefsWriter::default(),
             None,
             #[cfg(target_os = "macos")]
+            None,
+            #[cfg(target_os = "linux")]
             None,
         );
         eframe::App::on_exit(&mut app, None);

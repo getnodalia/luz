@@ -47,6 +47,7 @@ pub mod state;
 pub mod sync;
 pub mod tasks;
 pub mod theme;
+pub mod titlebar;
 pub mod widgets;
 pub mod window_place;
 
@@ -153,6 +154,11 @@ pub struct LuzApp {
     pub perf: Perf,
     /// macOS: the host draws the traffic lights over our top bar.
     pub integrated_titlebar: bool,
+    /// Linux with Nodalia's window controls: the window has no OS decorations, the top bar is its
+    /// title bar and draws the round controls (`crate::titlebar`).
+    pub custom_titlebar: bool,
+    /// The theme's window colour as of the last frame: the host clears the window with it.
+    pub window_fill: egui::Color32,
     /// The `movable` flag last given to the window (macOS, `craft_window::title_bar::sync_movable`).
     pub window_movable: Option<bool>,
     /// The host installed a native menu bar (no in-window menus then).

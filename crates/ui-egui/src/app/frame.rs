@@ -473,9 +473,17 @@ impl LuzApp {
         panels::topbar::show(self, ui);
         panels::library_problem::banner(self, ui);
         panels::strip::show(self, ui);
-        // filled: the gaps the dock leaves between its panes show chrome, not the dark clear colour
-        let chrome = theme::Tokens::get(&ctx).chrome;
-        egui::CentralPanel::default().frame(egui::Frame::NONE.fill(chrome)).show(ui, |ui| docking::show(self, ui));
+        // filled: the gaps the dock leaves between its islands show the window colour, not the
+        // clear colour; the dock keeps the window colour's margin round it as well
+        let window = theme::Tokens::get(&ctx).window;
+        self.window_fill = window;
+        let gap = theme::ISLAND_GAP as i8;
+        egui::CentralPanel::default()
+            .frame(egui::Frame::NONE.fill(window).inner_margin(egui::Margin { left: gap, right: 0, top: 0, bottom: gap }))
+            .show(ui, |ui| docking::show(self, ui));
+        if self.custom_titlebar {
+            crate::titlebar::resize_zones(ui);
+        }
         self.lights_out(&ctx);
         panels::second::show(self, &ctx);
         if notice_blocks {

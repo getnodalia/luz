@@ -34,6 +34,8 @@ impl LuzApp {
             perf: Perf::default(),
             caches: Caches::default(),
             integrated_titlebar: false,
+            custom_titlebar: false,
+            window_fill: crate::theme::Tokens::default().window,
             window_movable: None,
             native_menu: false,
             native_shortcuts: Default::default(),
@@ -160,6 +162,11 @@ impl LuzApp {
         // keep CPU copies of photo textures so `ui.screenshot {"headless": true}` can draw them
         self.renderer.keep_pixels = true;
         self
+    }
+
+    /// The colour round the islands, for the host's clear colour.
+    pub fn window_colour(&self) -> egui::Color32 {
+        self.window_fill
     }
 
     /// Seconds on the app's monotonic clock. Every timer that must advance while the window is

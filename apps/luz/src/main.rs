@@ -32,6 +32,8 @@ mod control_server;
 mod dialog_filter;
 mod editors;
 mod hdr_display;
+#[cfg(target_os = "linux")]
+mod linux_menu;
 mod logging;
 #[cfg(target_os = "macos")]
 mod native_menu;
@@ -83,7 +85,13 @@ fn app_icon() -> egui::IconData {
     eframe::icon_data::from_png_bytes(png).unwrap_or_default()
 }
 
-struct App(LuzApp, PrefsWriter, Option<WindowTextures>, #[cfg(target_os = "macos")] Option<native_menu::NativeMenu>);
+struct App(
+    LuzApp,
+    PrefsWriter,
+    Option<WindowTextures>,
+    #[cfg(target_os = "macos")] Option<native_menu::NativeMenu>,
+    #[cfg(target_os = "linux")] Option<linux_menu::GlobalMenu>,
+);
 
 /// Draws renders that stayed on the GPU: registers their textures with the window's egui-wgpu
 /// renderer (the GPU renderer runs on the window's device, see [`adopt_window_device`]).
@@ -146,10 +154,12 @@ fn adopt_window_device(rs: &eframe::egui_wgpu::RenderState, ctx: &egui::Context)
 }
 
 impl eframe::App for App {
-    fn clear_color(&self, _visuals: &egui::Visuals) -> [f32; 4] {
+    fn clear_color(&self, visuals: &egui::Visuals) -> [f32; 4] {
         // The transparency-capable DirectComposition window is a presentation workaround;
         // translucent UI layers (disabled panels, modal dimming) must not reveal the desktop.
-        egui::Color32::from_rgb(12, 12, 12).to_normalized_gamma_f32()
+        // Opaque, in the theme's window colour: what shows round the islands.
+        let _ = visuals;
+        self.0.window_colour().to_normalized_gamma_f32()
     }
     fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         #[cfg(target_os = "macos")]
@@ -162,6 +172,10 @@ impl eframe::App for App {
             // process instead of closing the viewport while AppKit is terminating (PR #444).
             eframe::App::on_exit(self, None);
             std::process::exit(0);
+        }
+        #[cfg(target_os = "linux")]
+        if let Some(m) = self.3.as_mut() {
+            m.update(&mut self.0);
         }
         self.0.logic(ctx);
         self.1.tick(&mut self.0, ctx);
@@ -309,6 +323,10 @@ fn main() -> eframe::Result {
     let came_up_app = came_up.clone();
     // how the window was when the app was last used (checked: the settings file is a file)
     let opens_as = prefs.as_ref().and_then(|ui| ui.window).and_then(luz_ui_egui::window_place::WindowPlace::checked);
+    // Linux draws Nodalia's own title bar and round window controls, unless Settings ▸ Interface
+    // asks for the desktop's; macOS and Windows keep the system's. Read once: the window is
+    // created with or without decorations.
+    let nodalia_frame = cfg!(target_os = "linux") && !prefs.as_ref().is_some_and(|u| u.settings.system_window_controls);
     let options = eframe::NativeOptions {
         renderer,
         viewport: as_remembered(egui::ViewportBuilder::default().with_title("Luz"), opens_as)
@@ -318,6 +336,7 @@ fn main() -> eframe::Result {
             .with_fullsize_content_view(true)
             .with_titlebar_shown(false)
             .with_title_shown(false)
+            .with_decorations(!nodalia_frame)
             .with_icon(app_icon())
             // Wayland matches the window to packaging/linux/dev.danielmiguelt.Luz.desktop by this id
             .with_app_id(APP_ID),
@@ -365,6 +384,7 @@ fn main() -> eframe::Result {
                 app.alt_asks_for_library = matches!(launch, Launch::Open { alt_asks: true, .. });
                 luz_ui_egui::i18n::set_language(app.ui.language);
                 app.integrated_titlebar = cfg!(target_os = "macos");
+                app.custom_titlebar = nodalia_frame;
                 app.notices.extend(prefs_warning);
                 app.notices.extend(launch_notices);
                 app.notices.extend(window_notice);
@@ -423,6 +443,11 @@ fn main() -> eframe::Result {
                 // drawn in the window's top bar). LUZ_NO_NATIVE_MENU=1 keeps the in-window menus.
                 #[cfg(target_os = "macos")]
                 let menu = (std::env::var_os("LUZ_NO_NATIVE_MENU").is_none()).then(|| native_menu::NativeMenu::install(&mut app, &cc.egui_ctx));
+                // Linux: the menus go to the desktop's top bar when it shows the focused app's menus
+                // (Nodalix), and stay in the window otherwise.
+                #[cfg(target_os = "linux")]
+                let global_menu =
+                    std::env::var_os("LUZ_NO_NATIVE_MENU").is_none().then(|| linux_menu::GlobalMenu::install(&cc.egui_ctx, &app)).flatten();
                 // the GPU renderer on the window's device, when GPU rendering is on
                 // (LUZ_GPU_WINDOW=0: a device of its own, renders read back - for comparison or a driver
                 // that misbehaves with compute and drawing on one device)
@@ -435,6 +460,8 @@ fn main() -> eframe::Result {
                     window_textures,
                     #[cfg(target_os = "macos")]
                     menu,
+                    #[cfg(target_os = "linux")]
+                    global_menu,
                 )))
             }),
         )

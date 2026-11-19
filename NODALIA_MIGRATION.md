@@ -30,19 +30,24 @@ interface follows Foundation's [NDL standard](https://github.com/getnodalia/foun
 
 ## Technical debt
 
-- Internal names inherited from upstream (crate, binary and package names) remain where saved
-  settings, files and the upstream sync depend on them.
+- None left from the rename: every name is Luz's (`scripts/rebrand.py check`). File signatures
+  keep upstream's values on purpose (`rebrand: keep`), so older libraries and presets open.
 
 ## Reusable Nodalia components
 
 getnodalia/foundation (vendored crates, fonts, translations, reusable workflows);
 getnodalia/nodalia-design (theme, icons).
 
-## NDL work pending
+## NDL
 
-Check the interface against Foundation's NDL standard: hamburger menu with About, Preferences and
-Keyboard shortcuts; theme selector only in Preferences; NDL window controls on Linux only; global
-menu exported over D-Bus on Linux.
+Done (2026-11-18): Nodalia's palette for the chrome (`nodalia-theme`, `Accent::Luz`, creator
+suite) with the photo surfaces kept neutral; panels as rounded islands on the window colour; a
+hamburger menu with Preferences, Keyboard shortcuts and About; the theme chosen only in
+Preferences; NDL window controls on Linux only, with a preference for the desktop's own; the
+menus exported over D-Bus to the desktop's top bar on Linux (`apps/luz/src/linux_menu.rs`).
+
+Still to do: the creator suite's shared Home sidebar and dialogs, and the NDL icon set in place
+of the app's own drawn icons.
 
 ## Risks and priorities
 
@@ -53,7 +58,7 @@ menu exported over D-Bus on Linux.
 
 1. A Foundation release workflow, tested with a dry run, then Luz's release on it.
 2. A Foundation Windows ARM64 workflow.
-3. NDL review of the interface.
+3. The creator suite's shared Home and dialogs, then NDL icons.
 
 ## What the first agent should do
 
@@ -64,6 +69,4 @@ menu exported over D-Bus on Linux.
 
 Luz releases through `release-auto.yml` like every Nodalia app (Foundation's `release-tag` and
 `release-publish`, with `release-linux.yml`, `release-macos.yml` and `release-windows.yml`). The
-packages are still named `luz-X.Y.Z-…`: rename them (packaging scripts, the release workflows,
-`app=` in `scripts/check-release-notes.sh`) before the first release. Until then the notes check
-refuses any notes, since they would have to name `luz` files.
+packages are named `luz-X.Y.Z-…`.

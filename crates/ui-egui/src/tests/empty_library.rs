@@ -186,20 +186,27 @@ fn recently_deleted_is_not_the_empty_library() {
 }
 
 #[test]
-fn the_import_button_leaves_the_filter_and_appearance_icons_apart() {
+fn the_import_button_leaves_the_filter_and_activity_icons_apart() {
     // the search field is centred: a seventh icon on the right must not push it into them
     // with the menus in the window (Windows, Linux, web) and in the native menu bar (macOS)
-    for (width, native_menu) in [900.0, 906.0, 1024.0, 1200.0, 1600.0].into_iter().flat_map(|w| [(w, false), (w, true)]) {
+    // and with Nodalia's window controls at the bar's right end (Linux)
+    for (width, native_menu, controls) in
+        [900.0, 906.0, 1024.0, 1200.0, 1600.0].into_iter().flat_map(|w| [(w, false, false), (w, true, false), (w, false, true)])
+    {
         let mut a = app(luz_engine::Session::with_demo());
         // a native menu bar comes with the title bar drawn in the window (macOS): a wider left margin
         a.native_menu = native_menu;
         a.integrated_titlebar = native_menu;
+        a.custom_titlebar = controls;
         let mut h = Headless::new(a, [width, 800.0], 1.0);
         h.step();
         h.step();
         let rect = |id: &str| h.app.widgets.iter().find(|(w, _)| w == id).map(|(_, r)| *r).unwrap_or_else(|| panic!("{id} at {width}"));
-        let (filter, appearance, import) = (rect("icon:filter"), rect("icon:appearance"), rect("icon:import"));
-        assert!(!filter.intersects(appearance), "{width} (native menu {native_menu}): filter {filter:?} meets appearance {appearance:?}");
+        let (filter, activity, import) = (rect("icon:filter"), rect("icon:bell"), rect("icon:import"));
+        assert!(!filter.intersects(activity), "{width} (native menu {native_menu}): filter {filter:?} meets activity {activity:?}");
+        if controls {
+            assert!(rect("icon:menu").right() < rect("button:windowClose").left(), "{width}: the menu stays left of the window controls");
+        }
         assert!(!filter.intersects(import), "{width} (native menu {native_menu}): filter {filter:?} meets import {import:?}");
     }
 }

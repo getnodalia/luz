@@ -33,6 +33,16 @@ pub(super) fn appearance(ui: &mut egui::Ui, t: &Tokens, s: &mut crate::state::Ap
         ui.horizontal_top(|ui| cards(ui, ((available - 12.0) / 2.0).floor()));
     }
     ui.add_space(2.0);
+    #[cfg(target_os = "linux")]
+    {
+        ui.add_space(6.0);
+        super::widgets::check(
+            ui,
+            "settings.systemWindowControls",
+            &mut s.system_window_controls,
+            "Use the desktop's window controls (applies at next launch)",
+        );
+    }
 }
 
 /// What a theme family's card shows.

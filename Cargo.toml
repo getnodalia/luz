@@ -16,6 +16,7 @@ craft-docpath = { version = "0.1.0", git = "https://github.com/getnodalia/founda
 craft-crw = { git = "https://github.com/getnodalia/foundation", rev = "f3b62ec61f45534392376492fc5ad33047375205" }
 # In-app updates from this app's GitHub releases, with the update windows for egui.
 nodalia-update = { git = "https://github.com/getnodalia/nodalia-design", rev = "114848a2ff1a7c29c9a5432fb12e955fbe0aeef2", features = ["egui"] }
+nodalia-theme = { git = "https://github.com/getnodalia/nodalia-design", rev = "114848a2ff1a7c29c9a5432fb12e955fbe0aeef2" }
 craft-window = { git = "https://github.com/getnodalia/foundation", rev = "c5a1cbfb5f9049f9270955caffb5bee5997aebf7", features = ["egui"] }
 # internal
 luz-denoise-core = { path = "crates/denoise-core" }

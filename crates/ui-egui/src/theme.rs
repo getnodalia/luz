@@ -36,7 +36,9 @@ pub fn label_toast_colors(label: luz_catalog::ColorLabel) -> (Color32, Color32) 
 
 #[derive(Clone, Copy, Debug)]
 pub struct Tokens {
-    /// Top bar, side panels, bottom bar, tool strip.
+    /// The window behind the islands: the top bar and the gaps between panels.
+    pub window: Color32,
+    /// The islands: side panels, bottom bar, tool strip.
     pub chrome: Color32,
     /// Photo canvas (detail view) and filmstrip.
     pub canvas: Color32,
@@ -132,6 +134,7 @@ impl ThemeKind {
 impl Default for Tokens {
     fn default() -> Self {
         Tokens {
+            window: Color32::from_rgb(0x1c, 0x1c, 0x1c),
             chrome: Color32::from_rgb(0x2d, 0x2d, 0x2d),
             canvas: Color32::from_rgb(0x1c, 0x1c, 0x1c),
             grid_bg: Color32::from_rgb(0x0f, 0x0f, 0x0f),
@@ -178,6 +181,54 @@ impl Default for Tokens {
 impl Tokens {
     /// The tokens of `kind`. Metrics are shared; only colours change.
     pub fn for_kind(kind: ThemeKind) -> Tokens {
+        Self::photo_surfaces(kind).nodalia(kind)
+    }
+
+    /// The Nodalia Design Language over a theme's photo surfaces: the window, the islands, text,
+    /// controls and the accent come from `nodalia-theme` with Luz's accent. The grid, its cells,
+    /// the canvas and the selection rings stay neutral grey, so nothing tints a photo being judged.
+    fn nodalia(self, kind: ThemeKind) -> Tokens {
+        let p = ndl_palette(kind);
+        Tokens {
+            window: ndl(p.surface_window),
+            chrome: ndl(p.surface_panel),
+            divider: ndl(p.border_subtle),
+            inset: ndl(p.surface_sunken),
+            field: ndl(p.control_field_bg),
+            field_border: ndl(p.border_default),
+            button: ndl(p.control_bg),
+            button_border: ndl(p.border_default),
+            hover: ndl(p.control_bg_hover),
+            pressed: ndl(p.control_bg_pressed),
+            tool_active: ndl(p.control_bg_pressed),
+            text: ndl(p.text_primary),
+            text_label: ndl(p.text_secondary),
+            text_dim: ndl(p.text_tertiary),
+            text_disabled: ndl(p.text_disabled),
+            icon: ndl(p.text_secondary),
+            track: ndl(p.control_track),
+            accent: ndl(p.accent_default),
+            caution: ndl(p.status_warning_fg),
+            reject: ndl(p.status_danger_fg),
+            ..self
+        }
+    }
+
+    /// The creator suite's shared parts (`nodalia_theme::creator`) in this theme's colours.
+    pub fn creator(&self) -> nodalia_theme::creator::Look {
+        let mut p = ndl_palette(if self.window.r() > 128 { ThemeKind::Paper } else { ThemeKind::Charcoal });
+        p.surface_window = rgba(self.window);
+        p.surface_panel = rgba(self.chrome);
+        p.accent_default = rgba(self.accent);
+        nodalia_theme::creator::Look::new(p).strong_family(FontFamily::Name(FONT_SEMIBOLD.into()))
+    }
+
+    /// Whether these tokens are a dark theme.
+    pub fn dark(&self) -> bool {
+        self.window.r() <= 128
+    }
+
+    fn photo_surfaces(kind: ThemeKind) -> Tokens {
         let rgb = |v: u32| Color32::from_rgb((v >> 16) as u8, (v >> 8) as u8, v as u8);
         let base = Tokens::default();
         match kind {
@@ -400,6 +451,62 @@ pub const WHEEL_STRIP_SHARE: f32 = 1.0 / 3.0;
 /// one notch still zooms the same amount now that it scrolls [`WHEEL_LINE_POINTS`].
 pub const WHEEL_ZOOM_PER_POINT: f32 = 40.0 / 200.0 / WHEEL_LINE_POINTS;
 
+/// Luz's accent in the Nodalia palette.
+pub const LUZ: nodalia_theme::Accent = nodalia_theme::Accent::Luz;
+/// An island's corner radius.
+pub const ISLAND_RADIUS: f32 = nodalia_theme::component::PANEL_RADIUS;
+/// The window-colour gap between two islands, and between an island and the window's edge.
+pub const ISLAND_GAP: f32 = nodalia_theme::component::WINDOW_GAP;
+
+pub(crate) fn ndl(c: nodalia_theme::Rgba) -> Color32 {
+    Color32::from_rgba_unmultiplied(c.r, c.g, c.b, c.a)
+}
+
+fn rgba(c: Color32) -> nodalia_theme::Rgba {
+    nodalia_theme::Rgba::new(c.r(), c.g(), c.b(), c.a())
+}
+
+/// Nodalia's palette with Luz's accent for `kind`: Charcoal and Silver lift NDL's darkest and
+/// lightest surfaces a step towards the middle (Midnight and Paper are NDL's own).
+pub(crate) fn ndl_palette(kind: ThemeKind) -> nodalia_theme::Palette {
+    let mode = if kind.is_dark() { nodalia_theme::Mode::Dark } else { nodalia_theme::Mode::Light };
+    let mut p = mode.palette_with(LUZ);
+    let shift = |c: nodalia_theme::Rgba, k: f32| {
+        let m = |v: u8| {
+            let v = f32::from(v);
+            let to = if k > 0.0 { 255.0 } else { 0.0 };
+            (v + (to - v) * k.abs()).round().clamp(0.0, 255.0) as u8
+        };
+        nodalia_theme::Rgba::new(m(c.r), m(c.g), m(c.b), c.a)
+    };
+    let k = match kind {
+        ThemeKind::Charcoal => 0.08,
+        ThemeKind::Silver => -0.05,
+        ThemeKind::Midnight | ThemeKind::Paper => return p,
+    };
+    for c in [
+        &mut p.surface_window,
+        &mut p.surface_panel,
+        &mut p.surface_raised,
+        &mut p.surface_sunken,
+        &mut p.surface_overlay,
+        &mut p.control_bg,
+        &mut p.control_bg_hover,
+        &mut p.control_bg_pressed,
+        &mut p.control_field_bg,
+        &mut p.border_subtle,
+    ] {
+        *c = shift(*c, k);
+    }
+    p
+}
+
+/// Rounds the corners of an island whose contents paint edge to edge (a dock pane, the photo):
+/// a window-coloured ring outside the rounded `rect`. Paint it after the contents.
+pub fn round_island_corners(painter: &egui::Painter, t: &Tokens, rect: egui::Rect) {
+    nodalia_theme::creator::round_island_corners(painter, &t.creator(), rect);
+}
+
 fn theme_id() -> egui::Id {
     egui::Id::unique("luz-theme")
 }
@@ -458,8 +565,9 @@ pub fn apply_kind(ctx: &egui::Context, kind: ThemeKind) {
     v.extreme_bg_color = t.field;
     v.faint_bg_color = t.inset;
     v.window_stroke = Stroke::new(1.0, t.button_border);
-    v.window_corner_radius = CornerRadius::same(6);
-    v.menu_corner_radius = CornerRadius::same(6);
+    // NDL: dialogs are islands, menus and popovers take the control radius
+    v.window_corner_radius = CornerRadius::same(ISLAND_RADIUS as u8);
+    v.menu_corner_radius = CornerRadius::same(nodalia_theme::component::CONTROL_RADIUS as u8);
     v.selection.bg_fill = t.accent.gamma_multiply(0.6);
     v.selection.stroke = Stroke::new(1.0, t.accent);
     v.override_text_color = Some(t.text_label);
@@ -469,7 +577,7 @@ pub fn apply_kind(ctx: &egui::Context, kind: ThemeKind) {
     let w = &mut v.widgets;
     craft_ui::theme::WidgetPalette { noninteractive: t.chrome, inactive: t.button, hovered: t.hover, active: t.pressed, open: t.hover }.apply_to(
         w,
-        CornerRadius::same(4),
+        CornerRadius::same(8),
         Stroke::new(1.0, t.text_label),
     );
     w.noninteractive.bg_stroke = Stroke::new(1.0, t.divider);

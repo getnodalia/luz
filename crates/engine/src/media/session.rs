@@ -218,7 +218,7 @@ impl crate::Session {
     /// level is the smallest that keeps the face sharp, up to the preview. Cached (memory and the
     /// library's thumbnail cache on disk) like [`Self::variant_job`], and `key` likewise follows
     /// the content: a later launch shows the tile without reading the original.
-    pub fn face_job(&mut self, id: PhotoId, face: lightcraft_geom::Rect, edge: usize) -> Option<RenderJob> {
+    pub fn face_job(&mut self, id: PhotoId, face: luz_geom::Rect, edge: usize) -> Option<RenderJob> {
         let p = self.catalog.photo(id)?.clone();
         // `face` is on the upright (EXIF-oriented) photo; the crop below is in the frame after the
         // user's Rotate Left/Right, so carry the box (and the photo's size) over to it.
@@ -232,9 +232,9 @@ impl crate::Session {
         let (cx, cy) = ((face.x0 + face.x1) / 2.0 * w, (face.y0 + face.y1) / 2.0 * h);
         let (cx, cy) = (if cx.is_finite() { cx } else { w / 2.0 }, if cy.is_finite() { cy } else { h / 2.0 });
         let (x0, y0) = (cx.clamp(side / 2.0, w - side / 2.0) - side / 2.0, cy.clamp(side / 2.0, h - side / 2.0) - side / 2.0);
-        let rect = lightcraft_geom::Rect { x0: x0 / w, y0: y0 / h, x1: (x0 + side) / w, y1: (y0 + side) / h };
+        let rect = luz_geom::Rect { x0: x0 / w, y0: y0 / h, x1: (x0 + side) / w, y1: (y0 + side) / h };
         let mut settings = (*p.develop).clone();
-        settings.crop = lightcraft_develop::Crop { geometry: lightcraft_geom::CropGeometry { rect, angle: 0.0 }, ..Default::default() };
+        settings.crop = luz_develop::Crop { geometry: luz_geom::CropGeometry { rect, angle: 0.0 }, ..Default::default() };
         let edge = face_edge(edge);
         // pixels along the long edge that leave `edge` across the crop
         let needed = (edge as f64 * w.max(h) / side).ceil().min(SourceLevel::Preview.max_edge() as f64);
@@ -269,10 +269,9 @@ impl crate::Session {
     /// unedited raw (whose grid thumbnail is that preview too) not known to be offline, upright as
     /// imported, with a preview loader installed. `rect` is the square around the face, `edge` the
     /// tile, `needed` the source's long edge the develop render would ask for.
-    fn face_preview_cut(&self, p: &Photo, rect: lightcraft_geom::Rect, edge: usize, needed: usize) -> Option<crate::face_tiles::PreviewCut> {
+    fn face_preview_cut(&self, p: &Photo, rect: luz_geom::Rect, edge: usize, needed: usize) -> Option<crate::face_tiles::PreviewCut> {
         let (path, loader) = self.embedded_of(p)?;
-        if p.develop.orientation != lightcraft_geom::Orientation::Normal || self.media.availability.is_offline(&path) || p.width == 0 || p.height == 0
-        {
+        if p.develop.orientation != luz_geom::Orientation::Normal || self.media.availability.is_offline(&path) || p.width == 0 || p.height == 0 {
             return None;
         }
         let want = needed.max(edge).max(1);
@@ -331,7 +330,7 @@ impl crate::Session {
         id: PhotoId,
         full_w: usize,
         full_h: usize,
-        window: lightcraft_pipeline::PixelWindow,
+        window: luz_pipeline::PixelWindow,
         apply_crop: bool,
     ) -> Option<RenderJob> {
         self.region_job_of(id, full_w, full_h, window, apply_crop, false)
@@ -343,7 +342,7 @@ impl crate::Session {
         id: PhotoId,
         full_w: usize,
         full_h: usize,
-        window: lightcraft_pipeline::PixelWindow,
+        window: luz_pipeline::PixelWindow,
         apply_crop: bool,
     ) -> Option<RenderJob> {
         self.region_job_of(id, full_w, full_h, window, apply_crop, true)
@@ -354,7 +353,7 @@ impl crate::Session {
         id: PhotoId,
         full_w: usize,
         full_h: usize,
-        window: lightcraft_pipeline::PixelWindow,
+        window: luz_pipeline::PixelWindow,
         apply_crop: bool,
         before: bool,
     ) -> Option<RenderJob> {
@@ -362,7 +361,7 @@ impl crate::Session {
         // what the window's spots and Auto Mask strokes read must fit in one render: else the
         // caller keeps the whole-frame render (a window alone would come out wrong)
         let p = self.catalog.photo(id)?;
-        let frame = lightcraft_pipeline::geometry::Frame::with_lens(
+        let frame = luz_pipeline::geometry::Frame::with_lens(
             p.width.max(1) as usize,
             p.height.max(1) as usize,
             &job.settings,
@@ -370,7 +369,7 @@ impl crate::Session {
             p.embedded_lens.as_ref(),
         );
         let ppl = frame.px_per_long(full_w);
-        lightcraft_pipeline::spots::window_for_reads_checked(&job.settings, &frame, full_w, full_h, ppl, window.clamped(full_w, full_h))?;
+        luz_pipeline::spots::window_for_reads_checked(&job.settings, &frame, full_w, full_h, ppl, window.clamped(full_w, full_h))?;
         job.request.window = Some(window);
         job.key = Hasher128::new()
             .u64(job.key)
@@ -458,7 +457,7 @@ impl crate::Session {
     }
 
     /// The camera's embedded JPEG of an unedited raw at up to `max_edge` pixels (its full size for
-    /// a camera that stores one), for the loupe zoomed to 100 % while LightCraft renders the window
+    /// a camera that stores one), for the loupe zoomed to 100 % while Luz renders the window
     /// on screen: a focus check needs the pixels at once, and a 45 MP render of the window takes
     /// seconds. Not kept in any cache (a full-size picture is 180 MB). `None` for other photos.
     pub fn embedded_full_job(&mut self, id: PhotoId, max_edge: usize) -> Option<QuickJob> {
@@ -537,7 +536,7 @@ impl crate::Session {
 
     /// Synchronous render (CLI, MCP, tests).
     pub fn render_now(&mut self, id: PhotoId, max_w: usize, max_h: usize) -> Result<Rendered, String> {
-        lightcraft_pipeline::check_output_size(max_w, max_h)?;
+        luz_pipeline::check_output_size(max_w, max_h)?;
         let job = self.render_job(id, max_w, max_h, false, true).ok_or("no such photo")?;
         let r = job.run();
         self.accept(&r);
@@ -551,8 +550,8 @@ impl crate::Session {
         id: PhotoId,
         max_w: usize,
         max_h: usize,
-        space: lightcraft_pipeline::OutputSpace,
-        depth: lightcraft_pipeline::OutputDepth,
+        space: luz_pipeline::OutputSpace,
+        depth: luz_pipeline::OutputDepth,
     ) -> Result<Rendered, String> {
         let r = self.export_job(id, max_w, max_h, space, depth)?.run();
         self.accept(&r);
@@ -565,10 +564,10 @@ impl crate::Session {
         id: PhotoId,
         max_w: usize,
         max_h: usize,
-        space: lightcraft_pipeline::OutputSpace,
-        depth: lightcraft_pipeline::OutputDepth,
+        space: luz_pipeline::OutputSpace,
+        depth: luz_pipeline::OutputDepth,
     ) -> Result<RenderJob, String> {
-        lightcraft_pipeline::check_output_size(max_w, max_h)?;
+        luz_pipeline::check_output_size(max_w, max_h)?;
         let mut job = self.render_job(id, max_w, max_h, false, true).ok_or("no such photo")?;
         // An export develops from a source at least twice its size, so it is resized down with a good filter
         // rather than made from a preview just covering it (for a raw, a binned and box-reduced image)

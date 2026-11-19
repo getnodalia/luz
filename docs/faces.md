@@ -45,7 +45,7 @@ does check is listed under "Agreement and regression coverage".
    known) and which site the file comes from. **Download stays disabled until you tick "I have read these terms and
    accept them for my own use".** Nothing is fetched before that.
 2. Luz downloads the file from the model's own repository (GitHub for YuNet and SFace, Hugging Face for
-   AuraFace), at an address pinned to a commit, over https, in pure Rust (the `lightcraft-fetch` crate: no `curl`, no
+   AuraFace), at an address pinned to a commit, over https, in pure Rust (the `luz-fetch` crate: no `curl`, no
    OpenSSL). An interrupted download resumes where it stopped.
 3. The file must match the model's recorded size and SHA-256, or it is thrown away. A file that matches is installed
    by itself. Nothing else is sent anywhere, and no token or account is involved.
@@ -105,7 +105,7 @@ vector per face. A bad entry is reported in Settings ▸ Faces and skipped; the 
 still be added by file; non-commercial models are never offered by the built-in list.
 
 The models folder is `<config>/models` (`%APPDATA%\Luz\models` on Windows, `~/Library/Application Support/Luz/models`
-on macOS, `~/.config/lightcraft/models` on Linux), or `$LIGHTCRAFT_FACE_MODELS`. The desktop app, the CLI and the MCP
+on macOS, `~/.config/luz/models` on Linux), or `$LUZ_FACE_MODELS`. The desktop app, the CLI and the MCP
 server share it.
 
 ## What is known about the models Luz recognises
@@ -158,7 +158,7 @@ photo go together (`Embedder::embed_batch`, up to 16 per submission).
 The CPU interpreter remains the reference. After a model loads, a background check (a row in the activity stack, "Checking
 the GPU for faces") runs it once on the CPU and twice through the GPU on a fixed test input: the GPU is used only when
 every output is within 1e-3 of the CPU's (relative to the output's largest value) **and** it was faster; until then,
-and whenever the GPU is switched off (`LIGHTCRAFT_GPU=0`, `LIGHTCRAFT_GPU_BACKEND=off`, the GPU preference, or **Settings ▸
+and whenever the GPU is switched off (`LUZ_GPU=0`, `LUZ_GPU_BACKEND=off`, the GPU preference, or **Settings ▸
 Faces ▸ Run face models on the CPU only**), missing, wrong or slower, the model runs on the CPU. The first GPU error,
 or a result of the wrong size or with values that are not finite, drops it for that model. Settings ▸ Faces shows
 which device each model runs on (`faces.gpu`). The weights stay on a device of the scan's own (separate from the
@@ -177,7 +177,7 @@ other jobs (load average 100–250, so the absolute numbers are noisy):
 | SFace 2021dec | 40–42 ms | 47–51 ms | 9.6 ms | 8.1 ms |
 | AuraFace v1 | 295–308 ms | 165–172 ms | 70–73 ms | 71 ms |
 
-`LC_FACE_MODELS=<folder> cargo test --release -p lightcraft-gpu faces::tests -- --include-ignored --nocapture` checks
+`LC_FACE_MODELS=<folder> cargo test --release -p luz-gpu faces::tests -- --include-ignored --nocapture` checks
 agreement on the real models and every operator, and prints these timings.
 
 ### Agreement and regression coverage
@@ -201,7 +201,7 @@ exponential sigmoid. Tiny confidence outputs differ by at most 4.47e-7 absolute 
 far below the 0.6 detection threshold. Neither pinned recognizer uses Sigmoid. No approximate activation or reduced
 precision was introduced to get the speed figures.
 
-`LC_FACE_MODELS=<folder> cargo test --release -p lightcraft-faces runtime::tests::real_models_pass_the_self_test -- --ignored --nocapture`
+`LC_FACE_MODELS=<folder> cargo test --release -p luz-faces runtime::tests::real_models_pass_the_self_test -- --ignored --nocapture`
 runs the installation checks against locally supplied, hash-recognized model files. Models/crops stay out of git.
 
 ### And how well do they recognise?
@@ -280,9 +280,9 @@ Turning recognition on starts a scan of the whole library, once, in the backgrou
   when light (2 threads).
 - **Memory** limits the number of photos at once as much as the processor does: a photo in progress holds about 180 MB
   (peak memory grew by that much per extra worker), so at most half of the memory budget (a quarter of the RAM, at most
-  1.5 GiB, unless `LIGHTCRAFT_MEMORY_MB` says otherwise) is given to them: about four photos at once on a default setup,
+  1.5 GiB, unless `LUZ_MEMORY_MB` says otherwise) is given to them: about four photos at once on a default setup,
   whatever the core count. Eight at once was not much faster and needed about twice the memory (a 2.0 GB peak against
-  1.1 GB). `LIGHTCRAFT_FACE_THREADS` replaces these limits with a number of your own. A couple more photos wait behind
+  1.1 GB). `LUZ_FACE_THREADS` replaces these limits with a number of your own. A couple more photos wait behind
   the running ones, so a worker that finishes has its next photo at once.
 - **Earlier scan speed (a different runner).** A mixed raw and JPEG library of 184 photos (the raws read through their embedded previews, 73 photos searched
   for faces) took about 29 seconds on that machine at full pace: roughly 6 photos a second, so the first scan of 10,000 photos

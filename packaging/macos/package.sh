@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Build, sign and (optionally) notarize the macOS release artifacts:
 #
-#   $DIST/lightcraft-<version>-macos-<arch>.dmg          LightCraft.app on a drag-to-Applications DMG
-#   $DIST/lightcraft-cli-<version>-macos-<arch>.zip      the headless CLI
+#   $DIST/luz-<version>-macos-<arch>.dmg          Luz.app on a drag-to-Applications DMG
+#   $DIST/luz-cli-<version>-macos-<arch>.zip      the headless CLI
 #
 # Usage: packaging/macos/package.sh [--arch universal|aarch64|x86_64] [--skip-build]
 # Fonts: use CRAFT_FONTS_DIR or ../craft-fonts; download the pinned checkout if absent.
@@ -40,9 +40,9 @@ export MACOSX_DEPLOYMENT_TARGET=11.0
 IDENTITY="${MACOS_SIGN_IDENTITY:--}"
 SHORT_VERSION="${VERSION%%-*}"
 WORK="$CARGO_TARGET_DIR/macos-package"
-APP="$WORK/LightCraft.app"
-DMG="$DIST/lightcraft-$VERSION-macos-$ARCH.dmg"
-CLI_ZIP="$DIST/lightcraft-cli-$VERSION-macos-$ARCH.zip"
+APP="$WORK/Luz.app"
+DMG="$DIST/luz-$VERSION-macos-$ARCH.dmg"
+CLI_ZIP="$DIST/luz-cli-$VERSION-macos-$ARCH.zip"
 
 NOTARIZE=0
 if [[ "$IDENTITY" = "-" ]]; then
@@ -53,7 +53,7 @@ else
   warn "macOS: APPLE_ID / APPLE_PASSWORD / APPLE_TEAM_ID incomplete; signed but not notarized"
 fi
 
-echo "==> LightCraft $VERSION for macOS ($ARCH), identity: $IDENTITY, notarize: $NOTARIZE"
+echo "==> Luz $VERSION for macOS ($ARCH), identity: $IDENTITY, notarize: $NOTARIZE"
 
 # ---- build -------------------------------------------------------------------------------------
 if [[ "$SKIP_BUILD" = 0 ]]; then
@@ -62,14 +62,14 @@ if [[ "$SKIP_BUILD" = 0 ]]; then
   prepare_fonts
   args=()
   for t in "${TARGETS[@]}"; do args+=(--target "$t"); done
-  (cd "$ROOT" && cargo build --release --locked -p lightcraft -p lightcraft-cli --features lightcraft/heif,lightcraft-cli/heif "${args[@]}")
+  (cd "$ROOT" && cargo build --release --locked -p luz -p luz-cli --features luz/heif,luz-cli/heif "${args[@]}")
 fi
 
 rm -rf "$WORK"
 mkdir -p "$WORK/bin"
-for bin in lightcraft lightcraft-cli; do
+for bin in luz luz-cli; do
   source_bin="$bin"
-  if [[ "$bin" == lightcraft ]]; then source_bin=luz; fi
+  if [[ "$bin" == luz ]]; then source_bin=luz; fi
   inputs=()
   for t in "${TARGETS[@]}"; do inputs+=("$CARGO_TARGET_DIR/$t/release/$source_bin"); done
   lipo -create -output "$WORK/bin/$bin" "${inputs[@]}"
@@ -118,16 +118,29 @@ notarize() {
   fi
 }
 
-# ---- LightCraft.app ----------------------------------------------------------------------------
+# ---- Luz.app ----------------------------------------------------------------------------
 echo "==> assembling $APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-# Executable and icon carry the display name (CFBundleExecutable / CFBundleIconFile).
-cp "$WORK/bin/lightcraft" "$APP/Contents/MacOS/LightCraft"
-cp "$ROOT/assets/app-icon/lightcraft.icns" "$APP/Contents/Resources/LightCraft.icns"
+# Executable and icon are ASCII; Info.plist names them (CFBundleExecutable / CFBundleIconFile).
+cp "$WORK/bin/luz" "$APP/Contents/MacOS/Luz"
+cp "$ROOT/assets/app-icon/luz.icns" "$APP/Contents/Resources/Luz.icns"
 sed -e "s/@VERSION@/$VERSION/g" -e "s/@SHORT_VERSION@/$SHORT_VERSION/g" \
-  -e "s/@BUILD_SHA@/${LIGHTCRAFT_BUILD_SHA:-unknown}/g" \
+  -e "s/@BUILD_SHA@/${LUZ_BUILD_SHA:-unknown}/g" \
   "$HERE/Info.plist.in" >"$APP/Contents/Info.plist"
 plutil -lint "$APP/Contents/Info.plist"
+# An executable or icon name that doesn't match a file leaves the app unable to open, with a
+# crossed-out icon in the DMG. Check them here rather than on someone's Mac.
+python3 - "$APP" <<'PY'
+import os, plistlib, sys
+app = sys.argv[1]
+with open(os.path.join(app, "Contents", "Info.plist"), "rb") as f:
+    info = plistlib.load(f)
+missing = [p for p in (os.path.join("MacOS", info["CFBundleExecutable"]),
+                       os.path.join("Resources", info["CFBundleIconFile"] + ".icns"))
+           if not os.path.isfile(os.path.join(app, "Contents", p))]
+if missing:
+    sys.exit(f"error: Info.plist names files the bundle lacks: {missing}")
+PY
 printf 'APPL????' >"$APP/Contents/PkgInfo"
 # Licences (and the craft-fonts font licences when built with CRAFT_FONTS_DIR) inside the bundle.
 mkdir -p "$APP/Contents/Resources/Licenses"
@@ -139,13 +152,13 @@ xattr -cr "$APP"
 
 # Sign inside-out: nested code first, then the bundle itself (no --deep on the final signature).
 # Today the only nested code is the main executable; frameworks/helpers would be signed here too.
-sign --options runtime --entitlements "$HERE/entitlements.plist" "$APP/Contents/MacOS/LightCraft"
+sign --options runtime --entitlements "$HERE/entitlements.plist" "$APP/Contents/MacOS/Luz"
 sign --options runtime --entitlements "$HERE/entitlements.plist" "$APP"
 codesign --verify --strict --deep --verbose=2 "$APP"
 
 if [[ "$NOTARIZE" = 1 ]]; then
-  ditto -c -k --keepParent "$APP" "$WORK/LightCraft-notarize.zip"
-  notarize "$WORK/LightCraft-notarize.zip"
+  ditto -c -k --keepParent "$APP" "$WORK/Luz-notarize.zip"
+  notarize "$WORK/Luz-notarize.zip"
   stapler_retry staple "$APP"
   stapler_retry validate "$APP"
   spctl --assess --type execute -vvv "$APP"
@@ -155,11 +168,20 @@ fi
 echo "==> building $DMG"
 STAGE="$WORK/dmg"
 mkdir -p "$STAGE"
-ditto "$APP" "$STAGE/LightCraft.app"
+ditto "$APP" "$STAGE/Luz.app"
 ln -s /Applications "$STAGE/Applications"
 # Finder window layout: background, icon size and positions (packaging/macos/dmg/README.md).
 mkdir -p "$STAGE/.background"
 cp "$HERE/dmg/background.tiff" "$STAGE/.background/background.tiff"
+# The layout names the volume (the background's alias) and the app (its icon position). A layout
+# left over from another name opens a plain window with no background, so stop the build instead.
+python3 - "$HERE/dmg/dmg-layout.DS_Store" "Luz" "Luz.app" <<'PY'
+import sys
+path, volume, app = sys.argv[1:4]
+data = open(path, "rb").read()
+if f"/Volumes/{volume}".encode() not in data or app.encode("utf-16-be") not in data:
+    sys.exit(f"error: {path} is laid out for another volume or app; run packaging/macos/dmg/generate.py")
+PY
 cp "$HERE/dmg/dmg-layout.DS_Store" "$STAGE/.DS_Store"
 rm -f "$DMG"
 # hdiutil makehybrid -hfs injects FinderInfo metadata into the signed app.
@@ -179,7 +201,7 @@ hdiutil_retry() {
     sleep $((attempt * 10))
   done
 }
-hdiutil_retry create -srcfolder "$STAGE" -volname "LightCraft" -fs HFS+ -format UDZO \
+hdiutil_retry create -srcfolder "$STAGE" -volname "Luz" -fs HFS+ -format UDZO \
   -imagekey zlib-level=9 -ov "$DMG"
 sign "$DMG"
 codesign --verify --strict --verbose=2 "$DMG"
@@ -194,21 +216,21 @@ verify_dmg_app() {
     hdiutil detach "$mount" >/dev/null 2>&1 || true
     return 1
   fi
-  echo "==> strict codesign of LightCraft.app in finished DMG"
-  codesign --verify --deep --strict --verbose=2 "$mount/LightCraft.app" || rc=1
+  echo "==> strict codesign of Luz.app in finished DMG"
+  codesign --verify --deep --strict --verbose=2 "$mount/Luz.app" || rc=1
   if [[ "$rc" = 0 ]]; then
-    ditto "$mount/LightCraft.app" "$copy/LightCraft.app" || rc=1
+    ditto "$mount/Luz.app" "$copy/Luz.app" || rc=1
   fi
   if [[ "$rc" = 0 ]]; then
-    echo "==> strict codesign of LightCraft.app after ditto install-copy"
-    codesign --verify --deep --strict --verbose=2 "$copy/LightCraft.app" || rc=1
+    echo "==> strict codesign of Luz.app after ditto install-copy"
+    codesign --verify --deep --strict --verbose=2 "$copy/Luz.app" || rc=1
   fi
   if [[ "$rc" = 0 ]] && [[ "$NOTARIZE" = 1 ]]; then
-    spctl --assess --type execute -vvv "$copy/LightCraft.app" || rc=1
+    spctl --assess --type execute -vvv "$copy/Luz.app" || rc=1
   fi
   if [[ "$rc" != 0 ]]; then
     echo "error: published-image app verification failed; reject $DMG" >&2
-    xattr -lr "$mount/LightCraft.app" >&2 || true
+    xattr -lr "$mount/Luz.app" >&2 || true
   fi
   if ! hdiutil_retry detach "$mount" >/dev/null; then
     echo "error: could not detach verification mount" >&2
@@ -227,20 +249,20 @@ fi
 
 # ---- CLI ---------------------------------------------------------------------------------------
 echo "==> building $CLI_ZIP"
-CLI_DIR="$WORK/lightcraft-cli-$VERSION-macos-$ARCH"
+CLI_DIR="$WORK/luz-cli-$VERSION-macos-$ARCH"
 mkdir -p "$CLI_DIR"
-cp "$WORK/bin/lightcraft-cli" "$CLI_DIR/"
+cp "$WORK/bin/luz-cli" "$CLI_DIR/"
 copy_docs "$CLI_DIR"
 # Same entitlements as the app: `--opt addToPhotos=true` / `app.export {addToPhotos}` send Apple
 # Events to Photos through osascript too (macOS asks about the app that started the CLI, usually
 # the terminal).
-sign --options runtime --entitlements "$HERE/entitlements.plist" "$CLI_DIR/lightcraft-cli"
-codesign --verify --strict --verbose=2 "$CLI_DIR/lightcraft-cli"
+sign --options runtime --entitlements "$HERE/entitlements.plist" "$CLI_DIR/luz-cli"
+codesign --verify --strict --verbose=2 "$CLI_DIR/luz-cli"
 rm -f "$CLI_ZIP"
 ditto -c -k --keepParent "$CLI_DIR" "$CLI_ZIP"
 # A bare Mach-O can't carry a stapled ticket; Gatekeeper looks the notarization up online.
 if [[ "$NOTARIZE" = 1 ]]; then notarize "$CLI_ZIP"; fi
 
-"$WORK/bin/lightcraft-cli" --version
+"$WORK/bin/luz-cli" --version
 echo "==> done"
 ls -lh "$DMG" "$CLI_ZIP"

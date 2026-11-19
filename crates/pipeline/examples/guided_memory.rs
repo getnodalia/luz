@@ -1,14 +1,14 @@
 //! Isolated fast-guided-filter benchmark (procedural log luminance; no decoded RGB or tone median).
-//! `RAYON_NUM_THREADS=1 cargo run --release -p lightcraft-pipeline --example guided_memory -- new`
+//! `RAYON_NUM_THREADS=1 cargo run --release -p luz-pipeline --example guided_memory -- new`
 //! Replace `new` with `old` for the materialized-coefficient reference. Optional positional arguments:
 //! width height sigma iterations (defaults: 6000 4000 120 5). Append `--heap` for one dhat-counted run.
 #![forbid(unsafe_code)]
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
-use lightcraft_pipeline::local::{BASE_EPS, guided, guided_fast, guided_fast_step};
-use lightcraft_raster::blur::gaussian;
-use lightcraft_raster::resample::{Filter, resize};
-use lightcraft_raster::{Plane, par_join, par_rows};
+use luz_pipeline::local::{BASE_EPS, guided, guided_fast, guided_fast_step};
+use luz_raster::blur::gaussian;
+use luz_raster::resample::{Filter, resize};
+use luz_raster::{Plane, par_join, par_rows};
 use std::hint::black_box;
 use std::time::Instant;
 

@@ -17,4 +17,4 @@ Luz runs on Windows, macOS and Linux, and in a web browser. See [Install Luz](..
 
 ## Is it finished?
 
-No. Luz is in alpha. Some things from Adobe Lightroom are not there yet, such as on-screen HDR display, video and the Print, Book and Map modules. The project's [roadmap](https://github.com/storytold/lightcraft/blob/main/ROADMAP.md) lists what is missing.
+No. Luz is in alpha. Some things from Adobe Lightroom are not there yet, such as on-screen HDR display, video and the Print, Book and Map modules. The project's [roadmap](https://github.com/getnodalia/luz/blob/main/ROADMAP.md) lists what is missing.

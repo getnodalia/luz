@@ -10,18 +10,18 @@
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-use lightcraft_catalog::Photo;
-use lightcraft_color::transfer::linear_to_srgb;
-use lightcraft_pipeline::SourceInfo;
-use lightcraft_pipeline::masks::{MatteKind, Mattes};
-use lightcraft_pipeline::tone::CameraTone;
-use lightcraft_raster::{Image, Rgb32f, Rgba8};
+use luz_catalog::Photo;
+use luz_color::transfer::linear_to_srgb;
+use luz_pipeline::SourceInfo;
+use luz_pipeline::masks::{MatteKind, Mattes};
+use luz_pipeline::tone::CameraTone;
+use luz_raster::{Image, Rgb32f, Rgba8};
 
 const MAGIC: &[u8] = b"LCSP1\n";
 
 /// The proxy's file name for a photo (by its content, so copies share one).
 pub fn file_name(p: &Photo) -> String {
-    let h = lightcraft_preview::Hasher128::new().str(&crate::media::content_key(p)).finish();
+    let h = luz_preview::Hasher128::new().str(&crate::media::content_key(p)).finish();
     format!("{:032x}.lcsp", h.0)
 }
 
@@ -94,9 +94,9 @@ struct SmartFacts {
     as_shot_tint: f64,
     relative_wb: bool,
     legacy_relative_wb: bool,
-    lens: Option<lightcraft_develop::EmbeddedLens>,
-    camera_color: Option<lightcraft_pipeline::CameraColor>,
-    local_tone: Option<lightcraft_pipeline::local_tone::LocalTone>,
+    lens: Option<luz_develop::EmbeddedLens>,
+    camera_color: Option<luz_pipeline::CameraColor>,
+    local_tone: Option<luz_pipeline::local_tone::LocalTone>,
     /// The semantic mattes whose bytes follow the facts, in this order.
     #[serde(default)]
     mattes: Vec<StoredMatte>,
@@ -160,13 +160,8 @@ pub fn encode(img: &Rgb32f, info: Option<&SourceInfo>) -> Result<Vec<u8>, String
         })
         .collect();
     let rgba = Rgba8 { width: img.width, height: img.height, data };
-    let jpg = lightcraft_codecs::encode_jpeg(
-        &lightcraft_codecs::EncodeImage::rgba8(&rgba),
-        JPEG_QUALITY,
-        lightcraft_codecs::ChromaSubsampling::S444,
-        &Default::default(),
-    )
-    .map_err(|e| e.to_string())?;
+    let jpg = luz_codecs::encode_jpeg(&luz_codecs::EncodeImage::rgba8(&rgba), JPEG_QUALITY, luz_codecs::ChromaSubsampling::S444, &Default::default())
+        .map_err(|e| e.to_string())?;
     let mut out = MAGIC.to_vec();
     let mut head = serde_json::json!({
         "w": img.width,
@@ -231,7 +226,7 @@ pub fn decode(bytes: &[u8]) -> Result<(Rgb32f, Option<CameraTone>, Option<Source
     if end <= start {
         return Err("bad smart preview".into());
     }
-    let d = lightcraft_codecs::decode(bytes.get(start..end).ok_or("bad smart preview")?, Default::default()).map_err(|e| e.to_string())?;
+    let d = luz_codecs::decode(bytes.get(start..end).ok_or("bad smart preview")?, Default::default()).map_err(|e| e.to_string())?;
     // the decoder undoes the sRGB encoding; the values are the source's own primaries
     let mut img = d.image;
     img.data.iter_mut().for_each(|c| *c = c.map(|v| v * scale));
@@ -267,7 +262,7 @@ pub fn check_writable(dir: &Path) -> Result<(), String> {
         }
         std::fs::create_dir(dir).map_err(|e| format!("can't create {}: {e}", dir.display()))?;
     }
-    let probe = dir.join(format!(".lightcraft-write-test-{}", std::process::id()));
+    let probe = dir.join(format!(".luz-write-test-{}", std::process::id()));
     // the probe is a new entry of ours: an existing one (a link planted under the name would be
     // written through) is removed first, never opened
     let _ = std::fs::remove_file(&probe);
@@ -370,9 +365,7 @@ pub fn migrate(from: &Path, to: &Path, what: Existing) -> (usize, Vec<String>) {
                     } else {
                         // across drives: copied atomically (never a partial proxy at the new place)
                         std::fs::rename(&src, &dst).or_else(|_| {
-                            std::fs::read(&src)
-                                .and_then(|b| lightcraft_catalog::safe_file::write_atomic(&dst, &b))
-                                .and_then(|()| std::fs::remove_file(&src))
+                            std::fs::read(&src).and_then(|b| luz_catalog::safe_file::write_atomic(&dst, &b)).and_then(|()| std::fs::remove_file(&src))
                         })
                     }
                 })
@@ -435,7 +428,7 @@ fn header_encode_version(head: &serde_json::Value) -> u64 {
 /// Whether the complete proxy at `path` is out of date for a photo and must be rebuilt: written by
 /// an older encoding of its own pixels ([`ENCODE_VERSION`], i.e. a lower JPEG quality) — this
 /// reaches every proxy — or, when the photo takes the per-file camera look (`look`,
-/// [`lightcraft_catalog::Photo::fitted_look`]), by an older camera-look fit than this build's (so
+/// [`luz_catalog::Photo::fitted_look`]), by an older camera-look fit than this build's (so
 /// its stored curve, and the colour baked into its pixels, are out of date; the fit only reaches
 /// those raws, so a JPEG's or DNG's proxy is never stale for it). A proxy from a newer build is
 /// left alone (rebuilding it here would only undo that build's work), as is one that can't be
@@ -491,7 +484,7 @@ pub fn look_checked(dir: &Path) -> bool {
 pub fn mark_look_checked(dir: &Path) -> Result<(), String> {
     let path = dir.join(LOOK_MARKER);
     let text = format!("{} {}\n", crate::camera_preview::LOOK_VERSION, ENCODE_VERSION);
-    lightcraft_catalog::safe_file::write_atomic(&path, text.as_bytes()).map_err(|e| format!("{}: {e}", path.display()))
+    luz_catalog::safe_file::write_atomic(&path, text.as_bytes()).map_err(|e| format!("{}: {e}", path.display()))
 }
 
 /// Load the proxy at `path`.

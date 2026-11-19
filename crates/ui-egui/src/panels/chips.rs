@@ -3,10 +3,10 @@
 //! how many of the source's photos match, so an empty grid never looks like an empty folder.
 
 use egui::{Rect, Sense, Stroke, StrokeKind, pos2, vec2};
-use lightcraft_engine::FilterChip;
+use luz_engine::FilterChip;
 use serde_json::json;
 
-use crate::LightcraftApp;
+use crate::LuzApp;
 use crate::theme::Tokens;
 use crate::widgets::register;
 
@@ -30,11 +30,11 @@ fn chip_width(ui: &egui::Ui, label: &str, font: egui::FontId) -> f32 {
 }
 
 /// The colour labels a label chip names, in words ("Red or Blue").
-fn label_names(filter: &lightcraft_catalog::Filter, catalog: &lightcraft_catalog::Catalog) -> String {
+fn label_names(filter: &luz_catalog::Filter, catalog: &luz_catalog::Catalog) -> String {
     use crate::i18n::tr;
     let shown = filter.labels_shown().unwrap_or_default();
-    let name = |label: &lightcraft_catalog::ColorLabel| crate::i18n::color_label(catalog, *label);
-    let or = |labels: &[lightcraft_catalog::ColorLabel]| labels.iter().map(name).collect::<Vec<_>>().join(&format!(" {} ", tr("or")));
+    let name = |label: &luz_catalog::ColorLabel| crate::i18n::color_label(catalog, *label);
+    let or = |labels: &[luz_catalog::ColorLabel]| labels.iter().map(name).collect::<Vec<_>>().join(&format!(" {} ", tr("or")));
     if !shown.is_empty() {
         return or(&shown);
     }
@@ -43,7 +43,7 @@ fn label_names(filter: &lightcraft_catalog::Filter, catalog: &lightcraft_catalog
 }
 
 /// The value of a `prefix: value` chip, localised.
-fn prefixed_value(prefix: &str, value: &str, filter: &lightcraft_catalog::Filter) -> String {
+fn prefixed_value(prefix: &str, value: &str, filter: &luz_catalog::Filter) -> String {
     use crate::i18n::{date_group_label, tr};
     let date = match prefix {
         "Type" => return tr(value).to_string(),
@@ -55,7 +55,7 @@ fn prefixed_value(prefix: &str, value: &str, filter: &lightcraft_catalog::Filter
 }
 
 /// Localise generated chip labels without rewriting search text or metadata values.
-pub(crate) fn display_label(chip: &FilterChip, filter: &lightcraft_catalog::Filter, catalog: &lightcraft_catalog::Catalog) -> String {
+pub(crate) fn display_label(chip: &FilterChip, filter: &luz_catalog::Filter, catalog: &luz_catalog::Catalog) -> String {
     use crate::i18n::{date_group_label, rules_label, tr};
     if crate::i18n::language() == crate::i18n::Locale::En {
         return chip.label.clone();
@@ -70,8 +70,8 @@ pub(crate) fn display_label(chip: &FilterChip, filter: &lightcraft_catalog::Filt
     }
     if chip.clear.get("flags").is_some() {
         let shown = filter.flags_shown().unwrap_or_default();
-        let name = |flag: &lightcraft_catalog::Flag| tr(&format!("{flag:?}").to_lowercase()).to_string();
-        let or = |flags: &[lightcraft_catalog::Flag]| flags.iter().map(name).collect::<Vec<_>>().join(&format!(" {} ", tr("or")));
+        let name = |flag: &luz_catalog::Flag| tr(&format!("{flag:?}").to_lowercase()).to_string();
+        let or = |flags: &[luz_catalog::Flag]| flags.iter().map(name).collect::<Vec<_>>().join(&format!(" {} ", tr("or")));
         let names = if shown.is_empty() {
             let plural = if filter.flags.len() > 1 { format!("({})", or(&filter.flags)) } else { or(&filter.flags) };
             format!("{} {} {plural}", filter.flag.as_ref().map(name).unwrap_or_default(), tr("and"))
@@ -101,7 +101,7 @@ pub(crate) fn display_label(chip: &FilterChip, filter: &lightcraft_catalog::Filt
 }
 
 /// Draws the strip; does nothing without chips.
-pub fn show(app: &mut LightcraftApp, ui: &mut egui::Ui, chips: &[FilterChip]) {
+pub fn show(app: &mut LuzApp, ui: &mut egui::Ui, chips: &[FilterChip]) {
     if chips.is_empty() {
         return;
     }

@@ -1,6 +1,6 @@
-use lightcraft_codecs::exif::minimal_exif;
-use lightcraft_codecs::*;
-use lightcraft_raster::Rgba8;
+use luz_codecs::exif::minimal_exif;
+use luz_codecs::*;
+use luz_raster::Rgba8;
 
 fn codestream(bytes: &[u8]) -> Vec<u8> {
     if bytes.starts_with(b"\xff\x0a") {

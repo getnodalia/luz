@@ -41,7 +41,7 @@ from coloured inks.
 
 - The reference is X-Rite's published L\*a\*b\* (D50) for charts made after November 2014.
 - The model is a 3×3 matrix from white-balanced camera RGB to XYZ (D50), with neutral (1, 1, 1)
-  held exactly at the engine's D50 white (`lightcraft_color::D50`): the third column is D50
+  held exactly at the engine's D50 white (`luz_color::D50`): the third column is D50
   minus the first two. That is a DNG `ForwardMatrix`.
 - **Chromaticity only.** Each prediction is scaled to the patch's reference luminance before
   the CIEDE2000 residual. In the sun the chart warped as it heated: the grey row's brightness

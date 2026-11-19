@@ -5,7 +5,7 @@ order: 30
 verified: 0.7.1
 ---
 
-Open an issue in the [issue tracker](https://github.com/storytold/lightcraft/issues), or ask in [Discord](https://discord.gg/artcraft). Include your version, your system, what you did, and what you expected.
+Open an issue in the [issue tracker](https://github.com/getnodalia/luz/issues), or ask in [Discord](https://github.com/getnodalia/luz/issues). Include your version, your system, what you did, and what you expected.
 
 ## What to include
 
@@ -15,24 +15,24 @@ Open an issue in the [issue tracker](https://github.com/storytold/lightcraft/iss
 4. **The camera and file type**, if the problem is with a photo.
 5. **A sample file**, if a raw or other photo renders wrong. Maintainers ask for the original file, not an export. A link to a shared folder works. Uploading raws to [raw.pixls.us](https://raw.pixls.us) also helps, because every file there becomes a permanent test sample for that camera.
 6. **A screenshot** of Luz next to the camera JPEG or the other app, for colour problems.
-7. **The log file.** Choose **Help** > **Open Log Folder** and attach `lightcraft.log`.
+7. **The log file.** Choose **Help** > **Open Log Folder** and attach `luz.log`.
 
 ## Where the log is
 
-Luz writes its log to `logs/lightcraft.log` in its settings folder. On Windows that is `%APPDATA%\Luz\logs\`. Each start moves the previous log to `lightcraft.1.log`, and that one to `lightcraft.2.log`, so the log of a run that crashed survives the next start.
+Luz writes its log to `logs/luz.log` in its settings folder. On Windows that is `%APPDATA%\Luz\logs\`. Each start moves the previous log to `luz.1.log`, and that one to `luz.2.log`, so the log of a run that crashed survives the next start.
 
 ## A more detailed log
 
-When thumbnails or previews don't appear, appear slowly, or keep the computer busy, a log of every picture Luz draws helps. Start Luz with the environment variable `RUST_LOG` set to `warn,lightcraft*=info,lightcraft_ui_egui::render=debug`. On Windows, in PowerShell:
+When thumbnails or previews don't appear, appear slowly, or keep the computer busy, a log of every picture Luz draws helps. Start Luz with the environment variable `RUST_LOG` set to `warn,luz*=info,luz_ui_egui::render=debug`. On Windows, in PowerShell:
 
 ```powershell
-$env:RUST_LOG = "warn,lightcraft*=info,lightcraft_ui_egui::render=debug"; & "C:\Program Files\Luz\lightcraft.exe"
+$env:RUST_LOG = "warn,luz*=info,luz_ui_egui::render=debug"; & "C:\Program Files\Luz\luz.exe"
 ```
 
-The log then has a line for each picture Luz asks for, with its file, and usually a line for how it ended: drawn, or dropped and why (for example, scrolled out of view, or replaced by a newer request). A few requests that are dropped while they wait, such as when photos are removed or Luz quits, have no ending line. A file that can't be read is still a warning. So the log shows whether a file was asked for once or many times. `LIGHTCRAFT_LOG=debug` instead turns on the detailed log of all of Luz.
+The log then has a line for each picture Luz asks for, with its file, and usually a line for how it ended: drawn, or dropped and why (for example, scrolled out of view, or replaced by a newer request). A few requests that are dropped while they wait, such as when photos are removed or Luz quits, have no ending line. A file that can't be read is still a warning. So the log shows whether a file was asked for once or many times. `LUZ_LOG=debug` instead turns on the detailed log of all of Luz.
 
 This log names the files Luz draws, with their folders. Look through it before you share it, and remove any names you'd rather keep private.
 
 ## Still stuck?
 
-Ask in [Discord](https://discord.gg/artcraft).
+Ask in [Discord](https://github.com/getnodalia/luz/issues).

@@ -3,7 +3,7 @@ use super::{RichText, Tokens, register};
 
 /// Appearance Mode (`button:settingsAppearance-{0,1,2}`: Auto, Dark, Light) above the light and
 /// dark theme cards (`radio:theme-{id}`), each with a preview of the chosen theme. The card in
-/// use is outlined. Applied on the next frame ([`LightcraftApp::sync_theme`]).
+/// use is outlined. Applied on the next frame ([`LuzApp::sync_theme`]).
 pub(super) fn appearance(ui: &mut egui::Ui, t: &Tokens, s: &mut crate::state::AppSettings, system: Option<egui::Theme>) {
     use crate::state::{AppearanceMode as M, DarkTheme, LightTheme};
     heading(ui, t, crate::i18n::tr("Appearance"));
@@ -33,6 +33,16 @@ pub(super) fn appearance(ui: &mut egui::Ui, t: &Tokens, s: &mut crate::state::Ap
         ui.horizontal_top(|ui| cards(ui, ((available - 12.0) / 2.0).floor()));
     }
     ui.add_space(2.0);
+    #[cfg(target_os = "linux")]
+    {
+        ui.add_space(6.0);
+        super::widgets::check(
+            ui,
+            "settings.systemWindowControls",
+            &mut s.system_window_controls,
+            "Use the desktop's window controls (applies at next launch)",
+        );
+    }
 }
 
 /// What a theme family's card shows.
@@ -105,7 +115,7 @@ fn theme_card<V: PartialEq + Copy>(ui: &mut egui::Ui, t: &Tokens, card: ThemeCar
         });
 }
 
-/// A small LightCraft window painted with `kind`'s tokens: the top bar with its search field, the
+/// A small Luz window painted with `kind`'s tokens: the top bar with its search field, the
 /// photo with the filmstrip under it, the Edit panel (histogram and sliders), the tool strip and
 /// the bottom bar.
 fn theme_preview(ui: &mut egui::Ui, kind: crate::theme::ThemeKind, width: f32) {
@@ -221,7 +231,7 @@ fn theme_preview(ui: &mut egui::Ui, kind: crate::theme::ThemeKind, width: f32) {
         let thumb = cell.shrink(2.5);
         painter.rect_filled(thumb, 0.0, Color32::from_rgb(0x6f + 8 * i as u8, 0x80, 0x8f));
         if selected {
-            crate::panels::grid::selection_ring(&painter, &p, thumb, lightcraft_engine::SelectionState::Active);
+            crate::panels::grid::selection_ring(&painter, &p, thumb, luz_engine::SelectionState::Active);
         }
     }
 }

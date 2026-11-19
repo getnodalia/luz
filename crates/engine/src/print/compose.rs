@@ -15,10 +15,10 @@ use super::{MAX_JOB_PAGES, MAX_JOB_PIXELS, MAX_PAGE_PIXELS, PageRaster};
 use crate::Session;
 use crate::export::{ExportOptions, output_size};
 use crate::media::RenderJob;
-use lightcraft_catalog::PhotoId;
-use lightcraft_color::transfer::srgb_to_linear;
-use lightcraft_color::{REC2020, SRGB};
-use lightcraft_pipeline::{DeepSamples, OutputDepth, OutputSpace};
+use luz_catalog::PhotoId;
+use luz_color::transfer::srgb_to_linear;
+use luz_color::{REC2020, SRGB};
+use luz_pipeline::{DeepSamples, OutputDepth, OutputSpace};
 use serde::{Deserialize, Serialize};
 
 /// Most photos one print job takes.

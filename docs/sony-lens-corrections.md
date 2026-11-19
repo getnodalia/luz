@@ -182,13 +182,13 @@ profile correction control when an existing edit has it disabled.
 
 ## Local inventory check
 
-`crates/raw/tests/it/sony_lens_inventory.rs` is opt-in and does nothing in CI. With `LIGHTCRAFT_SONY_LENS_DIR` naming a
+`crates/raw/tests/it/sony_lens_inventory.rs` is opt-in and does nothing in CI. With `LUZ_SONY_LENS_DIR` naming a
 directory of ARWs it decodes each from its headers and prints its record (settings, sources, copies' agreement,
-sample ranges, statuses); `LIGHTCRAFT_SONY_LENS_FULL=1` also compares header and full decode. With
-`LIGHTCRAFT_SONY_LENS_INVENTORY` naming a CSV inventory it checks every file's table counts, sizes, sample counts,
+sample ranges, statuses); `LUZ_SONY_LENS_FULL=1` also compares header and full decode. With
+`LUZ_SONY_LENS_INVENTORY` naming a CSV inventory it checks every file's table counts, sizes, sample counts,
 minima and maxima, raw-IFD versus `SR2SubIFD` agreement, settings (numbers and labels), stored size, compression and
 crop tags. A file with a row must decode, and every file must have a row, whether it decodes or not. Any decode
-error fails the check except an unsupported variant, which is counted and must equal `LIGHTCRAFT_SONY_LENS_UNSUPPORTED`
+error fails the check except an unsupported variant, which is counted and must equal `LUZ_SONY_LENS_UNSUPPORTED`
 (default 0). On the 131 A7CR raws above, all 131 inventory rows reproduce and every file decodes. On 133 public Sony
 ARWs (127 raw.pixls.us samples from 100 bodies, four corpus copies and two files attached to a public issue), 110 carry
 a record, 14 decode without one, and 9 are unsupported variants (eight packed ARWs of older bodies and one ARW
@@ -344,7 +344,7 @@ download checks. `sony_embedded_distortion_is_limited_to_validated_models` check
 codings have their own test), and `sony_lens_records_of_the_public_samples` verifies all 25 against their pins
 (`SONY_SAMPLES` in `crates/raw/tests/it/corpus.rs`, itself anchored by a pinned digest and compared with the manifest)
 before decoding. **No CI job fetches the corpus**: these fixture tests run only where it has been downloaded, and
-otherwise skip each absent file. `LIGHTCRAFT_CORPUS_REQUIRED=1` makes `sony_lens_records_of_the_public_samples`
+otherwise skip each absent file. `LUZ_CORPUS_REQUIRED=1` makes `sony_lens_records_of_the_public_samples`
 fail on any absent pinned file instead.
 
 | Camera | Corpus samples | Decoded record: tables, settings (shading / CA / distortion) | Applied |

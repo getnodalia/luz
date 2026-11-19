@@ -95,7 +95,7 @@ zoom on other lenses (the X-A1 and X-A2 with the XC16–50), so the rule is not 
 everywhere (no empty border, as for the Sony table). Six bodies whose shape did not match well enough (F550EXR, S1,
 SL1000, X10, XF1, XQ1) are not corrected.
 
-**Through the shipped code path** (`lightcraft-cli render` of the same 67 combinations with the embedded
+**Through the shipped code path** (`luz-cli render` of the same 67 combinations with the embedded
 correction applied, then the free fit of the corrected render against the camera JPEG, global scale removed so
 the framing difference does not count): the residual radial shape error falls from a median of
 0.72 % of the half diagonal (largest 2.60 %) to a median of 0.05 % (largest 0.42 %), 54 of the 57 corrected combinations land within 0.25 %
@@ -163,4 +163,4 @@ before demosaicing would be needed.
 - `crates/raw/src/vendor/raf.rs`: a synthetic RAF through header and full decode, only for validated models, and a DNG
   round trip.
 - `crates/raw/tests/it/corpus.rs` `fuji_embedded_lens_tables_follow_the_validated_models`: the corpus' `raf-fuji-*` files,
-  or any folder of RAFs in `LIGHTCRAFT_FUJI` (the pixls set: 129 decoded, 88 warps, 98 vignette gains).
+  or any folder of RAFs in `LUZ_FUJI` (the pixls set: 129 decoded, 88 warps, 98 vignette gains).

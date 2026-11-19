@@ -16,7 +16,7 @@ zooms to it, so checking whether the subject is sharp takes one key while cullin
   centres on the active photo's point; per-pane focus zoom is a follow-up.
 - **Info panel**: a *Focus* row says how the camera focused, e.g. `AF-C · Wide · Animal Eye Tracking` (focus mode,
   the AF area set on the camera, and what it tracked when the camera says).
-- **Agents**: `photo.inspect` (and the MCP `lightcraft://photo/active` resource) returns it as `meta.focus`:
+- **Agents**: `photo.inspect` (and the MCP `luz://photo/active` resource) returns it as `meta.focus`:
   `{rect: {x0, y0, x1, y1}, mode?, area?, tracking?}`, the box normalized to the upright (EXIF-oriented) photo, y down.
   Photos without one have no `focus` key. `view.zoomToggle` replies `{focus: [x, y]}` (the pan it centred on) when it
   zoomed to one.
@@ -36,7 +36,7 @@ re-reads and hashes whole files and runs while you wait, so it is for a few phot
 - **What is opened**: only photos whose stored camera is a supported body (`SONY ILCE-1`, `SONY ILCE-7SM3`), whose
   file is an ARW or JPEG, that are in the library and have no point yet. Nothing else is opened.
 - **What is read**: the few kilobytes that hold the focus data, not the file
-  (`lightcraft_meta::focus::read_header`). It walks the file's structure as the decoder does — the TIFF header and
+  (`luz_meta::focus::read_header`). It walks the file's structure as the decoder does — the TIFF header and
   IFD0 (Make, Model), the Exif IFD (the MakerNote entry), the maker note's IFD and the values of the focus tags; in a
   JPEG, the segments up to the Exif one — asking only for the ranges the bytes read so far point at, and decodes them
   with the same code as a whole-file read. On the α1 and the A7S III everything sits in the first 16 KB, so one 32 KB
@@ -58,13 +58,13 @@ re-reads and hashes whole files and runs while you wait, so it is for a few phot
 - **Resuming**: quitting mid-run keeps what was committed; the next launch reads the rest.
 - **Agents**: `photo.readFocusPoints {ids?, wait?}` — without `ids`, every photo not looked at yet; with `ids`, those
   photos, looked at again even if listed. `wait: true` returns when done with `{last: {total, done, found, none,
-  unavailable, bytesRead, seconds, cancelled}}` (`lightcraft-cli run --library DIR photo.readFocusPoints wait=true`).
+  unavailable, bytesRead, seconds, cancelled}}` (`luz-cli run --library DIR photo.readFocusPoints wait=true`).
   The app's frame loop calls `focus.pump {pace}`, which also starts the job once per library opening.
 
 ## Cameras
 
 Sony first, on bodies whose files have been checked: **ILCE-1 (α1)** and **ILCE-7SM3 (A7S III)**
-(`lightcraft_meta::focus::SONY_MODELS`). Other Sony bodies store the same tags, but a body is added only after its
+(`luz_meta::focus::SONY_MODELS`). Other Sony bodies store the same tags, but a body is added only after its
 files are checked, so an unchecked one shows nothing rather than a misleading box. Fujifilm, Canon, Nikon, OM System
 and Panasonic record similar data and are later steps.
 
@@ -109,11 +109,11 @@ DMF (AF, then manual touch-up) keeps its point.
 ## Code
 
 - `crates/meta/src/focus.rs`: the decoder (bounded; hostile values give no point, never a panic) and its tests,
-  including an opt-in test over real files (`LIGHTCRAFT_FOCUS_SAMPLES=<photo folder>`).
+  including an opt-in test over real files (`LUZ_FOCUS_SAMPLES=<photo folder>`).
 - `crates/meta/src/focus_read.rs`: the header-only read; its tests check it against the whole-file read on intact,
   truncated and corrupted files and count what it reads.
 - `crates/engine/src/focus_scan.rs`: the background job (`photo.readFocusPoints`, `focus.pump`) and
   `crates/engine/src/tests/focus_scan.rs`, with an opt-in comparison over real files
-  (`LIGHTCRAFT_FOCUS_FILES=<a list of paths>`); `crates/ui-egui/src/focus_scan.rs` drives it from the frame loop.
+  (`LUZ_FOCUS_FILES=<a list of paths>`); `crates/ui-egui/src/focus_scan.rs` drives it from the frame loop.
 - `crates/ui-egui/src/panels/detail.rs` (`focus_box`, `focus_pan`, `draw_focus_point`): mapping through the user's
   rotation and crop, the overlay, and the zoom target; `crates/ui-egui/src/tests/focus_point.rs`.

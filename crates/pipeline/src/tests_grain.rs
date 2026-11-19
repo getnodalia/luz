@@ -1,8 +1,8 @@
 //! Film grain through the whole pipeline: which model each process renders with, and the crystal
 //! grain's resolution independence (`crate::crystal`).
 
-use lightcraft_develop::{DevelopSettings, Process};
-use lightcraft_raster::Rgb32f;
+use luz_develop::{DevelopSettings, Process};
+use luz_raster::Rgb32f;
 
 use crate::finish::GrainModel;
 use crate::{OutputDepth, RenderRequest, SourceInfo, render};

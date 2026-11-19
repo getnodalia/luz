@@ -1,10 +1,10 @@
 use super::{
-    ControlResponse, LightcraftApp, MAX_PENDING_SHOTS, MAX_SHOT_BYTES, MAX_SHOT_TOTAL_BYTES, PendingShot, SCREENSHOT_FALLBACK_MS,
-    SCREENSHOT_SETTLE_MS, SHOT_FORCE_BUSY_MS, SHOT_SETTLE_FRAMES, SHOT_SETTLE_MS, Sender, ShotGeometry, headless,
+    ControlResponse, LuzApp, MAX_PENDING_SHOTS, MAX_SHOT_BYTES, MAX_SHOT_TOTAL_BYTES, PendingShot, SCREENSHOT_FALLBACK_MS, SCREENSHOT_SETTLE_MS,
+    SHOT_FORCE_BUSY_MS, SHOT_SETTLE_FRAMES, SHOT_SETTLE_MS, Sender, ShotGeometry, headless,
 };
 use crate::control;
 
-impl LightcraftApp {
+impl LuzApp {
     /// The immutable identity a capture is bound to: the library generation. It changes when a
     /// different library is opened, not on every edit, import batch or keyword op (`catalog.revision`
     /// bumps on all of those), so a screenshot during interactive editing still belongs to the
@@ -99,7 +99,7 @@ impl LightcraftApp {
     pub(crate) fn admit_shot(
         &mut self,
         ctx: &egui::Context,
-        target: Option<lightcraft_engine::originals::WriteTarget>,
+        target: Option<luz_engine::originals::WriteTarget>,
         headless: bool,
         reply: Sender<ControlResponse>,
     ) -> Result<(), String> {

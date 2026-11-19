@@ -13,8 +13,8 @@ pub const FONT_SEMIBOLD: &str = "semibold";
 const WEB_CHINESE_FONT: &str = "web Noto Sans CJK SC";
 
 /// Shared colour-label palette for badges, thumbnail surrounds and feedback.
-pub fn label_color(label: lightcraft_catalog::ColorLabel) -> Color32 {
-    use lightcraft_catalog::ColorLabel;
+pub fn label_color(label: luz_catalog::ColorLabel) -> Color32 {
+    use luz_catalog::ColorLabel;
     match label {
         ColorLabel::Red => Color32::from_rgb(222, 72, 72),
         ColorLabel::Yellow => Color32::from_rgb(232, 196, 58),
@@ -25,18 +25,20 @@ pub fn label_color(label: lightcraft_catalog::ColorLabel) -> Color32 {
 }
 
 /// A translucent label colour over thumbnail chrome; selection remains brighter.
-pub fn label_background(base: Color32, label: Option<lightcraft_catalog::ColorLabel>, selected: bool) -> Color32 {
+pub fn label_background(base: Color32, label: Option<luz_catalog::ColorLabel>, selected: bool) -> Color32 {
     label.map_or(base, |l| base.lerp_to_gamma(label_color(l), if selected { 0.32 } else { 0.22 }))
 }
 
 /// Label confirmations use a pale colour and dark text, distinct from neutral/error HUDs.
-pub fn label_toast_colors(label: lightcraft_catalog::ColorLabel) -> (Color32, Color32) {
+pub fn label_toast_colors(label: luz_catalog::ColorLabel) -> (Color32, Color32) {
     (Color32::WHITE.lerp_to_gamma(label_color(label), 0.3), Color32::from_rgb(36, 24, 24))
 }
 
 #[derive(Clone, Copy, Debug)]
 pub struct Tokens {
-    /// Top bar, side panels, bottom bar, tool strip.
+    /// The window behind the islands: the top bar and the gaps between panels.
+    pub window: Color32,
+    /// The islands: side panels, bottom bar, tool strip.
     pub chrome: Color32,
     /// Photo canvas (detail view) and filmstrip.
     pub canvas: Color32,
@@ -132,6 +134,7 @@ impl ThemeKind {
 impl Default for Tokens {
     fn default() -> Self {
         Tokens {
+            window: Color32::from_rgb(0x1c, 0x1c, 0x1c),
             chrome: Color32::from_rgb(0x2d, 0x2d, 0x2d),
             canvas: Color32::from_rgb(0x1c, 0x1c, 0x1c),
             grid_bg: Color32::from_rgb(0x0f, 0x0f, 0x0f),
@@ -178,6 +181,54 @@ impl Default for Tokens {
 impl Tokens {
     /// The tokens of `kind`. Metrics are shared; only colours change.
     pub fn for_kind(kind: ThemeKind) -> Tokens {
+        Self::photo_surfaces(kind).nodalia(kind)
+    }
+
+    /// The Nodalia Design Language over a theme's photo surfaces: the window, the islands, text,
+    /// controls and the accent come from `nodalia-theme` with Luz's accent. The grid, its cells,
+    /// the canvas and the selection rings stay neutral grey, so nothing tints a photo being judged.
+    fn nodalia(self, kind: ThemeKind) -> Tokens {
+        let p = ndl_palette(kind);
+        Tokens {
+            window: ndl(p.surface_window),
+            chrome: ndl(p.surface_panel),
+            divider: ndl(p.border_subtle),
+            inset: ndl(p.surface_sunken),
+            field: ndl(p.control_field_bg),
+            field_border: ndl(p.border_default),
+            button: ndl(p.control_bg),
+            button_border: ndl(p.border_default),
+            hover: ndl(p.control_bg_hover),
+            pressed: ndl(p.control_bg_pressed),
+            tool_active: ndl(p.control_bg_pressed),
+            text: ndl(p.text_primary),
+            text_label: ndl(p.text_secondary),
+            text_dim: ndl(p.text_tertiary),
+            text_disabled: ndl(p.text_disabled),
+            icon: ndl(p.text_secondary),
+            track: ndl(p.control_track),
+            accent: ndl(p.accent_default),
+            caution: ndl(p.status_warning_fg),
+            reject: ndl(p.status_danger_fg),
+            ..self
+        }
+    }
+
+    /// The creator suite's shared parts (`nodalia_theme::creator`) in this theme's colours.
+    pub fn creator(&self) -> nodalia_theme::creator::Look {
+        let mut p = ndl_palette(if self.window.r() > 128 { ThemeKind::Paper } else { ThemeKind::Charcoal });
+        p.surface_window = rgba(self.window);
+        p.surface_panel = rgba(self.chrome);
+        p.accent_default = rgba(self.accent);
+        nodalia_theme::creator::Look::new(p).strong_family(FontFamily::Name(FONT_SEMIBOLD.into()))
+    }
+
+    /// Whether these tokens are a dark theme.
+    pub fn dark(&self) -> bool {
+        self.window.r() <= 128
+    }
+
+    fn photo_surfaces(kind: ThemeKind) -> Tokens {
         let rgb = |v: u32| Color32::from_rgb((v >> 16) as u8, (v >> 8) as u8, v as u8);
         let base = Tokens::default();
         match kind {
@@ -288,28 +339,25 @@ pub fn install_fonts(ctx: &egui::Context) {
 
 /// Install the browser's separately downloaded Chinese face alongside the embedded faces.
 pub fn install_fonts_with_chinese(ctx: &egui::Context, chinese: Option<&Arc<FontData>>) {
-    ctx.set_fonts(font_definitions_with_chinese(lightcraft_engine::CRAFT_FONTS, chinese));
+    ctx.set_fonts(font_definitions_with_chinese(luz_engine::CRAFT_FONTS, chinese));
 }
 
 /// Inter remains the default UI face. Egui's default faces and craft-fonts cover other scripts;
 /// the browser's separate Chinese face precedes Japanese faces within the CJK fallback list.
 /// Without craft-fonts or that separate face, CJK text shows boxes.
-pub fn font_definitions(craft: &'static [lightcraft_engine::CraftFont]) -> FontDefinitions {
+pub fn font_definitions(craft: &'static [luz_engine::CraftFont]) -> FontDefinitions {
     font_definitions_with_chinese(craft, None)
 }
 
 /// The web build keeps the large Simplified Chinese face outside the size-limited WASM module.
 /// Prefer it for Chinese UI text, including Traditional Chinese until it has its own face.
-pub fn font_definitions_with_chinese(craft: &'static [lightcraft_engine::CraftFont], chinese: Option<&Arc<FontData>>) -> FontDefinitions {
+pub fn font_definitions_with_chinese(craft: &'static [luz_engine::CraftFont], chinese: Option<&Arc<FontData>>) -> FontDefinitions {
     let mut fonts = FontDefinitions::default();
     fonts.font_data.insert("Inter".into(), Arc::new(FontData::from_static(include_bytes!("../../../assets/fonts/Inter-Regular.ttf"))));
     fonts.font_data.insert("Inter-SemiBold".into(), Arc::new(FontData::from_static(include_bytes!("../../../assets/fonts/Inter-SemiBold.ttf"))));
     // Craft-fonts faces in preference order for a family drawn in `style`.
     let fallback = |style: &str| {
-        lightcraft_engine::fonts::ui_fallback(craft, crate::i18n::language().script(), style)
-            .into_iter()
-            .map(craft_font_name)
-            .collect::<Vec<String>>()
+        luz_engine::fonts::ui_fallback(craft, crate::i18n::language().script(), style).into_iter().map(craft_font_name).collect::<Vec<String>>()
     };
     let (mut regular, mut bold) = (fallback("Regular"), fallback("Bold"));
     for name in regular.iter().chain(bold.iter()) {
@@ -361,7 +409,7 @@ pub fn font_definitions_with_chinese(craft: &'static [lightcraft_engine::CraftFo
 /// The font families used by this app instance, including the browser's separately loaded face.
 pub fn font_credits(chinese_loaded: bool) -> String {
     let mut families = vec!["Inter"];
-    for f in lightcraft_engine::CRAFT_FONTS {
+    for f in luz_engine::CRAFT_FONTS {
         if !families.contains(&f.family) {
             families.push(f.family);
         }
@@ -388,7 +436,7 @@ fn strong_weight(bytes: &'static [u8]) -> Option<FontData> {
     Some(face.tweak(tweak))
 }
 
-fn craft_font_name(f: &lightcraft_engine::CraftFont) -> String {
+fn craft_font_name(f: &luz_engine::CraftFont) -> String {
     format!("craft-fonts {} {}", f.family, f.style)
 }
 
@@ -403,8 +451,64 @@ pub const WHEEL_STRIP_SHARE: f32 = 1.0 / 3.0;
 /// one notch still zooms the same amount now that it scrolls [`WHEEL_LINE_POINTS`].
 pub const WHEEL_ZOOM_PER_POINT: f32 = 40.0 / 200.0 / WHEEL_LINE_POINTS;
 
+/// Luz's accent in the Nodalia palette.
+pub const LUZ: nodalia_theme::Accent = nodalia_theme::Accent::Luz;
+/// An island's corner radius.
+pub const ISLAND_RADIUS: f32 = nodalia_theme::component::PANEL_RADIUS;
+/// The window-colour gap between two islands, and between an island and the window's edge.
+pub const ISLAND_GAP: f32 = nodalia_theme::component::WINDOW_GAP;
+
+pub(crate) fn ndl(c: nodalia_theme::Rgba) -> Color32 {
+    Color32::from_rgba_unmultiplied(c.r, c.g, c.b, c.a)
+}
+
+fn rgba(c: Color32) -> nodalia_theme::Rgba {
+    nodalia_theme::Rgba::new(c.r(), c.g(), c.b(), c.a())
+}
+
+/// Nodalia's palette with Luz's accent for `kind`: Charcoal and Silver lift NDL's darkest and
+/// lightest surfaces a step towards the middle (Midnight and Paper are NDL's own).
+pub(crate) fn ndl_palette(kind: ThemeKind) -> nodalia_theme::Palette {
+    let mode = if kind.is_dark() { nodalia_theme::Mode::Dark } else { nodalia_theme::Mode::Light };
+    let mut p = mode.palette_with(LUZ);
+    let shift = |c: nodalia_theme::Rgba, k: f32| {
+        let m = |v: u8| {
+            let v = f32::from(v);
+            let to = if k > 0.0 { 255.0 } else { 0.0 };
+            (v + (to - v) * k.abs()).round().clamp(0.0, 255.0) as u8
+        };
+        nodalia_theme::Rgba::new(m(c.r), m(c.g), m(c.b), c.a)
+    };
+    let k = match kind {
+        ThemeKind::Charcoal => 0.08,
+        ThemeKind::Silver => -0.05,
+        ThemeKind::Midnight | ThemeKind::Paper => return p,
+    };
+    for c in [
+        &mut p.surface_window,
+        &mut p.surface_panel,
+        &mut p.surface_raised,
+        &mut p.surface_sunken,
+        &mut p.surface_overlay,
+        &mut p.control_bg,
+        &mut p.control_bg_hover,
+        &mut p.control_bg_pressed,
+        &mut p.control_field_bg,
+        &mut p.border_subtle,
+    ] {
+        *c = shift(*c, k);
+    }
+    p
+}
+
+/// Rounds the corners of an island whose contents paint edge to edge (a dock pane, the photo):
+/// a window-coloured ring outside the rounded `rect`. Paint it after the contents.
+pub fn round_island_corners(painter: &egui::Painter, t: &Tokens, rect: egui::Rect) {
+    nodalia_theme::creator::round_island_corners(painter, &t.creator(), rect);
+}
+
 fn theme_id() -> egui::Id {
-    egui::Id::unique("lightcraft-theme")
+    egui::Id::unique("luz-theme")
 }
 
 /// The theme `ctx` is styled with (none before the first [`apply_kind`]).
@@ -414,12 +518,12 @@ pub fn current(ctx: &egui::Context) -> Option<ThemeKind> {
 
 /// Windows only: tell the window its theme again, the first time it has focus. A first theme that
 /// reaches a focused window as it comes up changes the title's colour but not the caption's, so
-/// with LightCraft dark on a light system the title is white on a light caption (it looks blank),
+/// with Luz dark on a light system the title is white on a light caption (it looks blank),
 /// and light on dark is dark on dark, until focus next moves (#3381). The same command repaints
 /// the caption once the window is up. A window that opens without focus shows the right colours
 /// from the start.
 pub fn refresh_window_on_first_focus(ctx: &egui::Context) {
-    let done = egui::Id::unique("lightcraft-window-theme-refreshed");
+    let done = egui::Id::unique("luz-window-theme-refreshed");
     if !cfg!(target_os = "windows") || !ctx.input(|i| i.focused) || ctx.data(|d| d.get_temp::<bool>(done)).is_some() {
         return;
     }
@@ -461,8 +565,9 @@ pub fn apply_kind(ctx: &egui::Context, kind: ThemeKind) {
     v.extreme_bg_color = t.field;
     v.faint_bg_color = t.inset;
     v.window_stroke = Stroke::new(1.0, t.button_border);
-    v.window_corner_radius = CornerRadius::same(6);
-    v.menu_corner_radius = CornerRadius::same(6);
+    // NDL: dialogs are islands, menus and popovers take the control radius
+    v.window_corner_radius = CornerRadius::same(ISLAND_RADIUS as u8);
+    v.menu_corner_radius = CornerRadius::same(nodalia_theme::component::CONTROL_RADIUS as u8);
     v.selection.bg_fill = t.accent.gamma_multiply(0.6);
     v.selection.stroke = Stroke::new(1.0, t.accent);
     v.override_text_color = Some(t.text_label);
@@ -472,7 +577,7 @@ pub fn apply_kind(ctx: &egui::Context, kind: ThemeKind) {
     let w = &mut v.widgets;
     craft_ui::theme::WidgetPalette { noninteractive: t.chrome, inactive: t.button, hovered: t.hover, active: t.pressed, open: t.hover }.apply_to(
         w,
-        CornerRadius::same(4),
+        CornerRadius::same(8),
         Stroke::new(1.0, t.text_label),
     );
     w.noninteractive.bg_stroke = Stroke::new(1.0, t.divider);
@@ -510,7 +615,7 @@ mod tests {
             }
             // the selected ring also sits on a selected cell (square grid, filmstrip), label-tinted or not
             let mut selected_cells = vec![("grid", t.grid_bg), ("selected cell", t.cell_selected)];
-            for label in lightcraft_catalog::ColorLabel::ALL {
+            for label in luz_catalog::ColorLabel::ALL {
                 selected_cells.push(("labelled selected cell", label_background(t.cell_selected, Some(label), true)));
             }
             for (what, surface) in selected_cells {
@@ -587,13 +692,13 @@ mod tests {
     /// Exercise the Thai characters of the reported folder name through every egui family.
     #[test]
     fn thai_folder_name_has_glyphs_in_every_ui_family() {
-        if lightcraft_engine::CRAFT_FONTS.is_empty() {
-            lightcraft_testkit::skip!(Fonts, "built without CRAFT_FONTS_DIR: no craft-fonts to check");
+        if luz_engine::CRAFT_FONTS.is_empty() {
+            luz_testkit::skip!(Fonts, "built without CRAFT_FONTS_DIR: no craft-fonts to check");
             return;
         }
-        let thai = lightcraft_engine::CRAFT_FONTS.iter().find(|f| f.covers("Thai")).expect("font input includes Thai");
+        let thai = luz_engine::CRAFT_FONTS.iter().find(|f| f.covers("Thai")).expect("font input includes Thai");
         set_language(Locale::En);
-        let definitions = font_definitions(lightcraft_engine::CRAFT_FONTS);
+        let definitions = font_definitions(luz_engine::CRAFT_FONTS);
         let name = craft_font_name(thai);
         assert!(definitions.font_data.contains_key(&name));
         // (The strong family has the face's heavier twin instead when it is a variable font.)
@@ -620,14 +725,14 @@ mod tests {
 
     #[test]
     fn native_chinese_face_falls_back_after_default_faces() {
-        static FACES: &[lightcraft_engine::CraftFont] = &[
-            lightcraft_engine::CraftFont {
+        static FACES: &[luz_engine::CraftFont] = &[
+            luz_engine::CraftFont {
                 family: "BIZ UDPGothic",
                 style: "Regular",
                 scripts: &["Jpan", "Latn"],
                 bytes: include_bytes!("../../../assets/fonts/Inter-Regular.ttf"),
             },
-            lightcraft_engine::CraftFont {
+            luz_engine::CraftFont {
                 family: "Noto Sans CJK SC",
                 style: "Regular",
                 scripts: &["Hans", "Latn"],
@@ -656,13 +761,13 @@ mod tests {
     fn separate_web_chinese_face_is_available_in_every_ui_family() {
         // Simulate the WASM build, which embeds only the Japanese face. The Chinese face arrives
         // as a separate file and must precede that face when the UI uses Chinese.
-        static JAPANESE: &[lightcraft_engine::CraftFont] = &[lightcraft_engine::CraftFont {
+        static JAPANESE: &[luz_engine::CraftFont] = &[luz_engine::CraftFont {
             family: "BIZ UDPGothic",
             style: "Regular",
             scripts: &["Jpan", "Latn"],
             bytes: include_bytes!("../../../assets/fonts/Inter-Regular.ttf"),
         }];
-        let embedded = lightcraft_engine::CRAFT_FONTS.iter().find(|font| font.family == "Noto Sans CJK SC" && font.style == "Regular");
+        let embedded = luz_engine::CRAFT_FONTS.iter().find(|font| font.family == "Noto Sans CJK SC" && font.style == "Regular");
         let fallback: &'static [u8] = include_bytes!("../../../assets/fonts/Inter-Regular.ttf");
         let source = embedded.map_or(fallback, |font| font.bytes);
         let chinese = Arc::new(FontData::from_static(source));
@@ -727,8 +832,8 @@ mod tests {
     }
 
     /// The craft-fonts face for Arabic, when it is a variable font with a weight axis.
-    fn variable_arabic_face() -> Option<&'static lightcraft_engine::CraftFont> {
-        let face = lightcraft_engine::CRAFT_FONTS.iter().find(|font| font.covers("Arab"))?;
+    fn variable_arabic_face() -> Option<&'static luz_engine::CraftFont> {
+        let face = luz_engine::CRAFT_FONTS.iter().find(|font| font.covers("Arab"))?;
         FontData::from_static(face.bytes).variation_axes().iter().any(|axis| axis.tag.to_be_bytes() == *b"wght").then_some(face)
     }
 
@@ -743,8 +848,8 @@ mod tests {
         }
         set_language(Locale::En);
         // When an Arabic word is laid out regular and strong at the same size
-        let (regular_width, regular_ink) = width_and_ink(font_definitions(lightcraft_engine::CRAFT_FONTS), ARABIC_WORD, FontFamily::Proportional);
-        let (strong_width, strong_ink) = width_and_ink(font_definitions(lightcraft_engine::CRAFT_FONTS), ARABIC_WORD, semibold_family());
+        let (regular_width, regular_ink) = width_and_ink(font_definitions(luz_engine::CRAFT_FONTS), ARABIC_WORD, FontFamily::Proportional);
+        let (strong_width, strong_ink) = width_and_ink(font_definitions(luz_engine::CRAFT_FONTS), ARABIC_WORD, semibold_family());
         eprintln!("{ARABIC_WORD}: regular {regular_width} px, ink {regular_ink}; strong {strong_width} px, ink {strong_ink}");
         // Then the strong one is wider and puts down more ink
         assert!(strong_width > regular_width, "strong Arabic is wider than regular: strong {strong_width} px, regular {regular_width} px");
@@ -762,7 +867,7 @@ mod tests {
         };
         set_language(Locale::En);
         // When the UI builds its fonts
-        let definitions = font_definitions(lightcraft_engine::CRAFT_FONTS);
+        let definitions = font_definitions(luz_engine::CRAFT_FONTS);
         // Then the regular Arabic face is the font file untouched, and the only Arabic face of
         // the regular and monospace families
         let name = craft_font_name(arabic);
@@ -801,7 +906,7 @@ mod tests {
     #[test]
     fn a_static_face_has_no_strong_twin() {
         // Given a face without a weight axis for another script
-        static FACES: &[lightcraft_engine::CraftFont] = &[lightcraft_engine::CraftFont {
+        static FACES: &[luz_engine::CraftFont] = &[luz_engine::CraftFont {
             family: "Static Sans",
             style: "Regular",
             scripts: &["Thai"],

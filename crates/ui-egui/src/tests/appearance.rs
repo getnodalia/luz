@@ -7,16 +7,16 @@ use serde_json::json;
 use crate::headless::Headless;
 use crate::state::{AppSettings, AppearanceMode, DarkTheme, LightTheme, UiState};
 use crate::theme::ThemeKind;
-use crate::{LightcraftApp, Services};
+use crate::{LuzApp, Services};
 
 const T: Duration = Duration::from_secs(20);
 
-fn app() -> LightcraftApp {
-    LightcraftApp::new(lightcraft_engine::Session::new(), Services { png: None, ..Default::default() })
+fn app() -> LuzApp {
+    LuzApp::new(luz_engine::Session::new(), Services { png: None, ..Default::default() })
 }
 
 /// One frame of logic on `ctx`: where the theme is applied.
-fn frame(app: &mut LightcraftApp, ctx: &egui::Context) {
+fn frame(app: &mut LuzApp, ctx: &egui::Context) {
     let mut output = ctx.run_ui(egui::RawInput::default(), |ui| app.logic(ui.ctx()));
     output.textures_delta.clear();
 }
@@ -32,8 +32,9 @@ fn new_users_keep_the_dark_look_and_old_settings_load_unchanged() {
     assert_eq!(old.settings.dark_theme, DarkTheme::Charcoal);
     assert_eq!(old.settings.light_theme, LightTheme::Silver);
     assert_eq!(old.settings.startup_view, crate::state::StartupView::Detail);
-    // and the Charcoal tokens are the ones LightCraft always had
-    assert_eq!(crate::theme::Tokens::for_kind(ThemeKind::Charcoal).chrome, crate::theme::Tokens::default().chrome);
+    // and Charcoal keeps the neutral photo surfaces Luz always had (Nodalia styles the chrome)
+    let (charcoal, base) = (crate::theme::Tokens::for_kind(ThemeKind::Charcoal), crate::theme::Tokens::default());
+    assert_eq!((charcoal.canvas, charcoal.grid_bg, charcoal.cell), (base.canvas, base.grid_bg, base.cell));
 }
 
 /// Delete asks first by default (#1239). Earlier versions saved `"confirmDelete": false` for
@@ -53,7 +54,7 @@ fn delete_asks_first_by_default_also_for_settings_saved_by_earlier_versions() {
 fn choices_validate_and_survive_a_restart() {
     let mut a = app();
     let ctx = egui::Context::default();
-    let set = |a: &mut LightcraftApp, p: serde_json::Value| {
+    let set = |a: &mut LuzApp, p: serde_json::Value| {
         let (req, _) = crate::control::ControlRequest::new("ui.set", p);
         match crate::control::handle(a, &ctx, &req) {
             crate::control::Outcome::Done(reply) => reply,
@@ -92,12 +93,6 @@ fn the_button_cycles_auto_light_dark_without_losing_theme_choices() {
         frame(&mut a, &ctx);
         assert_eq!(crate::theme::current(&ctx), Some(shown));
         assert_eq!(crate::theme::Tokens::get(&ctx).chrome, crate::theme::Tokens::for_kind(shown).chrome);
-        let icon = match mode {
-            AppearanceMode::Auto => crate::icons::Icon::Monitor,
-            AppearanceMode::Light => crate::icons::Icon::Sun,
-            AppearanceMode::Dark => crate::icons::Icon::Moon,
-        };
-        assert_eq!(crate::panels::topbar::appearance_icon(mode).0, icon);
     }
     // a light theme from the menu fixes Light
     a.run("view.theme", json!({"theme": "silver"})).unwrap();
@@ -163,13 +158,12 @@ fn view_menu_lists_modes_and_themes_with_checks() {
 }
 
 #[test]
-fn the_top_bar_button_and_settings_cards_drive_the_mode() {
+fn the_settings_cards_drive_the_mode() {
     let mut h = Headless::new(app(), [1400.0, 900.0], 1.0);
     h.settle(Duration::from_secs(60));
-    assert_eq!(h.request("ui.clickWidget", json!({"id": "icon:appearance"}), T)["ok"], true);
-    h.step();
-    assert_eq!(h.app.ui.settings.appearance_mode, AppearanceMode::Auto);
-    assert_eq!(h.request("ui.clickWidget", json!({"id": "icon:appearance"}), T)["ok"], true);
+    // Nodalia: the theme is chosen in Preferences only, never from the top bar
+    assert!(!h.app.widgets.iter().any(|(id, _)| id == "icon:appearance"), "the top bar still has a theme button");
+    h.app.run("view.appearance", json!({"mode": "light"})).unwrap();
     h.step();
     h.step();
     assert_eq!(h.app.ui.settings.appearance_mode, AppearanceMode::Light);
@@ -192,7 +186,7 @@ fn the_top_bar_button_and_settings_cards_drive_the_mode() {
 
 #[test]
 fn top_bar_has_no_cloud_widget() {
-    // LightCraft has no cloud service: the icon only shows as the warning that saving is failing
+    // Luz has no cloud service: the icon only shows as the warning that saving is failing
     // (`tests/unsaved.rs`), not as a button that does nothing.
     let mut h = Headless::new(app(), [1400.0, 900.0], 1.0);
     h.settle(T);
@@ -239,11 +233,10 @@ fn favorites_validate_roundtrip_and_stars_toggle_without_selecting() {
             h.step();
         }
         let pixels = h.paint();
-        let image =
-            lightcraft_raster::Rgba8 { width: pixels.size[0], height: pixels.size[1], data: pixels.pixels.iter().map(|c| c.to_array()).collect() };
-        let png = lightcraft_codecs::encode_png(&lightcraft_codecs::EncodeImage::rgba8(&image), &lightcraft_codecs::EncodeMeta::default()).unwrap();
+        let image = luz_raster::Rgba8 { width: pixels.size[0], height: pixels.size[1], data: pixels.pixels.iter().map(|c| c.to_array()).collect() };
+        let png = luz_codecs::encode_png(&luz_codecs::EncodeImage::rgba8(&image), &luz_codecs::EncodeMeta::default()).unwrap();
         std::fs::create_dir_all(&path).unwrap();
-        std::fs::write(std::path::Path::new(&path).join("lightcraft-favorites.png"), png).unwrap();
+        std::fs::write(std::path::Path::new(&path).join("luz-favorites.png"), png).unwrap();
     }
     assert_eq!(h.app.ui.settings.light_theme, LightTheme::Silver, "starring does not select");
     let saved = serde_json::to_value(&h.app.ui.settings).unwrap();
@@ -251,19 +244,24 @@ fn favorites_validate_roundtrip_and_stars_toggle_without_selecting() {
     assert_eq!(h.request("ui.clickWidget", json!({"id": "button:themeFavorite-paper"}), T)["ok"], true);
     h.step();
     assert!(h.app.ui.settings.favorite_themes.is_empty());
-    h.app.ui.dialog = None;
-    h.app.ui.settings.favorite_themes = vec!["midnight".into(), "paper".into()];
-    h.step();
-    assert_eq!(h.request("ui.clickWidget", json!({"id": "icon:appearance", "button": "right"}), T)["ok"], true);
-    h.step();
-    h.step();
-    let light = h.app.widgets.iter().find(|(id, _)| id == "menu:themeFavorite-paper").unwrap().1;
-    let dark = h.app.widgets.iter().find(|(id, _)| id == "menu:themeFavorite-midnight").unwrap().1;
-    assert!(light.top() < dark.top(), "light favorites precede dark favorites");
-    assert_eq!(h.request("ui.clickWidget", json!({"id": "menu:themeFavorite-paper"}), T)["ok"], true);
-    h.step();
-    h.step();
-    assert_eq!(h.app.ui.settings.appearance_mode, AppearanceMode::Light);
-    assert_eq!(h.app.ui.settings.light_theme, LightTheme::Paper);
-    assert_eq!(h.app.ui.settings.dark_theme, DarkTheme::Charcoal);
+}
+
+/// Nodalia's ≡ menu at the top bar's right end holds Preferences, Keyboard Shortcuts and About.
+#[test]
+fn the_app_menu_opens_preferences_shortcuts_and_about() {
+    for (item, dialog) in [
+        ("menu:preferences", crate::state::Dialog::Settings { tab: String::new() }),
+        ("menu:shortcuts", crate::state::Dialog::Shortcuts),
+        ("menu:about", crate::state::Dialog::About),
+    ] {
+        let mut h = Headless::new(app(), [1400.0, 900.0], 1.0);
+        h.settle(T);
+        assert_eq!(h.request("ui.clickWidget", json!({"id": "icon:menu"}), T)["ok"], true);
+        h.step();
+        h.step();
+        assert_eq!(h.request("ui.clickWidget", json!({"id": item}), T)["ok"], true, "{item}");
+        h.step();
+        let open = h.app.ui.dialog.clone();
+        assert_eq!(std::mem::discriminant(&open.expect(item)), std::mem::discriminant(&dialog), "{item}");
+    }
 }

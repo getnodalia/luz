@@ -3,7 +3,7 @@
 use std::collections::HashSet;
 use std::sync::Arc;
 
-use lightcraft_develop::DevelopSettings;
+use luz_develop::DevelopSettings;
 
 use crate::*;
 

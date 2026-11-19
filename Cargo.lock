@@ -1874,7 +1874,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -3536,522 +3536,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightcraft"
-version = "0.18.0"
-dependencies = [
- "chrono",
- "eframe",
- "egui",
- "lightcraft-codecs",
- "lightcraft-engine",
- "lightcraft-raster",
- "lightcraft-sysmem",
- "lightcraft-testkit",
- "lightcraft-ui-egui",
- "lightcraft-wincolor",
- "log",
- "muda",
- "objc2 0.6.5",
- "objc2-app-kit 0.3.2",
- "objc2-foundation 0.3.2",
- "pollster 1.0.1",
- "raw-window-handle",
- "rfd",
- "serde_json",
- "winit",
- "winresource",
- "zbus",
-]
-
-[[package]]
-name = "lightcraft-catalog"
-version = "0.18.0"
-dependencies = [
- "chrono",
- "crc32fast",
- "dhat",
- "lightcraft-develop",
- "lightcraft-geom",
- "lightcraft-meta",
- "lightcraft-raw",
- "lightcraft-testkit",
- "log",
- "proptest",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "web-time",
- "winapi-util",
-]
-
-[[package]]
-name = "lightcraft-cli"
-version = "0.18.0"
-dependencies = [
- "dhat",
- "lightcraft-codecs",
- "lightcraft-denoise",
- "lightcraft-engine",
- "lightcraft-mcp",
- "lightcraft-merge",
- "lightcraft-raster",
- "lightcraft-sysmem",
- "lightcraft-testkit",
- "lightcraft-ui-egui",
- "serde_json",
-]
-
-[[package]]
-name = "lightcraft-codecs"
-version = "0.18.0"
-dependencies = [
- "avif-serialize",
- "bytemuck",
- "dhat",
- "image",
- "image-webp",
- "jixel",
- "jpeg-decoder",
- "jpeg-encoder",
- "jxl-oxide",
- "lightcraft-color",
- "lightcraft-geom",
- "lightcraft-heif",
- "lightcraft-raster",
- "lightcraft-testkit",
- "moxcms 0.9.1",
- "png",
- "proptest",
- "rav1e",
- "ravif",
- "rayon",
- "serde",
- "thiserror 2.0.21",
- "tiff",
- "zune-core",
- "zune-jpeg",
-]
-
-[[package]]
-name = "lightcraft-color"
-version = "0.18.0"
-dependencies = [
- "lightcraft-geom",
- "proptest",
- "serde",
-]
-
-[[package]]
-name = "lightcraft-denoise"
-version = "0.18.0"
-dependencies = [
- "faer-core",
- "lightcraft-denoise-core",
- "lightcraft-raster",
- "miniz_oxide 0.9.1",
- "proptest",
- "rayon",
- "serde",
- "serde_json",
- "sha2",
- "thiserror 2.0.21",
- "web-time",
-]
-
-[[package]]
-name = "lightcraft-denoise-core"
-version = "0.18.0"
-dependencies = [
- "dhat",
- "lightcraft-raster",
- "miniz_oxide 0.9.1",
- "proptest",
- "rayon",
- "serde",
- "serde_json",
- "sha2",
- "thiserror 2.0.21",
- "web-time",
-]
-
-[[package]]
-name = "lightcraft-develop"
-version = "0.18.0"
-dependencies = [
- "lightcraft-color",
- "lightcraft-geom",
- "miniz_oxide 0.9.1",
- "proptest",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "lightcraft-engine"
-version = "0.18.0"
-dependencies = [
- "ab_glyph",
- "chrono",
- "craft-docpath",
- "crc32fast",
- "fs4",
- "harfrust 0.13.3",
- "jxl-oxide",
- "libc",
- "lightcraft-catalog",
- "lightcraft-codecs",
- "lightcraft-color",
- "lightcraft-denoise",
- "lightcraft-denoise-core",
- "lightcraft-develop",
- "lightcraft-faces",
- "lightcraft-fetch",
- "lightcraft-geocode",
- "lightcraft-geom",
- "lightcraft-gpu",
- "lightcraft-heif",
- "lightcraft-lensdb",
- "lightcraft-merge",
- "lightcraft-meta",
- "lightcraft-pipeline",
- "lightcraft-preview",
- "lightcraft-raster",
- "lightcraft-raw",
- "lightcraft-scenes",
- "lightcraft-segment",
- "lightcraft-slideshow",
- "lightcraft-testkit",
- "lightcraft-tiff",
- "log",
- "miniz_oxide 0.9.1",
- "rayon",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "unicode-normalization",
- "unicode-segmentation",
- "web-time",
-]
-
-[[package]]
-name = "lightcraft-faces"
-version = "0.18.0"
-dependencies = [
- "lightcraft-testkit",
- "matrixmultiply",
- "ndarray",
- "proptest",
- "serde",
- "serde_json",
- "sha2",
- "thiserror 2.0.21",
- "web-time",
-]
-
-[[package]]
-name = "lightcraft-fetch"
-version = "0.18.0"
-dependencies = [
- "log",
- "rustls",
- "rustls-rustcrypto",
- "sha2",
- "webpki-roots",
-]
-
-[[package]]
-name = "lightcraft-film"
-version = "0.18.0"
-dependencies = [
- "libm",
-]
-
-[[package]]
-name = "lightcraft-geocode"
-version = "0.18.0"
-dependencies = [
- "miniz_oxide 0.9.1",
- "serde",
-]
-
-[[package]]
-name = "lightcraft-geom"
-version = "0.18.0"
-dependencies = [
- "proptest",
- "serde",
-]
-
-[[package]]
-name = "lightcraft-gpu"
-version = "0.18.0"
-dependencies = [
- "bytemuck",
- "lightcraft-color",
- "lightcraft-denoise",
- "lightcraft-develop",
- "lightcraft-faces",
- "lightcraft-geom",
- "lightcraft-pipeline",
- "lightcraft-raster",
- "lightcraft-raw",
- "lightcraft-scenes",
- "lightcraft-testkit",
- "log",
- "pollster 1.0.1",
- "wgpu",
-]
-
-[[package]]
-name = "lightcraft-heif"
-version = "0.18.0"
-dependencies = [
- "heic-rs",
- "rayon",
-]
-
-[[package]]
-name = "lightcraft-inpaint"
-version = "0.18.0"
-dependencies = [
- "rayon",
-]
-
-[[package]]
-name = "lightcraft-lensdb"
-version = "0.18.0"
-dependencies = [
- "lightcraft-develop",
- "lightcraft-geom",
- "quick-xml",
-]
-
-[[package]]
-name = "lightcraft-mcp"
-version = "0.18.0"
-dependencies = [
- "lightcraft-codecs",
- "lightcraft-engine",
- "lightcraft-raster",
- "log",
- "serde_json",
-]
-
-[[package]]
-name = "lightcraft-merge"
-version = "0.18.0"
-dependencies = [
- "lightcraft-codecs",
- "lightcraft-color",
- "lightcraft-geom",
- "lightcraft-meta",
- "lightcraft-raster",
- "lightcraft-raw",
- "lightcraft-scenes",
- "rayon",
- "serde",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "lightcraft-meta"
-version = "0.18.0"
-dependencies = [
- "chrono",
- "lightcraft-geom",
- "lightcraft-heif",
- "lightcraft-tiff",
- "proptest",
- "quick-xml",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "lightcraft-pipeline"
-version = "0.18.0"
-dependencies = [
- "dhat",
- "image",
- "lightcraft-color",
- "lightcraft-develop",
- "lightcraft-geom",
- "lightcraft-inpaint",
- "lightcraft-raster",
- "lightcraft-raw",
- "lightcraft-scenes",
- "proptest",
- "rayon",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "lightcraft-preview"
-version = "0.18.0"
-dependencies = [
- "jpeg-encoder",
- "lightcraft-raster",
- "log",
- "siphasher",
- "zune-core",
- "zune-jpeg",
-]
-
-[[package]]
-name = "lightcraft-raster"
-version = "0.18.0"
-dependencies = [
- "libc",
- "lightcraft-color",
- "lightcraft-geom",
- "proptest",
- "rayon",
- "serde",
-]
-
-[[package]]
-name = "lightcraft-raw"
-version = "0.18.0"
-dependencies = [
- "chrono",
- "craft-crw",
- "dhat",
- "jpeg-encoder",
- "jxl-oxide",
- "lightcraft-color",
- "lightcraft-geom",
- "lightcraft-meta",
- "lightcraft-raster",
- "lightcraft-testkit",
- "lightcraft-tiff",
- "miniz_oxide 0.9.1",
- "proptest",
- "rayon",
- "serde",
- "sha2",
- "thiserror 2.0.21",
- "zune-core",
- "zune-jpeg",
- "zune-jpegxl",
-]
-
-[[package]]
-name = "lightcraft-scenes"
-version = "0.18.0"
-dependencies = [
- "image",
- "lightcraft-color",
- "lightcraft-raster",
- "rayon",
- "serde",
-]
-
-[[package]]
-name = "lightcraft-segment"
-version = "0.18.0"
-dependencies = [
- "candle-core",
- "candle-nn",
- "lightcraft-fetch",
- "lightcraft-testkit",
- "log",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "lightcraft-slideshow"
-version = "0.18.0"
-dependencies = [
- "lightcraft-raster",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "lightcraft-sysmem"
-version = "0.18.0"
-
-[[package]]
-name = "lightcraft-testkit"
-version = "0.18.0"
-
-[[package]]
-name = "lightcraft-tiff"
-version = "0.18.0"
-dependencies = [
- "proptest",
- "serde",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "lightcraft-ui-egui"
-version = "0.18.0"
-dependencies = [
- "craft-ui",
- "craft-window",
- "egui",
- "egui_extras",
- "egui_kittest",
- "lightcraft-catalog",
- "lightcraft-codecs",
- "lightcraft-color",
- "lightcraft-denoise",
- "lightcraft-develop",
- "lightcraft-engine",
- "lightcraft-faces",
- "lightcraft-geom",
- "lightcraft-merge",
- "lightcraft-meta",
- "lightcraft-pipeline",
- "lightcraft-preview",
- "lightcraft-raster",
- "lightcraft-slideshow",
- "lightcraft-testkit",
- "log",
- "nodalia-update",
- "pollster 1.0.1",
- "serde",
- "serde_json",
- "toml",
- "web-time",
-]
-
-[[package]]
-name = "lightcraft-web"
-version = "0.18.0"
-dependencies = [
- "crc32fast",
- "eframe",
- "egui",
- "js-sys",
- "lightcraft-codecs",
- "lightcraft-color",
- "lightcraft-engine",
- "lightcraft-preview",
- "lightcraft-raster",
- "lightcraft-raw",
- "lightcraft-ui-egui",
- "log",
- "serde",
- "serde_json",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
-]
-
-[[package]]
-name = "lightcraft-wincolor"
-version = "0.18.0"
-dependencies = [
- "lightcraft-testkit",
- "windows-sys 0.61.2",
-]
-
-[[package]]
 name = "linebender_resource_handle"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4106,6 +3590,524 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0fae87c125b03c1d2c0150c90365d7d6bcc53fb73a9acaef207d2d065860f062"
 dependencies = [
  "imgref",
+]
+
+[[package]]
+name = "luz"
+version = "0.18.0"
+dependencies = [
+ "chrono",
+ "eframe",
+ "egui",
+ "log",
+ "luz-codecs",
+ "luz-engine",
+ "luz-raster",
+ "luz-sysmem",
+ "luz-testkit",
+ "luz-ui-egui",
+ "luz-wincolor",
+ "muda",
+ "objc2 0.6.5",
+ "objc2-app-kit 0.3.2",
+ "objc2-foundation 0.3.2",
+ "pollster 1.0.1",
+ "raw-window-handle",
+ "rfd",
+ "serde",
+ "serde_json",
+ "winit",
+ "winresource",
+ "zbus",
+]
+
+[[package]]
+name = "luz-catalog"
+version = "0.18.0"
+dependencies = [
+ "chrono",
+ "crc32fast",
+ "dhat",
+ "log",
+ "luz-develop",
+ "luz-geom",
+ "luz-meta",
+ "luz-raw",
+ "luz-testkit",
+ "proptest",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "web-time",
+ "winapi-util",
+]
+
+[[package]]
+name = "luz-cli"
+version = "0.18.0"
+dependencies = [
+ "dhat",
+ "luz-codecs",
+ "luz-denoise",
+ "luz-engine",
+ "luz-mcp",
+ "luz-merge",
+ "luz-raster",
+ "luz-sysmem",
+ "luz-testkit",
+ "luz-ui-egui",
+ "serde_json",
+]
+
+[[package]]
+name = "luz-codecs"
+version = "0.18.0"
+dependencies = [
+ "avif-serialize",
+ "bytemuck",
+ "dhat",
+ "image",
+ "image-webp",
+ "jixel",
+ "jpeg-decoder",
+ "jpeg-encoder",
+ "jxl-oxide",
+ "luz-color",
+ "luz-geom",
+ "luz-heif",
+ "luz-raster",
+ "luz-testkit",
+ "moxcms 0.9.1",
+ "png",
+ "proptest",
+ "rav1e",
+ "ravif",
+ "rayon",
+ "serde",
+ "thiserror 2.0.21",
+ "tiff",
+ "zune-core",
+ "zune-jpeg",
+]
+
+[[package]]
+name = "luz-color"
+version = "0.18.0"
+dependencies = [
+ "luz-geom",
+ "proptest",
+ "serde",
+]
+
+[[package]]
+name = "luz-denoise"
+version = "0.18.0"
+dependencies = [
+ "faer-core",
+ "luz-denoise-core",
+ "luz-raster",
+ "miniz_oxide 0.9.1",
+ "proptest",
+ "rayon",
+ "serde",
+ "serde_json",
+ "sha2",
+ "thiserror 2.0.21",
+ "web-time",
+]
+
+[[package]]
+name = "luz-denoise-core"
+version = "0.18.0"
+dependencies = [
+ "dhat",
+ "luz-raster",
+ "miniz_oxide 0.9.1",
+ "proptest",
+ "rayon",
+ "serde",
+ "serde_json",
+ "sha2",
+ "thiserror 2.0.21",
+ "web-time",
+]
+
+[[package]]
+name = "luz-develop"
+version = "0.18.0"
+dependencies = [
+ "luz-color",
+ "luz-geom",
+ "miniz_oxide 0.9.1",
+ "proptest",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "luz-engine"
+version = "0.18.0"
+dependencies = [
+ "ab_glyph",
+ "chrono",
+ "craft-docpath",
+ "crc32fast",
+ "fs4",
+ "harfrust 0.13.3",
+ "jxl-oxide",
+ "libc",
+ "log",
+ "luz-catalog",
+ "luz-codecs",
+ "luz-color",
+ "luz-denoise",
+ "luz-denoise-core",
+ "luz-develop",
+ "luz-faces",
+ "luz-fetch",
+ "luz-geocode",
+ "luz-geom",
+ "luz-gpu",
+ "luz-heif",
+ "luz-lensdb",
+ "luz-merge",
+ "luz-meta",
+ "luz-pipeline",
+ "luz-preview",
+ "luz-raster",
+ "luz-raw",
+ "luz-scenes",
+ "luz-segment",
+ "luz-slideshow",
+ "luz-testkit",
+ "luz-tiff",
+ "miniz_oxide 0.9.1",
+ "rayon",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "unicode-normalization",
+ "unicode-segmentation",
+ "web-time",
+]
+
+[[package]]
+name = "luz-faces"
+version = "0.18.0"
+dependencies = [
+ "luz-testkit",
+ "matrixmultiply",
+ "ndarray",
+ "proptest",
+ "serde",
+ "serde_json",
+ "sha2",
+ "thiserror 2.0.21",
+ "web-time",
+]
+
+[[package]]
+name = "luz-fetch"
+version = "0.18.0"
+dependencies = [
+ "log",
+ "rustls",
+ "rustls-rustcrypto",
+ "sha2",
+ "webpki-roots",
+]
+
+[[package]]
+name = "luz-film"
+version = "0.18.0"
+dependencies = [
+ "libm",
+]
+
+[[package]]
+name = "luz-geocode"
+version = "0.18.0"
+dependencies = [
+ "miniz_oxide 0.9.1",
+ "serde",
+]
+
+[[package]]
+name = "luz-geom"
+version = "0.18.0"
+dependencies = [
+ "proptest",
+ "serde",
+]
+
+[[package]]
+name = "luz-gpu"
+version = "0.18.0"
+dependencies = [
+ "bytemuck",
+ "log",
+ "luz-color",
+ "luz-denoise",
+ "luz-develop",
+ "luz-faces",
+ "luz-geom",
+ "luz-pipeline",
+ "luz-raster",
+ "luz-raw",
+ "luz-scenes",
+ "luz-testkit",
+ "pollster 1.0.1",
+ "wgpu",
+]
+
+[[package]]
+name = "luz-heif"
+version = "0.18.0"
+dependencies = [
+ "heic-rs",
+ "rayon",
+]
+
+[[package]]
+name = "luz-inpaint"
+version = "0.18.0"
+dependencies = [
+ "rayon",
+]
+
+[[package]]
+name = "luz-lensdb"
+version = "0.18.0"
+dependencies = [
+ "luz-develop",
+ "luz-geom",
+ "quick-xml",
+]
+
+[[package]]
+name = "luz-mcp"
+version = "0.18.0"
+dependencies = [
+ "log",
+ "luz-codecs",
+ "luz-engine",
+ "luz-raster",
+ "serde_json",
+]
+
+[[package]]
+name = "luz-merge"
+version = "0.18.0"
+dependencies = [
+ "luz-codecs",
+ "luz-color",
+ "luz-geom",
+ "luz-meta",
+ "luz-raster",
+ "luz-raw",
+ "luz-scenes",
+ "rayon",
+ "serde",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "luz-meta"
+version = "0.18.0"
+dependencies = [
+ "chrono",
+ "luz-geom",
+ "luz-heif",
+ "luz-tiff",
+ "proptest",
+ "quick-xml",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "luz-pipeline"
+version = "0.18.0"
+dependencies = [
+ "dhat",
+ "image",
+ "luz-color",
+ "luz-develop",
+ "luz-geom",
+ "luz-inpaint",
+ "luz-raster",
+ "luz-raw",
+ "luz-scenes",
+ "proptest",
+ "rayon",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "luz-preview"
+version = "0.18.0"
+dependencies = [
+ "jpeg-encoder",
+ "log",
+ "luz-raster",
+ "siphasher",
+ "zune-core",
+ "zune-jpeg",
+]
+
+[[package]]
+name = "luz-raster"
+version = "0.18.0"
+dependencies = [
+ "libc",
+ "luz-color",
+ "luz-geom",
+ "proptest",
+ "rayon",
+ "serde",
+]
+
+[[package]]
+name = "luz-raw"
+version = "0.18.0"
+dependencies = [
+ "chrono",
+ "craft-crw",
+ "dhat",
+ "jpeg-encoder",
+ "jxl-oxide",
+ "luz-color",
+ "luz-geom",
+ "luz-meta",
+ "luz-raster",
+ "luz-testkit",
+ "luz-tiff",
+ "miniz_oxide 0.9.1",
+ "proptest",
+ "rayon",
+ "serde",
+ "sha2",
+ "thiserror 2.0.21",
+ "zune-core",
+ "zune-jpeg",
+ "zune-jpegxl",
+]
+
+[[package]]
+name = "luz-scenes"
+version = "0.18.0"
+dependencies = [
+ "image",
+ "luz-color",
+ "luz-raster",
+ "rayon",
+ "serde",
+]
+
+[[package]]
+name = "luz-segment"
+version = "0.18.0"
+dependencies = [
+ "candle-core",
+ "candle-nn",
+ "log",
+ "luz-fetch",
+ "luz-testkit",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "luz-slideshow"
+version = "0.18.0"
+dependencies = [
+ "luz-raster",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "luz-sysmem"
+version = "0.18.0"
+
+[[package]]
+name = "luz-testkit"
+version = "0.18.0"
+
+[[package]]
+name = "luz-tiff"
+version = "0.18.0"
+dependencies = [
+ "proptest",
+ "serde",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "luz-ui-egui"
+version = "0.18.0"
+dependencies = [
+ "craft-ui",
+ "craft-window",
+ "egui",
+ "egui_extras",
+ "egui_kittest",
+ "log",
+ "luz-catalog",
+ "luz-codecs",
+ "luz-color",
+ "luz-denoise",
+ "luz-develop",
+ "luz-engine",
+ "luz-faces",
+ "luz-geom",
+ "luz-merge",
+ "luz-meta",
+ "luz-pipeline",
+ "luz-preview",
+ "luz-raster",
+ "luz-slideshow",
+ "luz-testkit",
+ "nodalia-theme",
+ "nodalia-update",
+ "pollster 1.0.1",
+ "serde",
+ "serde_json",
+ "toml",
+ "web-time",
+]
+
+[[package]]
+name = "luz-web"
+version = "0.18.0"
+dependencies = [
+ "crc32fast",
+ "eframe",
+ "egui",
+ "js-sys",
+ "log",
+ "luz-codecs",
+ "luz-color",
+ "luz-engine",
+ "luz-preview",
+ "luz-raster",
+ "luz-raw",
+ "luz-ui-egui",
+ "serde",
+ "serde_json",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+]
+
+[[package]]
+name = "luz-wincolor"
+version = "0.18.0"
+dependencies = [
+ "luz-testkit",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -4343,6 +4345,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "418abd1b6d34fbf6cae440dc874771b0525a604428704c76e48b29a5e67b8003"
 dependencies = [
  "memchr",
+]
+
+[[package]]
+name = "nodalia-theme"
+version = "0.1.0-alpha.1"
+source = "git+https://github.com/getnodalia/nodalia-design?rev=114848a2ff1a7c29c9a5432fb12e955fbe0aeef2#114848a2ff1a7c29c9a5432fb12e955fbe0aeef2"
+dependencies = [
+ "egui",
 ]
 
 [[package]]
@@ -4906,7 +4916,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7d8fae84b431384b68627d0f9b3b1245fcf9f46f6c0e3dc902e9dce64edd1967"
 dependencies = [
  "libc",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -5837,7 +5847,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.12.1",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -5894,7 +5904,7 @@ dependencies = [
  "security-framework",
  "security-framework-sys",
  "webpki-root-certs",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -6462,7 +6472,7 @@ dependencies = [
  "getrandom 0.4.3",
  "once_cell",
  "rustix 1.1.5",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -7355,7 +7365,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]

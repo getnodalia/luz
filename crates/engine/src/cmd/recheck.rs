@@ -9,10 +9,10 @@
 //!
 //! The work is split so the app can probe on a worker thread: [`stale`] lists what to probe (no
 //! file-system calls), [`probe`] reads the files without the session, and [`apply`] applies the
-//! results as LightCraft's own bookkeeping (journaled, not an undo step). Agents and tests use
+//! results as Luz's own bookkeeping (journaled, not an undo step). Agents and tests use
 //! `library.recheckPreviewOnly`, which does all three at once.
 
-use lightcraft_catalog::{Catalog, Op, Photo, PhotoId};
+use luz_catalog::{Catalog, Op, Photo, PhotoId};
 use serde_json::{Value, json};
 
 use super::{CommandSpec, always, bad, cmd};
@@ -124,7 +124,7 @@ pub fn specs() -> Vec<CommandSpec> {
         "Recheck Preview-Only Raws",
         [],
         None,
-        "{all?: bool} — probe again preview-only raws and ORFs whose support another LightCraft version checked (the app does this in the background when a library opens; `all` rechecks every preview-only raw and ORF, e.g. when testing a decoder build of the same version), and bring each up to date as Reload from Disk would; not an undo step, develop settings and history are kept; files that can't be read are left for next time → {checked, updated: [ids], cleared: [ids] (develop from their raw data now)}",
+        "{all?: bool} — probe again preview-only raws and ORFs whose support another Luz version checked (the app does this in the background when a library opens; `all` rechecks every preview-only raw and ORF, e.g. when testing a decoder build of the same version), and bring each up to date as Reload from Disk would; not an undo step, develop settings and history are kept; files that can't be read are left for next time → {checked, updated: [ids], cleared: [ids] (develop from their raw data now)}",
         always,
         recheck
     )]

@@ -1,9 +1,9 @@
 //! Masking and Remove (spot) commands on the active photo.
 
-use lightcraft_develop::{
+use luz_develop::{
     BrushStroke, LocalAdjustments, MAX_COLOR_RANGE_SAMPLES, MAX_RED_EYES, Mask, MaskComponent, MaskOp, MaskShape, RedEye, Spot, SpotMode,
 };
-use lightcraft_geom::Point;
+use luz_geom::Point;
 use serde_json::{Value, json};
 
 use super::{CommandSpec, bad, bool_or, cmd, f64_or, has_active, ok, point, str_param};
@@ -75,7 +75,7 @@ fn points(p: &Value, key: &str) -> Vec<Point> {
 }
 
 /// A segmentation passed in (`seg`: a stored or replayed AI mask; the model isn't needed).
-fn seg_param(p: &Value) -> Option<lightcraft_develop::SegMask> {
+fn seg_param(p: &Value) -> Option<luz_develop::SegMask> {
     p.get("seg").and_then(|v| serde_json::from_value(v.clone()).ok())
 }
 
@@ -424,8 +424,8 @@ pub fn specs() -> Vec<CommandSpec> {
                 let src = s.source_now(id, crate::media::SourceLevel::Thumb).map_err(|e| bad(c, e))?;
                 let info = s.source_info(id);
                 let d = s.develop_of(id).unwrap_or_default();
-                let req = lightcraft_pipeline::RenderRequest::fit(384, 384);
-                let lab = lightcraft_pipeline::color_range_sample(&src, &info, &d, &req, lightcraft_geom::Point::new(x, y))
+                let req = luz_pipeline::RenderRequest::fit(384, 384);
+                let lab = luz_pipeline::color_range_sample(&src, &info, &d, &req, luz_geom::Point::new(x, y))
                     .ok_or_else(|| bad(c, "the point is outside the photo"))?;
                 let mut out = Vec::new();
                 masks_edit(s, c, "Color Range", |masks, _| {
@@ -482,12 +482,7 @@ pub fn specs() -> Vec<CommandSpec> {
                     }
                     let mut on = (*cur).clone();
                     s.attach_masks(id, &cur, &mut on);
-                    s.apply_silent(lightcraft_catalog::Op::SetDevelop {
-                        id,
-                        settings: std::sync::Arc::new(on),
-                        label: "Masks".into(),
-                        edited: None,
-                    })?;
+                    s.apply_silent(luz_catalog::Op::SetDevelop { id, settings: std::sync::Arc::new(on), label: "Masks".into(), edited: None })?;
                 }
                 let d = s.develop_of(id).unwrap_or_default();
                 let m = d.masks.iter().find(|m| m.id == mid).ok_or_else(|| bad(c, format!("no mask {mid}")))?;
@@ -598,7 +593,7 @@ pub fn specs() -> Vec<CommandSpec> {
             "Download AI Mask Model",
             [],
             None,
-            "{acknowledged: true} — download the SAM 3 model (about 3.4 GB, Meta's SAM License, not LightCraft's) in the background, from the configured mirrors; only after the user agreed to it. Watch segment.model.status; segment.model.cancel stops it (it resumes later) → {started, installed, downloading}",
+            "{acknowledged: true} — download the SAM 3 model (about 3.4 GB, Meta's SAM License, not Luz's) in the background, from the configured mirrors; only after the user agreed to it. Watch segment.model.status; segment.model.cancel stops it (it resumes later) → {started, installed, downloading}",
             super::always,
             |s, p| {
                 let c = "segment.model.download";
@@ -656,7 +651,7 @@ pub fn specs() -> Vec<CommandSpec> {
                 masks_edit(s, "mask.adjust", "Mask Adjustment", |masks, _| {
                     let i = find(masks, mid, "mask.adjust")?;
                     let mut v = serde_json::to_value(masks[i].adjust).unwrap_or_default();
-                    lightcraft_develop::presets::deep_merge(&mut v, &vals);
+                    luz_develop::presets::deep_merge(&mut v, &vals);
                     let a: LocalAdjustments = serde_json::from_value(v).map_err(|e| bad("mask.adjust", e.to_string()))?;
                     masks[i].adjust = clamp_local(a);
                     Ok(())
@@ -817,7 +812,7 @@ pub fn specs() -> Vec<CommandSpec> {
                 // the uncropped photo, so positions are the spots' own coordinates
                 let job = s.render_job(id, 1600, 1600, false, false).ok_or_else(|| bad(c, "no photo"))?;
                 let img = job.run().rendered.map_err(|e| bad(c, e))?.image;
-                let found = lightcraft_pipeline::dust::detect(&img, f64_or(p, "sensitivity", 50.0) as f32);
+                let found = luz_pipeline::dust::detect(&img, f64_or(p, "sensitivity", 50.0) as f32);
                 let out: Vec<Value> = found.iter().map(|d| json!({"x": d.x, "y": d.y, "size": d.radius})).collect();
                 if !p.get("add").and_then(Value::as_bool).unwrap_or(true) || found.is_empty() {
                     return Ok(json!({"spots": out, "added": 0}));
@@ -855,11 +850,10 @@ pub fn specs() -> Vec<CommandSpec> {
                 let job = s.render_job(id, 1600, 1600, false, false).ok_or_else(|| bad(c, "no photo"))?;
                 let img = job.run().rendered.map_err(|e| bad(c, e))?.image;
                 let rgb: Vec<u8> = img.data.iter().flat_map(|px| [px[0], px[1], px[2]]).collect();
-                let faces =
-                    detector.detect(&rgb, img.width, img.height, &lightcraft_faces::yunet::Options::default()).map_err(|e| bad(c, e.to_string()))?;
-                let boxes: Vec<lightcraft_pipeline::blemish::FaceBox> = faces
+                let faces = detector.detect(&rgb, img.width, img.height, &luz_faces::yunet::Options::default()).map_err(|e| bad(c, e.to_string()))?;
+                let boxes: Vec<luz_pipeline::blemish::FaceBox> = faces
                     .iter()
-                    .map(|f| lightcraft_pipeline::blemish::FaceBox {
+                    .map(|f| luz_pipeline::blemish::FaceBox {
                         x0: f64::from(f.x0),
                         y0: f64::from(f.y0),
                         x1: f64::from(f.x1),
@@ -868,7 +862,7 @@ pub fn specs() -> Vec<CommandSpec> {
                     })
                     .collect();
                 let max_per_face = (f64_or(p, "maxPerFace", 6.0) as usize).clamp(1, 20);
-                let mut found = lightcraft_pipeline::blemish::detect(&img, &boxes, f64_or(p, "sensitivity", 50.0) as f32);
+                let mut found = luz_pipeline::blemish::detect(&img, &boxes, f64_or(p, "sensitivity", 50.0) as f32);
                 let mut per_face = std::collections::BTreeMap::new();
                 found.retain(|b| {
                     let n = per_face.entry(b.face).or_insert(0usize);
@@ -1118,10 +1112,10 @@ fn spots_edit(s: &mut Session, c: &str, label: &str, f: impl FnOnce(&mut Vec<Spo
 }
 
 /// An automatic source for `spot` on photo `id` (a small proxy of the photo, framed by `d`).
-fn pick_source(s: &mut Session, id: crate::PhotoId, d: &lightcraft_develop::DevelopSettings, spot: &Spot, avoid: Option<Point>) -> Option<Point> {
+fn pick_source(s: &mut Session, id: crate::PhotoId, d: &luz_develop::DevelopSettings, spot: &Spot, avoid: Option<Point>) -> Option<Point> {
     let src = s.source_now(id, crate::media::SourceLevel::Thumb).ok()?;
     let info = s.source_info(id);
-    lightcraft_pipeline::spots::pick_source(&src, &info, d, spot, avoid)
+    luz_pipeline::spots::pick_source(&src, &info, d, spot, avoid)
 }
 
 pub(crate) fn clamp_local(mut a: LocalAdjustments) -> LocalAdjustments {

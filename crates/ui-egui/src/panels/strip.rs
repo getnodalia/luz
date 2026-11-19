@@ -3,7 +3,7 @@
 use egui::vec2;
 use serde_json::json;
 
-use crate::LightcraftApp;
+use crate::LuzApp;
 use crate::icons::Icon;
 use crate::state::RightPanel;
 use crate::theme::Tokens;
@@ -14,18 +14,24 @@ const BUTTON_H: f32 = 40.0;
 /// Space between tool buttons.
 const GAP: f32 = 6.0;
 
-pub fn show(app: &mut LightcraftApp, ui: &mut egui::Ui) {
+pub fn show(app: &mut LuzApp, ui: &mut egui::Ui) {
     let t = Tokens::get(ui.ctx());
+    // an island of its own on the window colour, a gap from the panels on its left and from the
+    // window's right and bottom edges
+    let gap = crate::theme::ISLAND_GAP;
+    let pad = 8.0;
     egui::Panel::right("tool_strip")
-        .exact_size(t.strip_w)
+        .exact_size(t.strip_w + 2.0 * gap)
         .resizable(false)
-        .frame(
-            egui::Frame::NONE
-                .fill(t.chrome)
-                .inner_margin(egui::Margin { left: 0, right: 0, top: 8, bottom: 8 })
-                .stroke(egui::Stroke::new(1.0, t.divider)),
-        )
+        .frame(egui::Frame::NONE.fill(t.window).inner_margin(egui::Margin {
+            left: gap as i8,
+            right: gap as i8,
+            top: pad as i8,
+            bottom: (gap + pad) as i8,
+        }))
         .show(ui, |ui| {
+            let island = ui.max_rect().expand2(egui::vec2(0.0, pad));
+            ui.painter().rect_filled(island, crate::theme::ISLAND_RADIUS, t.chrome);
             crate::widgets::announce_region(ui, egui::accesskit::Role::Toolbar, crate::i18n::tr("Tool strip"));
             let has_photo = app.session.active().is_some();
             ui.vertical_centered(|ui| {
@@ -94,7 +100,7 @@ mod tests {
 
     #[test]
     fn info_ends_as_far_above_the_bottom_as_presets_starts_below_the_top() {
-        let mut app = LightcraftApp::new(lightcraft_engine::Session::new(), Services::default());
+        let mut app = LuzApp::new(luz_engine::Session::new(), Services::default());
         let mut view = HeadlessView::new();
         let mut widgets = vec![];
         for frame in 0..3 {
@@ -104,7 +110,8 @@ mod tests {
         }
         let rect = |id: &str| widgets.iter().find(|(w, _)| w == id).unwrap_or_else(|| panic!("{id} not registered")).1;
         let (presets, keywords, info) = (rect("icon:presets"), rect("icon:keywords"), rect("icon:info"));
-        let (top, bottom) = (presets.top(), 700.0 - info.bottom());
+        // the island stops the window's gap short of the bottom edge
+        let (top, bottom) = (presets.top(), 700.0 - crate::theme::ISLAND_GAP - info.bottom());
         assert!((top - bottom).abs() < 0.5, "Presets starts {top} below the top, Info ends {bottom} above the bottom");
         assert_eq!(info.top() - keywords.bottom(), GAP, "the bottom buttons are spaced like the top ones");
     }

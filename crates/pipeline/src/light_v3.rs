@@ -20,8 +20,8 @@
 //! renders compose per-channel operations over linear input ([`PreviewOps`]). Luminance operations
 //! retain the original evaluation, including any preceding per-channel operation.
 
-use lightcraft_color::{Mat3, PROPHOTO, REC2020};
-use lightcraft_develop::{DevelopSettings, Process};
+use luz_color::{Mat3, PROPHOTO, REC2020};
+use luz_develop::{DevelopSettings, Process};
 
 use crate::SourceInfo;
 use crate::light_v3_params as fitted;

@@ -11,10 +11,10 @@
 //! Known gaps (documented in the freeze): the PowerShot G5's entropy coding diverges from the
 //! model and is refused (its embedded JPEG is shown instead); PowerShot bodies without CC0 samples
 //! (G2/G3/Pro1/S-series) decode through the same model unverified. Colour matrices for these
-//! bodies are LightCraft's own (`chart_table`, the EOS D60); the file carries none.
+//! bodies are Luz's own (`chart_table`, the EOS D60); the file carries none.
 
 use crate::{BlackLevel, Cfa, ColorData, Metadata, Mode, OpcodeLists, Orientation, RawData, RawError, RawFormat, RawImage, Rect, Result};
-use lightcraft_meta::DateTime;
+use luz_meta::DateTime;
 
 fn map_err(e: craft_crw::Error) -> RawError {
     match e {

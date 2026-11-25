@@ -23,8 +23,8 @@ use std::sync::{Arc, Mutex, RwLock};
 
 pub use disk::{DiskCache, decode_jpeg, encode_jpeg, jpeg_dims};
 pub use hash::{Hash128, Hasher128, hash_bytes};
-use lightcraft_raster::Rgba8;
 pub use lru::{Lru, next_tick};
+use luz_raster::Rgba8;
 pub use pool::JobPool;
 
 /// Images that deferred disk writes ([`PreviewCache::put_deferred`]) may hold waiting for the writer, in bytes. A

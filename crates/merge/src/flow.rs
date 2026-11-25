@@ -20,8 +20,8 @@
 //! 4. **Warp.** Each output pixel `p` samples the frame at `h(p + flow(p))` (the flow interpolated
 //!    bilinearly between tile centres): one Lanczos-3 resampling for both corrections.
 
-use lightcraft_geom::{Homography, Point};
-use lightcraft_raster::{Plane, Rgb32f};
+use luz_geom::{Homography, Point};
+use luz_raster::{Plane, Rgb32f};
 use rayon::prelude::*;
 
 use crate::refine::{self, PATCH};

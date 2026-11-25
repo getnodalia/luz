@@ -131,7 +131,7 @@ pub struct LoadReport {
 }
 
 /// Where persistence time goes (reported by `library.info` → `persistence`; printed to stderr
-/// per write under `LIGHTCRAFT_PROFILE`). Times are wall-clock milliseconds on the calling
+/// per write under `LUZ_PROFILE`). Times are wall-clock milliseconds on the calling
 /// thread, i.e. how long the caller (the UI thread, for the app) was blocked.
 #[derive(Clone, Copy, Debug, Default, PartialEq, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -179,10 +179,10 @@ pub struct SnapshotTiming {
     pub records: u64,
 }
 
-/// `LIGHTCRAFT_PROFILE` is set: print persistence timings to stderr.
+/// `LUZ_PROFILE` is set: print persistence timings to stderr.
 fn profiling() -> bool {
     static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
-    *ON.get_or_init(|| std::env::var_os("LIGHTCRAFT_PROFILE").is_some())
+    *ON.get_or_init(|| std::env::var_os("LUZ_PROFILE").is_some())
 }
 
 fn ms_since(t: web_time::Instant) -> f64 {
@@ -250,7 +250,7 @@ pub fn decode_record(line: &str) -> Option<(u64, Op)> {
 enum Line {
     Record(u64, Op),
     /// The CRC matches — the line is exactly what was written — but the op doesn't parse: it
-    /// was written by a newer LightCraft (an op or field this version doesn't know), not damaged.
+    /// was written by a newer Luz (an op or field this version doesn't know), not damaged.
     Newer(u64),
     /// Malformed or a CRC mismatch: torn or damaged.
     Bad,
@@ -274,7 +274,7 @@ fn decode_line(line: &str) -> Line {
     }
 }
 
-/// The error for a library written by a newer LightCraft.
+/// The error for a library written by a newer Luz.
 fn newer(what: String) -> CatalogError {
     CatalogError::Newer(format!("{what}; this version reads catalog format v{VERSION} and older"))
 }
@@ -376,7 +376,7 @@ fn write_snapshot_owned(store: &mut dyn Store, seq: u64, mut snapshot: Catalog) 
         let mut pool: Vec<String> = Vec::new();
         let mut index: std::collections::HashMap<String, u32> = std::collections::HashMap::new();
         {
-            let mut see = |s: &lightcraft_develop::DevelopSettings| {
+            let mut see = |s: &luz_develop::DevelopSettings| {
                 s.visit_seg_masks(&mut |m| {
                     // borrowed lookup: a grid every history step shares is not cloned just to
                     // find it already indexed (only a new grid is copied, into pool and table)
@@ -393,7 +393,7 @@ fn write_snapshot_owned(store: &mut dyn Store, seq: u64, mut snapshot: Catalog) 
             }
         }
         snapshot.grids = pool;
-        match lightcraft_develop::with_grid_interner(index, || serde_json::to_writer(&mut b, &snapshot)) {
+        match luz_develop::with_grid_interner(index, || serde_json::to_writer(&mut b, &snapshot)) {
             // no interner can be active here (snapshot writes don't nest), so `None` is a bug:
             // fail the write rather than store a truncated or reference-less snapshot
             Some(Ok(())) => {}
@@ -438,7 +438,7 @@ impl Journal {
                 // the header first: a newer snapshot may not parse as this version's catalog
                 let h: SnapHeader = serde_json::from_slice(&bytes).map_err(|e| CatalogError::Corrupt(format!("{SNAPSHOT}: {e}")))?;
                 if h.format != FORMAT {
-                    return Err(CatalogError::Corrupt(format!("{SNAPSHOT}: not a LightCraft catalog (format {:?})", h.format)));
+                    return Err(CatalogError::Corrupt(format!("{SNAPSHOT}: not a Luz catalog (format {:?})", h.format)));
                 }
                 if h.version > VERSION {
                     return Err(newer(format!("{SNAPSHOT} is catalog format v{}", h.version)));

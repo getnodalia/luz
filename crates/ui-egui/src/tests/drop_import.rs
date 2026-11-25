@@ -11,7 +11,7 @@ use serde_json::json;
 use crate::headless::Headless;
 use crate::pick::PickRequest;
 use crate::state::Dialog;
-use crate::{LightcraftApp, Services};
+use crate::{LuzApp, Services};
 
 const T: Duration = Duration::from_secs(20);
 const SETTLE: Duration = Duration::from_secs(120);
@@ -40,8 +40,8 @@ impl Drop for Scratch {
 fn write_png(path: &str, seed: u8) {
     let (w, h) = (24usize, 16usize);
     let data: Vec<[u8; 4]> = (0..w * h).map(|i| [(i % w * 9) as u8, (i / w * 13) as u8, seed, 255]).collect();
-    let img = lightcraft_raster::Rgba8 { width: w, height: h, data };
-    let bytes = lightcraft_codecs::encode_png(&lightcraft_codecs::EncodeImage::rgba8(&img), &lightcraft_codecs::EncodeMeta::default()).unwrap();
+    let img = luz_raster::Rgba8 { width: w, height: h, data };
+    let bytes = luz_codecs::encode_png(&luz_codecs::EncodeImage::rgba8(&img), &luz_codecs::EncodeMeta::default()).unwrap();
     std::fs::create_dir_all(std::path::Path::new(path).parent().unwrap()).unwrap();
     std::fs::write(path, bytes).unwrap();
 }
@@ -56,8 +56,8 @@ fn services() -> Services {
 fn app(dir: &Scratch) -> Headless {
     write_png(&dir.path("trip/a.png"), 1);
     write_png(&dir.path("trip/b.png"), 2);
-    let session = lightcraft_engine::Session::new().with_fs();
-    let mut h = Headless::new(LightcraftApp::new(session, services()), [1300.0, 900.0], 1.0);
+    let session = luz_engine::Session::new().with_fs();
+    let mut h = Headless::new(LuzApp::new(session, services()), [1300.0, 900.0], 1.0);
     for _ in 0..4 {
         h.step();
     }
@@ -73,8 +73,8 @@ type Asked = Arc<Mutex<Vec<(PickRequest, Sender<Vec<String>>)>>>;
 fn app_with_picker(dir: &Scratch) -> (Headless, Asked) {
     write_png(&dir.path("trip/a.png"), 1);
     write_png(&dir.path("trip/b.png"), 2);
-    let session = lightcraft_engine::Session::new().with_fs();
-    let mut app = LightcraftApp::new(session, services());
+    let session = luz_engine::Session::new().with_fs();
+    let mut app = LuzApp::new(session, services());
     let asked: Asked = Default::default();
     let a = asked.clone();
     app.services.picker = Some(Box::new(move |req| {
@@ -102,7 +102,7 @@ fn answer_picker(asked: &Asked, paths: Vec<String>) {
 /// A library folder that can be chosen by Open Another…, made outside the no-library app.
 fn library_at(dir: &Scratch, rel: &str) -> String {
     let path = dir.path(rel);
-    let mut session = lightcraft_engine::Session::new().with_fs();
+    let mut session = luz_engine::Session::new().with_fs();
     session.open_library(&path, false).unwrap();
     session.close_library().unwrap();
     path
@@ -121,9 +121,9 @@ fn drop_files(h: &mut Headless, paths: &[String], hover: bool) {
 fn app_with_library(dir: &Scratch) -> Headless {
     write_png(&dir.path("trip/a.png"), 1);
     write_png(&dir.path("trip/b.png"), 2);
-    let mut session = lightcraft_engine::Session::new().with_fs();
+    let mut session = luz_engine::Session::new().with_fs();
     session.open_library(dir.path("library"), false).unwrap();
-    let mut h = Headless::new(LightcraftApp::new(session, services()), [1300.0, 900.0], 1.0);
+    let mut h = Headless::new(LuzApp::new(session, services()), [1300.0, 900.0], 1.0);
     for _ in 0..4 {
         h.step();
     }
@@ -576,9 +576,9 @@ fn a_queued_drop_waits_for_a_dialog_opened_before_the_launch_list_closes() {
 fn a_drop_delivered_on_the_first_frame_waits_behind_the_startup_dialog() {
     let dir = Scratch::new("startup-drop");
     write_png(&dir.path("trip/a.png"), 1);
-    let mut session = lightcraft_engine::Session::new().with_fs();
+    let mut session = luz_engine::Session::new().with_fs();
     session.open_library(dir.path("library"), false).unwrap();
-    let mut h = Headless::new(LightcraftApp::new(session, services()), [1300.0, 900.0], 1.0);
+    let mut h = Headless::new(LuzApp::new(session, services()), [1300.0, 900.0], 1.0);
     // a window host on its first launch, with the drop riding the first frame's raw input
     h.app.headless_host = false;
     h.app.drop_pending = vec![dir.path("trip/a.png")];
@@ -691,7 +691,7 @@ fn a_queued_photo_drop_survives_the_async_open_library_picker_cancel() {
 #[test]
 fn a_model_drop_on_a_no_library_window_does_not_open_its_dialog_behind_it() {
     let dir = Scratch::new("model-window");
-    std::fs::write(dir.path("face.onnx"), lightcraft_faces::synthetic::tiny_embedder_model(512)).unwrap();
+    std::fs::write(dir.path("face.onnx"), luz_faces::synthetic::tiny_embedder_model(512)).unwrap();
     for (tag, problem) in [
         ("error", crate::panels::library_problem::LibraryProblem::new(dir.path("Gone"), "not found")),
         ("chooser", crate::panels::library_problem::LibraryProblem::choose_later(&crate::state::AppSettings::default())),
@@ -718,7 +718,7 @@ fn a_model_drop_on_a_no_library_window_does_not_open_its_dialog_behind_it() {
 #[test]
 fn a_model_drop_waits_behind_the_launch_list_and_opens_after_keep() {
     let dir = Scratch::new("chooser-model");
-    std::fs::write(dir.path("face.onnx"), lightcraft_faces::synthetic::tiny_embedder_model(512)).unwrap();
+    std::fs::write(dir.path("face.onnx"), luz_faces::synthetic::tiny_embedder_model(512)).unwrap();
     let mut h = app_with_library(&dir);
     h.app.session.face_models_dir = Some(std::path::PathBuf::from(dir.path("models")));
     show_launch_list(&mut h);
@@ -1010,7 +1010,7 @@ fn finish_mixed_drop_batch(h: &mut Headless, expected: &[String], direct: bool) 
         .catalog
         .photos()
         .map(|p| match &p.source {
-            lightcraft_catalog::Source::File { path } => path.clone(),
+            luz_catalog::Source::File { path } => path.clone(),
             other => panic!("unexpected imported source: {other:?}"),
         })
         .collect::<Vec<_>>();
@@ -1215,7 +1215,7 @@ fn auto_import_waits_for_an_import_that_starts_during_its_listing() {
 /// Auto Import doesn't start one beside it.
 #[test]
 fn auto_import_waits_for_a_browse_that_starts_during_its_listing() {
-    use lightcraft_engine::import::{ImportCandidate, ScanOutput};
+    use luz_engine::import::{ImportCandidate, ScanOutput};
     let dir = Scratch::new("auto-browse");
     let mut h = app(&dir);
     second_auto_import_listing(&mut h, &dir);

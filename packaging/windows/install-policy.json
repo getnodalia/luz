@@ -1,11 +1,11 @@
 {
-  "id": "lightcraft",
-  "name": "LightCraft",
-  "upgradeCode": "229BB552-5EFD-479A-BA86-8CB6D926390C",
+  "id": "luz",
+  "name": "Luz",
+  "upgradeCode": "D72D7C87-03E9-496B-AB8C-3F685B453F8E",
   "sources": [
-    "lightcraft.wxs"
+    "luz.wxs"
   ],
-  "icon": "assets/app-icon/lightcraft.ico",
+  "icon": "assets/app-icon/luz.ico",
   "localization": [],
   "extensions": [
     "UI",
@@ -14,19 +14,19 @@
   "payloads": [
     "FONT-LICENCES.txt",
     "NOTICE",
-    "lightcraft-cli.exe",
-    "lightcraft.exe"
+    "luz-cli.exe",
+    "luz.exe"
   ],
   "registry": [
     [
       "-1",
-      "Software\\Microsoft\\Windows\\CurrentVersion\\App Paths\\lightcraft.exe",
+      "Software\\Microsoft\\Windows\\CurrentVersion\\App Paths\\luz.exe",
       "",
-      "[#LightcraftExe]"
+      "[#LuzExe]"
     ],
     [
       "-1",
-      "Software\\LightCraft",
+      "Software\\Luz",
       "InstallFolder",
       "[INSTALLFOLDER]"
     ]

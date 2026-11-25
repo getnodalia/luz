@@ -18,6 +18,6 @@
 компилятором Rust при сборке. Английские окончания множественного числа скрываются через `{:.0}`.
 
 ```sh
-cargo test -p lightcraft-ui-egui i18n::tests -- --nocapture
-LIGHTCRAFT_LANGUAGE=ru lightcraft-cli snapshot --demo -o russian.png --size 1600x1000
+cargo test -p luz-ui-egui i18n::tests -- --nocapture
+LUZ_LANGUAGE=ru luz-cli snapshot --demo -o russian.png --size 1600x1000
 ```

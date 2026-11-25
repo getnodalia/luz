@@ -18,7 +18,7 @@ impl Session {
         match loaded {
             Some(m) => m.device(self.denoise.settings.run_on()),
             #[cfg(feature = "denoise")]
-            None if self.denoise.active.as_ref().is_some_and(|a| a.id == lightcraft_denoise::builtin::ID) => {
+            None if self.denoise.active.as_ref().is_some_and(|a| a.id == luz_denoise::builtin::ID) => {
                 let onnx = self.denoise.active.as_ref().map(|a| a.onnx.clone()).unwrap_or_default();
                 builtin_card(&builtin_marker(&onnx)).device(self.denoise.settings.run_on())
             }
@@ -48,8 +48,8 @@ impl Session {
         let (fingerprint, manifest, onnx) = match chosen {
             Some(i) => (i.fingerprint(), i.manifest, i.onnx),
             None => {
-                let manifest = lightcraft_denoise::builtin::manifest();
-                let onnx = self.denoise.models_dir.as_deref().map(|d| d.join(lightcraft_denoise::builtin::ID)).unwrap_or_default();
+                let manifest = luz_denoise::builtin::manifest();
+                let onnx = self.denoise.models_dir.as_deref().map(|d| d.join(luz_denoise::builtin::ID)).unwrap_or_default();
                 (format!("{}@{}", manifest.id, manifest.version), manifest, onnx)
             }
         };

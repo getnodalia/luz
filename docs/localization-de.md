@@ -51,8 +51,8 @@ wo sie nicht passen, mit `{:.0}` ausgeblendet; mengenabhängige Meldungen verwen
 Formulierungen. Das Datum erscheint beispielsweise als `Sonntag, 20.09.2026`.
 
 ```sh
-cargo test -p lightcraft-ui-egui i18n::tests
-LIGHTCRAFT_LANGUAGE=de lightcraft-cli snapshot --demo -o deutsch.png --size 1600x1000
+cargo test -p luz-ui-egui i18n::tests
+LUZ_LANGUAGE=de luz-cli snapshot --demo -o deutsch.png --size 1600x1000
 ```
 
 Die Tests prüfen Platzhalter, Sprachwechsel per Menü und Steuerkanal, Speicherung,

@@ -7,14 +7,14 @@ use egui::ViewportCommand;
 use serde_json::json;
 
 use crate::headless::Headless;
-use crate::{LightcraftApp, Services};
+use crate::{LuzApp, Services};
 
 const T: Duration = Duration::from_secs(20);
 
-/// Given LightCraft with the integrated title bar (macOS) in a 1200×800 window.
+/// Given Luz with the integrated title bar (macOS) in a 1200×800 window.
 fn integrated() -> Headless {
     let services = Services { png: None, ..Default::default() };
-    let mut app = LightcraftApp::new(lightcraft_engine::Session::with_demo(), services);
+    let mut app = LuzApp::new(luz_engine::Session::with_demo(), services);
     app.integrated_titlebar = true;
     let mut h = Headless::new(app, [1200.0, 800.0], 1.0);
     h.settle(Duration::from_secs(120));
@@ -78,7 +78,7 @@ fn single_click_on_the_empty_bar_does_nothing() {
 #[test]
 fn double_click_on_a_button_does_not_zoom() {
     let mut h = integrated();
-    let r = widget(&h, "icon:help");
+    let r = widget(&h, "icon:menu");
     h.request("ui.click", json!({"x": r.center().x, "y": r.center().y, "count": 2}), T);
     play(&mut h);
     assert!(h.window_commands.is_empty(), "{:?}", h.window_commands);
@@ -88,7 +88,7 @@ fn double_click_on_a_button_does_not_zoom() {
 #[test]
 fn dragging_from_a_button_does_not_move_the_window() {
     let mut h = integrated();
-    let r = widget(&h, "icon:help");
+    let r = widget(&h, "icon:menu");
     h.request("ui.drag", json!({"x": r.center().x, "y": r.center().y, "toX": r.center().x - 150.0, "toY": r.center().y + 30.0}), T);
     play(&mut h);
     assert!(h.window_commands.is_empty(), "{:?}", h.window_commands);
@@ -122,7 +122,7 @@ fn dragging_within_search_does_not_move_the_window() {
 #[test]
 fn without_the_integrated_title_bar_the_bar_is_not_a_window_handle() {
     let services = Services { png: None, ..Default::default() };
-    let app = LightcraftApp::new(lightcraft_engine::Session::with_demo(), services);
+    let app = LuzApp::new(luz_engine::Session::with_demo(), services);
     let mut h = Headless::new(app, [1200.0, 800.0], 1.0);
     h.settle(Duration::from_secs(120));
     assert!(!h.app.integrated_titlebar);
@@ -162,8 +162,8 @@ fn full_screen_moves_the_left_buttons_into_the_traffic_lights_space() {
     h.request("ui.key", json!({"key": "f", "cmd": true, "shift": true}), T);
     play(&mut h);
     assert!(h.app.window_is_fullscreen);
-    let right_padding = window_right - widget(&h, "icon:discord").right();
-    assert_eq!(widget(&h, "icon:sidebar").left(), right_padding, "My Photos as far from the left edge as Discord is from the right");
+    let right_padding = window_right - widget(&h, "icon:menu").right();
+    assert_eq!(widget(&h, "icon:sidebar").left(), right_padding, "My Photos as far from the left edge as Keyboard shortcuts is from the right");
     h.request("ui.key", json!({"key": "f", "cmd": true, "shift": true}), T);
     play(&mut h);
     assert!(!h.app.window_is_fullscreen);
@@ -183,7 +183,7 @@ fn a_panel_floating_over_the_bar_keeps_the_window_from_moving() {
         craft_window::title_bar::window_movable(&h.view.ctx)
     };
     assert!(hover(&mut h, empty), "the empty bar moves the window");
-    let help = widget(&h, "icon:help").center();
+    let help = widget(&h, "icon:menu").center();
     assert!(!hover(&mut h, help), "a bar control");
     let params = json!({"operation": "float", "panel": "tools", "rect": [bar.left(), bar.top() + 4.0, 330.0, 500.0]});
     let r = h.request("engine.execute", json!({"command": "ui.dock", "params": params}), T);
@@ -225,7 +225,7 @@ fn a_dialog_leaves_the_integrated_title_bar_undimmed() {
 #[test]
 fn a_dialog_dims_the_top_bar_without_the_integrated_title_bar() {
     let services = Services { png: None, ..Default::default() };
-    let app = LightcraftApp::new(lightcraft_engine::Session::with_demo(), services);
+    let app = LuzApp::new(luz_engine::Session::with_demo(), services);
     let mut h = Headless::new(app, [1200.0, 800.0], 1.0);
     h.settle(Duration::from_secs(120));
     let spot = egui::pos2(20.0, 20.0);
@@ -356,4 +356,35 @@ fn the_title_bar_handle_stays_below_a_dropdown_open_in_the_dialog() {
     assert!(!egui::Popup::is_any_open(&h.view.ctx), "Escape closes the dropdown");
     assert!(h.app.ui.dialog.is_some(), "and leaves the dialog");
     assert!(handle_at(&mut h), "the handle is back");
+}
+
+/// Given Luz with Nodalia's own title bar and window controls (Linux) in a 1200×800 window.
+fn nodalia_frame() -> Headless {
+    let services = Services { png: None, ..Default::default() };
+    let mut app = LuzApp::new(luz_engine::Session::with_demo(), services);
+    app.custom_titlebar = true;
+    let mut h = Headless::new(app, [1200.0, 800.0], 1.0);
+    h.settle(Duration::from_secs(120));
+    h
+}
+
+// Scenario: on Linux the round close button closes the window, and the empty bar still moves it
+#[test]
+fn nodalia_window_controls_close_and_the_bar_moves_the_window() {
+    let mut h = nodalia_frame();
+    let close = widget(&h, "button:windowClose");
+    assert!(close.right() <= 1200.0 - 8.0 + 0.5, "the controls keep their gap to the window's edge: {close:?}");
+    assert!(
+        widget(&h, "icon:menu").right() < close.left() - nodalia_theme::window_controls::WIDTH + 28.0,
+        "the menu sits left of all three controls"
+    );
+    // empty bar right of the filter button (the left end holds the sidebar button and the menus)
+    let p = egui::pos2(widget(&h, "icon:filter").right() + 30.0, widget(&h, "region:titlebar").center().y);
+    h.request("ui.drag", json!({"x": p.x, "y": p.y, "toX": p.x + 150.0, "toY": p.y + 30.0}), T);
+    play(&mut h);
+    assert_eq!(h.window_commands, vec![ViewportCommand::StartDrag]);
+    h.window_commands.clear();
+    h.request("ui.click", json!({"x": close.center().x, "y": close.center().y}), T);
+    play(&mut h);
+    assert!(h.quit_requested(), "the close button asks the window to close");
 }

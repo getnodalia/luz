@@ -40,7 +40,7 @@ các ngôn ngữ khác.
 | Shutter Speed | Tốc độ màn trập |
 | Smart Previews | Xem trước thông minh |
 
-Tên sản phẩm và chuẩn giữ nguyên khi là định danh: Luz, ArtCraft, GitHub, Discord,
+Tên sản phẩm và chuẩn giữ nguyên khi là định danh: Luz, Nodalia, GitHub, Discord,
 JPEG, PNG, TIFF, WebP, AVIF, HEIF, HEIC, RAW, DNG, RGB, HDR, ICC, EXIF, XMP, GPU, MCP, SAM, ISO, OK.
 
 Tên album / preset / profile do người dùng tạo, tên tệp, command ID và metadata nhập tay
@@ -61,9 +61,9 @@ Tiếng Việt dùng Inter (Latin + dấu). Không cần craft-fonts CJK. Kiểm
 ## Kiểm tra
 
 ```sh
-cargo test -p lightcraft-ui-egui i18n::tests -- --nocapture
-LIGHTCRAFT_LANGUAGE=vi lightcraft-cli snapshot --demo -o vi.png --size 1600x1000
-LIGHTCRAFT_LANGUAGE=vi lightcraft-cli snapshot --demo -o vi-narrow.png --size 1280x800
+cargo test -p luz-ui-egui i18n::tests -- --nocapture
+LUZ_LANGUAGE=vi luz-cli snapshot --demo -o vi.png --size 1600x1000
+LUZ_LANGUAGE=vi luz-cli snapshot --demo -o vi-narrow.png --size 1280x800
 ```
 
 Các test tiếng Việt kiểm tra đổi ngôn ngữ, lưu `vi`, formats, ngày, dữ liệu người dùng và glyph

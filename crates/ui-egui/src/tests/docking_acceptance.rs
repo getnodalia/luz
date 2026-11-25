@@ -1,10 +1,10 @@
 //! Dock changes exercise the same real catalog and command handlers as the application.
-use crate::{LightcraftApp, Services, docking::Panel, headless::Headless, state::RightPanel};
+use crate::{LuzApp, Services, docking::Panel, headless::Headless, state::RightPanel};
 use egui::{Event, Modifiers, PointerButton};
 use serde_json::json;
 
 fn app() -> Headless {
-    let mut app = LightcraftApp::new(lightcraft_engine::Session::with_demo(), Services { png: None, ..Default::default() });
+    let mut app = LuzApp::new(luz_engine::Session::with_demo(), Services { png: None, ..Default::default() });
     app.ui.left_panel = true;
     let mut h = Headless::new(app, [1400.0, 1000.0], 1.0);
     for _ in 0..5 {
@@ -23,18 +23,20 @@ fn rect(h: &Headless, id: &str) -> egui::Rect {
 }
 
 #[test]
-fn the_gaps_between_dock_panes_show_chrome_not_the_dark_clear_colour() {
+fn the_gaps_between_dock_panes_show_the_window_colour_round_the_islands() {
     let mut h = app();
     let image = h.snapshot(std::time::Duration::from_secs(5));
     let pixel = |p: egui::Pos2| image.pixels[p.y as usize * image.size[0] + p.x as usize];
-    // each panel's own chrome just inside its edge stroke, and the dock's gap just outside it
+    // each panel is an island: its own chrome just inside its edge, and the window colour in the dock's gap just outside it
+    let window = h.app.window_colour();
     let right = rect(&h, "panel:right_panel");
     let left = rect(&h, "panel:left_panel");
     for (panel, inside, gap) in [
         ("Tools", egui::pos2(right.left() + 3.0, right.center().y), egui::pos2(right.left() - 2.0, right.center().y)),
         ("Library", egui::pos2(left.right() - 3.0, left.center().y), egui::pos2(left.right() + 2.0, left.center().y)),
     ] {
-        assert_eq!(pixel(gap), pixel(inside), "the gap beside {panel} at {gap:?} is not chrome");
+        assert_eq!(pixel(gap), window, "the gap beside {panel} at {gap:?} is not the window colour");
+        assert_ne!(pixel(gap), pixel(inside), "{panel} does not stand out from the window as an island");
     }
 }
 fn release(h: &mut Headless, pos: egui::Pos2) {
@@ -151,14 +153,14 @@ fn floating_panel_blocks_photo_album_drop_then_uncovered_target_adds_exact_selec
     let undo = h.app.session.undo.len();
     h.app.ui.dragging_photos = Some(ids.clone());
     release(&mut h, row.center());
-    assert!(h.app.session.catalog.album(lightcraft_catalog::AlbumId(album)).unwrap().photos.is_empty());
+    assert!(h.app.session.catalog.album(luz_catalog::AlbumId(album)).unwrap().photos.is_empty());
     assert_eq!(h.app.session.undo.len(), undo);
     dock(&mut h, json!({"operation":"moveFloating","panel":"tools","rect":[800,100,330,500]}));
     h.app.ui.dragging_photos = Some(ids.clone());
     release(&mut h, row.center());
     assert_eq!(
-        h.app.session.catalog.album(lightcraft_catalog::AlbumId(album)).unwrap().photos,
-        ids.into_iter().map(lightcraft_catalog::PhotoId).collect::<Vec<_>>()
+        h.app.session.catalog.album(luz_catalog::AlbumId(album)).unwrap().photos,
+        ids.into_iter().map(luz_catalog::PhotoId).collect::<Vec<_>>()
     );
     assert_eq!(h.app.session.undo.len(), undo + 1);
 }
@@ -201,7 +203,7 @@ fn dock_tab_keeps_activation_keys_and_global_command_remains_reachable() {
     h.app.run("panel.crop", json!({})).unwrap();
     h.step();
     // The test chooses the renderer's actual registered tab, rather than an arbitrary focus owner.
-    let id = egui::Id::unique("lightcraft-docking").with(("tab", Panel::Tools));
+    let id = egui::Id::unique("luz-docking").with(("tab", Panel::Tools));
     h.view.ctx.memory_mut(|memory| memory.request_focus(id));
     h.step();
     key(&mut h, egui::Key::Enter);
@@ -239,11 +241,11 @@ fn floating_presets_block_keyword_photo_drop_then_uncovered_target_changes_exact
     let ids: Vec<_> = h.app.session.visible_cloned().iter().take(2).map(|id| id.0).collect();
     dock(&mut h, json!({"operation":"float","panel":"presets","rect":[row.left()-10.0,row.top()-30.0,300,500]}));
     let undo = h.app.session.undo.len();
-    let before: Vec<_> = ids.iter().map(|id| h.app.session.catalog.photo(lightcraft_catalog::PhotoId(*id)).unwrap().meta.keywords.clone()).collect();
+    let before: Vec<_> = ids.iter().map(|id| h.app.session.catalog.photo(luz_catalog::PhotoId(*id)).unwrap().meta.keywords.clone()).collect();
     h.app.ui.dragging_photos = Some(ids.clone());
     release(&mut h, row.center());
     for (id, expected) in ids.iter().zip(&before) {
-        assert_eq!(&h.app.session.catalog.photo(lightcraft_catalog::PhotoId(*id)).unwrap().meta.keywords, expected);
+        assert_eq!(&h.app.session.catalog.photo(luz_catalog::PhotoId(*id)).unwrap().meta.keywords, expected);
     }
     assert_eq!(h.app.session.undo.len(), undo);
     dock(&mut h, json!({"operation":"moveFloating","panel":"presets","rect":[400,100,300,500]}));
@@ -251,7 +253,7 @@ fn floating_presets_block_keyword_photo_drop_then_uncovered_target_changes_exact
     release(&mut h, row.center());
     for (id, mut expected) in ids.iter().zip(before) {
         expected.push("A Dock Keyword".into());
-        let mut actual = h.app.session.catalog.photo(lightcraft_catalog::PhotoId(*id)).unwrap().meta.keywords.clone();
+        let mut actual = h.app.session.catalog.photo(luz_catalog::PhotoId(*id)).unwrap().meta.keywords.clone();
         expected.sort();
         actual.sort();
         assert_eq!(actual, expected);
@@ -271,12 +273,12 @@ fn covered_folder_rejects_album_move_and_uncovered_folder_nests_exact_album() {
     let undo = h.app.session.undo.len();
     h.app.ui.dragging_album = Some(child);
     release(&mut h, row.center());
-    assert_eq!(h.app.session.catalog.album(lightcraft_catalog::AlbumId(child)).unwrap().parent, None);
+    assert_eq!(h.app.session.catalog.album(luz_catalog::AlbumId(child)).unwrap().parent, None);
     assert_eq!(h.app.session.undo.len(), undo);
     dock(&mut h, json!({"operation":"moveFloating","panel":"tools","rect":[800,100,330,500]}));
     h.app.ui.dragging_album = Some(child);
     release(&mut h, row.center());
-    assert_eq!(h.app.session.catalog.album(lightcraft_catalog::AlbumId(child)).unwrap().parent, Some(lightcraft_catalog::AlbumId(folder)));
+    assert_eq!(h.app.session.catalog.album(luz_catalog::AlbumId(child)).unwrap().parent, Some(luz_catalog::AlbumId(folder)));
     assert_eq!(h.app.session.undo.len(), undo + 1);
 }
 
@@ -308,7 +310,7 @@ fn covered_keyword_rejects_hierarchy_move_and_uncovered_target_moves_exact_keywo
 #[test]
 fn reset_during_held_divider_drag_keeps_replacement_layout_on_later_movement() {
     let mut h = app();
-    let divider = egui::Id::unique("lightcraft-docking").with(("column-resize", Some(Panel::Library)));
+    let divider = egui::Id::unique("luz-docking").with(("column-resize", Some(Panel::Library)));
     let from = h.view.ctx.read_response(divider).expect("the Library column's divider is rendered").rect.center();
     let before = h.app.ui.docking.as_ref().unwrap().layout.clone();
     h.app.synthetic.push(Event::PointerButton { pos: from, button: PointerButton::Primary, pressed: true, modifiers: Modifiers::NONE });
@@ -340,7 +342,7 @@ fn reset_during_held_divider_drag_keeps_replacement_layout_on_later_movement() {
 
 fn held_divider_replacement_route(route: &str) {
     let mut h = app();
-    let divider = egui::Id::unique("lightcraft-docking").with(("column-resize", Some(Panel::Library)));
+    let divider = egui::Id::unique("luz-docking").with(("column-resize", Some(Panel::Library)));
     let from = h.view.ctx.read_response(divider).unwrap().rect.center();
     let photos = serde_json::to_value(h.app.session.catalog.photos().map(|photo| photo.as_ref()).collect::<Vec<_>>()).unwrap();
     h.app.synthetic.push(Event::PointerButton { pos: from, button: PointerButton::Primary, pressed: true, modifiers: Modifiers::NONE });

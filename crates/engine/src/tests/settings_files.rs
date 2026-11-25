@@ -4,7 +4,7 @@
 
 use std::sync::{Arc, Mutex};
 
-use lightcraft_catalog::{MemStore, Store};
+use luz_catalog::{MemStore, Store};
 use serde_json::json;
 
 use crate::Session;

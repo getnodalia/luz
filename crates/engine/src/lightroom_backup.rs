@@ -243,7 +243,7 @@ pub fn extract(zip: &Path, root: &Path, cancel: &AtomicBool) -> Result<Extracted
     let all = entries(&mut f)?;
     let entry = catalog_entry(&all)?.clone();
     if entry.size > MAX_CATALOG_BYTES {
-        return Err(format!("the catalog in this backup unpacks to {} GB, more than LightCraft reads", entry.size >> 30));
+        return Err(format!("the catalog in this backup unpacks to {} GB, more than Luz reads", entry.size >> 30));
     }
     std::fs::create_dir_all(root).map_err(|e| format!("{}: {e}", root.display()))?;
     check_space(root, entry.size, crate::disk_space::read(root).map(|space| space.available))?;
@@ -329,7 +329,7 @@ pub fn extract(zip: &Path, root: &Path, cancel: &AtomicBool) -> Result<Extracted
                 }
             }
         }
-        m => return Err(format!("this zip uses compression method {m}, which LightCraft does not read; unzip it and import the .lrcat")),
+        m => return Err(format!("this zip uses compression method {m}, which Luz does not read; unzip it and import the .lrcat")),
     }
     writer.flush().map_err(|e| format!("writing {}: {e}", out.catalog.display()))?;
     drop(writer);
@@ -506,7 +506,7 @@ pub(crate) mod tests {
         z[at..at + 8].copy_from_slice(&(1u64 << 40).to_le_bytes());
         std::fs::write(dir.join("x.zip"), &z).unwrap();
         let err = extract(&dir.join("x.zip"), &dir.join("tmp"), &AtomicBool::new(false)).unwrap_err();
-        assert!(err.contains("more than LightCraft reads"), "{err}");
+        assert!(err.contains("more than Luz reads"), "{err}");
         std::fs::remove_dir_all(&dir).unwrap();
     }
 

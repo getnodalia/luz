@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use lightcraft_develop::DevelopSettings;
+use luz_develop::DevelopSettings;
 use proptest::prelude::*;
 
 use crate::journal::{LOG, SNAPSHOT, decode_record, encode_record};
@@ -365,13 +365,13 @@ fn failed_streamed_write_keeps_the_old_file() {
 /// else: the photo and its edits load (`docs/process-versions.md`).
 #[test]
 fn a_damaged_process_value_loads_as_v1_with_the_edits() {
-    use lightcraft_develop::ProcessVersion;
+    use luz_develop::ProcessVersion;
     let mut c = Catalog::new();
     let id = c.alloc_photo_id();
     let mut p = Photo::new(id, Source::Demo { scene: 1 }, "a.jpg", "JPEG", 10, 10, "2026-10-09T00:00:00");
     p.develop = Arc::new(DevelopSettings {
         process: ProcessVersion(7),
-        light: lightcraft_develop::Light { exposure: 0.5, ..Default::default() },
+        light: luz_develop::Light { exposure: 0.5, ..Default::default() },
         ..Default::default()
     });
     c.apply(Op::AddPhoto { photo: Box::new(p) }).unwrap();
@@ -388,11 +388,8 @@ fn a_damaged_process_value_loads_as_v1_with_the_edits() {
     let d = &loaded.photo(id).unwrap().develop;
     assert_eq!((d.process, d.light.exposure), (ProcessVersion::V1, 0.5));
     // and in a (CRC-valid) log record
-    let edit = DevelopSettings {
-        process: ProcessVersion(7),
-        light: lightcraft_develop::Light { exposure: 0.8, ..Default::default() },
-        ..Default::default()
-    };
+    let edit =
+        DevelopSettings { process: ProcessVersion(7), light: luz_develop::Light { exposure: 0.8, ..Default::default() }, ..Default::default() };
     let op = Op::SetDevelop { id, settings: Arc::new(edit), label: "Edit".into(), edited: None };
     let body = serde_json::to_string(&op).unwrap().replace(r#""process":7"#, r#""process":"seven""#);
     assert!(body.contains("seven"));

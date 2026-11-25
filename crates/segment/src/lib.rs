@@ -9,15 +9,15 @@
 //! ([`Sam3::encode`]); each click or prompt then reuses the [`Encoded`] features.
 //!
 //! On macOS the model runs on the GPU through Metal; elsewhere (for now) on the CPU. The
-//! weights are not part of LightCraft: they are the `facebook/sam3` checkpoint (SAM License),
+//! weights are not part of Luz: they are the `facebook/sam3` checkpoint (SAM License),
 //! read from a directory the user downloads them to ([`Sam3::load`]).
 //!
 //! Ported from the Hugging Face `transformers` implementation (Apache-2.0); see `NOTICE`.
 //! This crate is therefore licensed under the Apache License 2.0 only (not the MIT option of
-//! the rest of LightCraft). No UI dependencies (L3).
+//! the rest of Luz). No UI dependencies (L3).
 //!
 //! [`fetch`] downloads the model, only when the user asks for it (from configurable mirrors,
-//! verified before use). Nothing in LightCraft requires the model: without it, AI masks report
+//! verified before use). Nothing in Luz requires the model: without it, AI masks report
 //! that it isn't installed and everything else works.
 //!
 //! Modified work (Apache License 2.0, §4(b)): ported by the LightCraft contributors in 2026 from
@@ -269,7 +269,7 @@ fn hugging_face_format(weights: &weights::Weights) -> Result<()> {
     if !weights.contains(first) && (weights.has_prefix("detector.backbone.") || weights.has_prefix("tracker.")) {
         return Err(Error::Model(format!(
             "{WEIGHTS_FILE} is Meta's original checkpoint (sam3.pt, or a sam3.safetensors conversion of it as on community mirrors); \
-             LightCraft needs the Hugging Face format: {WEIGHTS_FILE} from facebook/sam3"
+             Luz needs the Hugging Face format: {WEIGHTS_FILE} from facebook/sam3"
         )));
     }
     Ok(())

@@ -15,7 +15,7 @@ Update to the latest Luz, then select the photo and choose **Photo** > **Reload 
 
 ## Fix
 
-1. Check your version in **Help** > **About Luz** (on macOS, **Luz** > **About Luz**). If it is older than 0.7.1, install the [latest release](https://github.com/storytold/lightcraft/releases/latest). See [Install Luz](../getting-started/install.md).
+1. Check your version in **Help** > **About Luz** (on macOS, **Luz** > **About Luz**). If it is older than 0.7.1, install the [latest release](https://github.com/getnodalia/luz/releases/latest). See [Install Luz](../getting-started/install.md).
 2. Select the raw photo and choose **Photo** > **Reload from Disk**.
 3. If it still looks dull, adjust it by hand in the **Edit** panel. See [Edit a photo](../guides/edit-a-photo.md).
 4. If you think the starting look is wrong for your camera, report it with the original raw file. See [Get help with a problem](get-help.md).
@@ -37,4 +37,4 @@ If a large raw looks soft right after you zoom in, wait a few seconds. Luz first
 
 ## Still stuck?
 
-Ask in [Discord](https://discord.gg/artcraft) or open an issue in the [issue tracker](https://github.com/storytold/lightcraft/issues).
+Ask in [Discord](https://github.com/getnodalia/luz/issues) or open an issue in the [issue tracker](https://github.com/getnodalia/luz/issues).

@@ -63,15 +63,15 @@ a Mac runs SAM 3. Build both ends from the same revision. On the Mac, install th
 as described below, then run:
 
 ```sh
-cargo build --release --locked -p lightcraft-segment --bin lightcraft-sam3-worker
-target/release/lightcraft-sam3-worker "$HOME/Library/Application Support/Luz/models/sam3" 127.0.0.1:8793
+cargo build --release --locked -p luz-segment --bin luz-sam3-worker
+target/release/luz-sam3-worker "$HOME/Library/Application Support/Luz/models/sam3" 127.0.0.1:8793
 ```
 
 On the editing computer, start an SSH tunnel in one terminal and Luz in another:
 
 ```sh
 ssh -N -T -o ExitOnForwardFailure=yes -L 127.0.0.1:8793:127.0.0.1:8793 user@your-mac
-LIGHTCRAFT_SAM3_REMOTE=127.0.0.1:8793 lightcraft
+LUZ_SAM3_REMOTE=127.0.0.1:8793 luz
 ```
 
 Object clicks, Describe prompts, and detail refinement use the remote worker. Only the
@@ -89,7 +89,7 @@ this only on machines whose local users you trust.
 
 No local weights are required in remote mode. An unavailable worker produces an explicit
 error, not a silent CPU fallback. Restore the tunnel and retry. Unset
-`LIGHTCRAFT_SAM3_REMOTE` to use the local model again. This offloads segmentation only,
+`LUZ_SAM3_REMOTE` to use the local model again. This offloads segmentation only,
 not RAW development, denoising, or upscaling. The model licence below still applies.
 
 ## Getting the model
@@ -111,7 +111,7 @@ when complete and verified — `model.safetensors` must have the exact size and 
 official checkpoint; a file that doesn't match is deleted, never used. If no location works, the
 dialog says why and Luz carries on without the model.
 
-Agents and scripts use the same commands (control channel, `lightcraft-cli mcp --connect`):
+Agents and scripts use the same commands (control channel, `luz-cli mcp --connect`):
 `segment.model.status`, `segment.model.download {"acknowledged": true}` (refused without the
 explicit `acknowledged`: pass it only after the user agreed to the download and the licence),
 `segment.model.cancel`.
@@ -121,10 +121,10 @@ explicit `acknowledged`: pass it only after the user agreed to the download and 
 The model is fetched from an ordered list of mirrors: base URLs where `<base>/model.safetensors`,
 `<base>/vocab.json` and `<base>/merges.txt` live. The list is, in order:
 
-1. `LIGHTCRAFT_SAM3_MIRRORS` (environment variable; URLs separated by commas or spaces);
+1. `LUZ_SAM3_MIRRORS` (environment variable; URLs separated by commas or spaces);
 2. the file `models/sam3-mirrors.txt` in Luz's settings folder (one URL per line, `#`
    comments) — `~/Library/Application Support/Luz/` (macOS), `%APPDATA%\Luz\`
-   (Windows), `~/.config/lightcraft/` (Linux);
+   (Windows), `~/.config/luz/` (Linux);
 3. the built-in list, `DEFAULT_MIRRORS` in `crates/segment/src/fetch.rs`.
 
 > **Maintainers:** the built-in list is **empty** until Luz's own CDN locations exist
@@ -139,11 +139,11 @@ licence there, wait for approval and download with their own token). Someone wit
 use it as their mirror:
 
 ```sh
-LIGHTCRAFT_SAM3_MIRRORS=https://huggingface.co/facebook/sam3/resolve/main \
-LIGHTCRAFT_SAM3_TOKEN=hf_... lightcraft
+LUZ_SAM3_MIRRORS=https://huggingface.co/facebook/sam3/resolve/main \
+LUZ_SAM3_TOKEN=hf_... luz
 ```
 
-(`LIGHTCRAFT_SAM3_TOKEN` is sent as a bearer token only over https, and only to the mirror's own
+(`LUZ_SAM3_TOKEN` is sent as a bearer token only over https, and only to the mirror's own
 host — not to the storage host it redirects to.)
 
 The download is plain HTTP/1.1 over TLS in pure Rust (rustls with the RustCrypto provider and
@@ -153,7 +153,7 @@ the Mozilla root certificates; no OpenSSL, `ring` or `aws-lc`, nothing compiled 
 ### By hand
 
 Put `model.safetensors`, `vocab.json` and `merges.txt` from `facebook/sam3` in the model folder:
-`models/sam3/` in the settings folder above, or the folder `LIGHTCRAFT_SAM3_DIR` names. It must be
+`models/sam3/` in the settings folder above, or the folder `LUZ_SAM3_DIR` names. It must be
 the Hugging Face format (3,439,938,512 bytes): `sam3.safetensors` from community mirrors, renamed, is
 Meta's original checkpoint, and Luz says so instead of loading it. Developers
 can use the installer scripts, which download from Hugging Face with your token and verify the
@@ -221,7 +221,7 @@ installed" that says how to get it.
 In the desktop app the commands don't wait for the model: `mask.objectPoint` returns
 `{pending: true}` and the selection is applied when it's computed (one undo step per settled
 selection); `mask.add {kind: "prompt"}` returns `{pending: true}` and the mask appears when
-something is found (or a message says nothing was). `lightcraft-cli` and the headless MCP server
+something is found (or a message says nothing was). `luz-cli` and the headless MCP server
 wait and return the result (when built with the `sam` feature; the default CLI has no AI masks).
 
 ## Implementation notes
@@ -231,10 +231,10 @@ wait and return the result (when built with the `sam` feature; the default CLI h
   with 2-D RoPE and windowed attention, the feature pyramids, the SAM 2-style prompt encoder and
   two-way mask decoder for clicks, and the CLIP text encoder, DETR encoder/decoder (box
   relative-position bias, presence token), pixel decoder and semantic head for text. The CLIP tokenizer is a
-  small BPE in `tokenizer.rs`. The downloader (original code) is the `lightcraft-fetch` crate, shared by any model that is downloaded; `fetch/` here says what SAM 3 needs.
+  small BPE in `tokenizer.rs`. The downloader (original code) is the `luz-fetch` crate, shared by any model that is downloaded; `fetch/` here says what SAM 3 needs.
 - candle is pinned at 0.9.2: later releases make `candle-core` depend on `tokenizers` with the
   Oniguruma C library, and the product is pure Rust. Weights are read with positional reads (no
-  memory map: `unsafe` stays in `lightcraft-sysmem`), only the tensors a path needs, and every
+  memory map: `unsafe` stays in `luz-sysmem`), only the tensors a path needs, and every
   tensor's byte range is checked against the file's length when it is opened (a truncated or
   damaged file is an error, never a crash).
 - The engine (`crates/engine/src/segment/`) owns one worker thread with the model and the last
@@ -246,7 +246,7 @@ wait and return the result (when built with the `sam` feature; the default CLI h
   once more on the CPU. If that works, the model stays on the CPU until Luz restarts and
   the user is told once ("The GPU couldn't run the AI mask model…"); if the CPU fails too, the
   error is reported and the next job tries the GPU again. Missing or damaged model files and
-  remote-worker errors are not retried. `LIGHTCRAFT_GPU=0` or `LIGHTCRAFT_GPU_BACKEND=off` keep
+  remote-worker errors are not retried. `LUZ_GPU=0` or `LUZ_GPU_BACKEND=off` keep
   the model on the CPU from the start.
 - Hostile documents: a selection keeps at most 4 detail patches (when read and when rendered),
   each at most 1024² logits; more than 64 clicks are never sent to the model.
@@ -262,5 +262,5 @@ wait and return the result (when built with the `sam` feature; the default CLI h
 ```sh
 python3 -m venv .venv-sam3 && .venv-sam3/bin/pip install -r tools/requirements-sam3-reference.txt
 .venv-sam3/bin/python tools/sam3_reference.py photo.jpg ref.safetensors
-LIGHTCRAFT_SAM3_DIR=<model dir> LIGHTCRAFT_SAM3_REF=ref.safetensors cargo test -p lightcraft-segment --release -- --nocapture
+LUZ_SAM3_DIR=<model dir> LUZ_SAM3_REF=ref.safetensors cargo test -p luz-segment --release -- --nocapture
 ```

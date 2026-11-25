@@ -8,7 +8,7 @@ File → Open Library… given a Lightroom catalog folder (or an `.lrdata` / `.l
 doesn't make a Luz library there: it offers this import instead, with the catalog found
 (`crates/engine/src/lightroom_folder.rs`, issue #891), and then asks where the catalog goes as described next
 (unless the question is turned off, below).
-`lightcraft-cli --library` refuses those places too.
+`luz-cli --library` refuses those places too.
 
 **Where the catalog goes.** Before the import starts, the desktop app asks where the catalog goes (issue #2672),
 unless Settings says to always merge (*Turning the question off*, below):
@@ -35,7 +35,7 @@ A session with no library on disk (in memory, e.g. after Continue Without Saving
 next to: the catalog merges into it without asking, as before.
 
 **Scripts and agents.** The app command `file.importLightroom {path?, into?, name?, location?}` (control channel,
-`lightcraft-cli mcp --connect`) chooses without the window: `into: "open"` merges, `into: "new"` creates the library
+`luz-cli mcp --connect`) chooses without the window: `into: "open"` merges, `into: "new"` creates the library
 `name` (default: the catalog's name) in the folder `location` (default: the open library's parent folder; a full
 path), opens it and imports. Without `into` it shows the window (and returns `{asking: true, path, into}`, `into`
 being the choice the window opens with) or merges when the setting says so. A catalog path that doesn't exist is
@@ -48,11 +48,11 @@ A Lightroom Classic catalog backup is imported the same way, as the `.zip` Light
 Equivalent commands:
 
 ```text
-lightcraft-cli run --library "Luz Library" library.inspectLightroom path="Lightroom Catalog.lrcat"
-lightcraft-cli run --library "Luz Library" library.importLightroom path="Lightroom Catalog.lrcat"
+luz-cli run --library "Luz Library" library.inspectLightroom path="Lightroom Catalog.lrcat"
+luz-cli run --library "Luz Library" library.importLightroom path="Lightroom Catalog.lrcat"
 ```
 
-The import itself (`library.importLightroom`, `lightcraft-cli run`) adds records to the currently open Luz
+The import itself (`library.importLightroom`, `luz-cli run`) adds records to the currently open Luz
 library; only the desktop window above can make a new library for it first. The desktop result stays open until dismissed and
 shows the destination library, the number of records added, missing originals and warnings.
 **Show in Library** opens All Photos, clears filters and selects an imported record (not one left in Recently
@@ -126,8 +126,8 @@ RAF, CR3, CR2, PEF, SRW; Lightroom names them all `RAW`) can't be taken as Kelvi
 as-shot white for Custom photos, so the photo stays As Shot and `Temperature, Tint` are reported
 (issue #510; a DNG keeps the Kelvin value, and an XMP packet with `crs:AsShotTemperature` is
 shifted by the same mired difference, see [xmp-interop.md](xmp-interop.md)). A raw whose camera has
-measured colour matrices (`lightcraft_raw::spectral`: ILCE-7M3, D850, EOS 5D Mark III…), or whose white-balance
-presets give a Kelvin scale (`lightcraft_raw::kelvin_presets`: ILCA-99M2, ILCA-77M2…), edits in Kelvin
+measured colour matrices (`luz_raw::spectral`: ILCE-7M3, D850, EOS 5D Mark III…), or whose white-balance
+presets give a Kelvin scale (`luz_raw::kelvin_presets`: ILCA-99M2, ILCA-77M2…), edits in Kelvin
 and keeps the Kelvin value too (issue #730) — when its file was found and probed, since the camera is
 read from the file, not from the Lightroom catalog; a missing file is treated as a relative-scale raw
 until Reload reads it.

@@ -4,11 +4,11 @@ The screenshots in `docs/images/` are captured by driving Luz over its control c
 
 ```sh
 # public-domain set (downloaded into the gitignored corpus/, see assets/ATTRIBUTION.md for sources)
-cargo run --release -p lightcraft -- --memory --control 7980 corpus/images/pd &
+cargo run --release -p luz -- --memory --control 7980 corpus/images/pd &
 python3 docs/showcase/run.py docs/showcase/pd-edits.jsonl
 
 # procedural demo library
-cargo run --release -p lightcraft -- --memory --control 7980 &
+cargo run --release -p luz -- --memory --control 7980 &
 python3 docs/showcase/run.py docs/showcase/demo.jsonl
 
 # compress for the repo (macOS)

@@ -1,28 +1,29 @@
 [package]
-name = "lightcraft-ui-egui"
+name = "luz-ui-egui"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
-description = "LightCraft egui frontend (Lightroom-style UI); swappable — nothing below depends on it (L5)"
+description = "Luz egui frontend (Lightroom-style UI); swappable — nothing below depends on it (L5)"
 
 [lints]
 workspace = true
 
 [dependencies]
+nodalia-theme = { workspace = true, features = ["creator"] }
 craft-ui = { workspace = true }
 craft-window = { workspace = true }
-lightcraft-geom = { workspace = true }
-lightcraft-meta = { workspace = true }
-lightcraft-color = { workspace = true }
-lightcraft-raster = { workspace = true }
-lightcraft-develop = { workspace = true }
-lightcraft-pipeline = { workspace = true }
-lightcraft-catalog = { workspace = true }
+luz-geom = { workspace = true }
+luz-meta = { workspace = true }
+luz-color = { workspace = true }
+luz-raster = { workspace = true }
+luz-develop = { workspace = true }
+luz-pipeline = { workspace = true }
+luz-catalog = { workspace = true }
 web-time = { workspace = true }
-lightcraft-engine = { workspace = true }
-lightcraft-slideshow = { workspace = true }
-lightcraft-preview = { workspace = true }
+luz-engine = { workspace = true }
+luz-slideshow = { workspace = true }
+luz-preview = { workspace = true }
 egui = { workspace = true }
 egui_extras = { workspace = true }
 serde = { workspace = true }
@@ -31,17 +32,17 @@ log = { workspace = true }
 
 [dev-dependencies]
 # tests record why they skip (`cargo xtask ci` lists the skips)
-lightcraft-testkit = { workspace = true }
+luz-testkit = { workspace = true }
 # The model-setup tests install and resume a real denoise model. Without this the engine's
 # `default_loader` is the "this build cannot run denoise models" stub when the package is tested
-# on its own (`cargo test -p lightcraft-ui-egui`); a workspace test only passed by feature
+# on its own (`cargo test -p luz-ui-egui`); a workspace test only passed by feature
 # unification with the desktop app's default `denoise` feature.
-lightcraft-engine = { workspace = true, features = ["denoise"] }
+luz-engine = { workspace = true, features = ["denoise"] }
 egui_kittest = { workspace = true, features = ["wgpu", "snapshot"] }
-lightcraft-denoise = { workspace = true, features = ["runtime"] }
-lightcraft-codecs = { workspace = true }
-lightcraft-faces = { workspace = true }
-lightcraft-merge = { workspace = true }
+luz-denoise = { workspace = true, features = ["runtime"] }
+luz-codecs = { workspace = true }
+luz-faces = { workspace = true }
+luz-merge = { workspace = true }
 # a device for the GPU-resident view test (`render.rs`)
 pollster = { workspace = true }
 

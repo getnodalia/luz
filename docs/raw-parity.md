@@ -32,7 +32,7 @@ rewrites [raw/coverage.tsv](raw/coverage.tsv) and prints the tables below; `--ch
 committed table is stale.
 
 Folder discovery, desktop file pickers, CLI and MCP share
-`lightcraft_engine::import::EXTENSIONS`. The list includes formats that may open only from an
+`luz_engine::import::EXTENSIONS`. The list includes formats that may open only from an
 embedded preview or report a decoder error; an extension is not a promise of sensor decoding.
 The 2026-10-12 release CLI check of the public DSC-R1 SR2 and DSC-F828 SRF samples found the
 same photos and decode status through recursive and direct import. DSC-F828 moves from
@@ -46,7 +46,7 @@ unsupported to preview-only in the counts; sensor-decoding readiness is unchange
   version. The year a model was added is approximated from that Camera Raw major version.
 - **What we decode**: the decoders and their refusals in `crates/raw/src` (`lib.rs` routing, `vendor/*.rs`
   coding variants, `crx.rs` CRX limits, `orf.rs` / `srw.rs` compressed refusals), the import list
-  `lightcraft_engine::import::EXTENSIONS`, and `KNOWN_UNSUPPORTED` in `crates/raw/tests/it/corpus.rs`. Doc
+  `luz_engine::import::EXTENSIONS`, and `KNOWN_UNSUPPORTED` in `crates/raw/tests/it/corpus.rs`. Doc
   claims were not used.
 - **Verified** means a real file from that body decoded from sensor data in: the corpus test over the
   `RAW_SAMPLES` manifest (`xtask/src/main.rs`, 105 CC0 files; bodies whose sample is in

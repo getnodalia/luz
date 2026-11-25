@@ -1,12 +1,10 @@
 use super::geometry::CanvasMap;
-use super::{
-    Affine, Color32, DevelopSettings, Frame, Gesture, LightcraftApp, PhotoId, Point, Pos2, Rect, Stroke, Tokens, json, pos2, register, vec2,
-};
+use super::{Affine, Color32, DevelopSettings, Frame, Gesture, LuzApp, PhotoId, Point, Pos2, Rect, Stroke, Tokens, json, pos2, register, vec2};
 
 // ------------------------------------------------------------------------ crop
 
 pub(super) fn crop_overlay(
-    app: &mut LightcraftApp,
+    app: &mut LuzApp,
     ui: &mut egui::Ui,
     resp: &egui::Response,
     map: &CanvasMap,
@@ -40,7 +38,7 @@ pub(super) fn crop_overlay(
     let preview;
     let d = match app.crop_tool_preview() {
         Some(geometry) => {
-            preview = DevelopSettings { crop: lightcraft_develop::Crop { geometry, ..d.crop }, ..d.clone() };
+            preview = DevelopSettings { crop: luz_develop::Crop { geometry, ..d.crop }, ..d.clone() };
             &preview
         }
         None => d,
@@ -156,7 +154,7 @@ pub(super) fn crop_overlay(
         match app.gesture.clone() {
             Some(Gesture::CropHandle { handle, start, angle }) => {
                 // The crop model decides what the drag does (anchor, aspect lock, image bounds): see
-                // `lightcraft_geom::drag_crop`; the UI only reports where the pointer started and is.
+                // `luz_geom::drag_crop`; the UI only reports where the pointer started and is.
                 let n = to_straight(map.norm(q), angle, frame);
                 let orig = ui.input(|i| i.pointer.press_origin()).map(|q0| to_straight(map.norm(q0), angle, frame)).unwrap_or(n);
                 // Shift keeps the current proportions for this drag only; the Lock toggle is untouched.
@@ -203,15 +201,7 @@ const CROP_HANDLE_NAMES: [&str; 9] = [
 /// Keyboard stand-ins for the crop handles: an arrow press drags the focused one by a step (one
 /// undo step each), as a pointer drag from its place would. Return applies the crop. True when the
 /// frame is over (the crop was applied).
-fn crop_keys(
-    app: &mut LightcraftApp,
-    ui: &mut egui::Ui,
-    map: &CanvasMap,
-    handles: &[Pos2],
-    pts: &[Pos2],
-    d: &DevelopSettings,
-    frame: &Frame,
-) -> bool {
+fn crop_keys(app: &mut LuzApp, ui: &mut egui::Ui, map: &CanvasMap, handles: &[Pos2], pts: &[Pos2], d: &DevelopSettings, frame: &Frame) -> bool {
     let r = d.crop.geometry.rect;
     let centre = if pts.len() == 4 { pts.iter().fold(Pos2::ZERO, |acc, q| acc + q.to_vec2() / 4.0) } else { return false };
     let pct = |v: f64| if v.is_finite() { (v * 100.0).round() as i64 } else { 0 };
@@ -246,8 +236,7 @@ fn crop_keys(
 
 /// The crop angle as the rotation readout shows it: like the Straighten value, in degrees.
 pub(crate) fn crop_angle_label(angle: f64) -> String {
-    let shown =
-        lightcraft_develop::controls::find("crop.angle").map_or_else(|| format!("{angle:.2}"), |spec| crate::widgets::shown_value(spec, angle));
+    let shown = luz_develop::controls::find("crop.angle").map_or_else(|| format!("{angle:.2}"), |spec| crate::widgets::shown_value(spec, angle));
     // the slider's format turns a rounded −0.00 into "0": every zero reads "0.00", the angle's
     // usual two decimals
     let shown = if shown == "0" { "0.00".to_string() } else { shown };
@@ -322,15 +311,7 @@ fn angle_readout(ui: &egui::Ui, at: Pos2, angle: f64, bounds: Rect) {
 
 /// Guided Upright: draw up to four guides along lines that should be vertical or horizontal. Guides are
 /// stored in lens-corrected (pre-perspective) coordinates, so they stay attached to the image as it warps.
-fn guided_overlay(
-    app: &mut LightcraftApp,
-    ui: &mut egui::Ui,
-    resp: &egui::Response,
-    map: &CanvasMap,
-    frame: &Frame,
-    d: &DevelopSettings,
-    id: PhotoId,
-) {
+fn guided_overlay(app: &mut LuzApp, ui: &mut egui::Ui, resp: &egui::Response, map: &CanvasMap, frame: &Frame, d: &DevelopSettings, id: PhotoId) {
     let p = ui.painter_at(map.rect.expand(8.0));
     let col = Color32::from_rgb(255, 196, 40);
     // the selected guide: brighter, so the Delete key has a visible target
@@ -554,7 +535,7 @@ fn frame_crop_quad(d: &DevelopSettings, frame: &Frame) -> [Point; 4] {
 /// Straighten tool: drag along a horizon (or a vertical) to set the crop angle; double-click = Auto.
 /// The image is shown unrotated in the crop view, so the line's on-screen angle is its image angle.
 /// `held`: drawn with ⌘ held in the crop tool, which stays active afterwards.
-fn straighten_overlay(app: &mut LightcraftApp, ui: &mut egui::Ui, resp: &egui::Response, held: bool) {
+fn straighten_overlay(app: &mut LuzApp, ui: &mut egui::Ui, resp: &egui::Response, held: bool) {
     ui.ctx().set_cursor_icon(egui::CursorIcon::Crosshair);
     if !held && resp.double_clicked() {
         app.auto_straighten(ui.ctx());

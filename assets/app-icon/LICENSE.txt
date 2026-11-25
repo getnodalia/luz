@@ -1,4 +1,4 @@
-Luz app icon (lightcraft.svg, lightcraft-small.svg and every file derived from them in this
+Luz app icon (luz.svg, luz-small.svg and every file derived from them in this
 directory, and the web favicon where the project has one).
 
 The icon is a portrait of Louis Daguerre cut out, converted to black and white and placed over the

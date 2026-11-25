@@ -87,9 +87,9 @@ tr_format!("Added {n} photo{} to “{}”", if n == 1 { "" } else { "s" }, album
 ## Testing and looking at it
 
 ```sh
-cargo test -p lightcraft-ui-egui i18n::tests                       # catalogs load, placeholders, switching
-CRAFT_FONTS_DIR=../craft-fonts cargo test -p lightcraft-ui-egui i18n::tests   # + glyph coverage
-cargo test -p lightcraft-ui-egui --lib -- --exact i18n::tests::translation_gaps_report --nocapture
+cargo test -p luz-ui-egui i18n::tests                       # catalogs load, placeholders, switching
+CRAFT_FONTS_DIR=../craft-fonts cargo test -p luz-ui-egui i18n::tests   # + glyph coverage
+cargo test -p luz-ui-egui --lib -- --exact i18n::tests::translation_gaps_report --nocapture
 ```
 
 The tests fail on a broken catalog (malformed JSON, a repeated key, placeholders that differ from
@@ -104,7 +104,7 @@ glyph tests are skipped without `CRAFT_FONTS_DIR` (there are no CJK faces to che
 To look at a language, render it headless:
 
 ```sh
-LIGHTCRAFT_LANGUAGE=zh-hans lightcraft-cli snapshot --demo --script tour.jsonl -o out.png --size 1600x1000
+LUZ_LANGUAGE=zh-hans luz-cli snapshot --demo --script tour.jsonl -o out.png --size 1600x1000
 ```
 
 or, with the app running (`--control 7980`), run the language command
@@ -113,7 +113,7 @@ or, with the app running (`--control 7980`), run the language command
 ## Language codes and settings
 
 The settings file stores the BCP-47 code, never the Rust variant name, so a language can be renamed
-in code without invalidating anyone's saved preference. `LIGHTCRAFT_LANGUAGE` accepts what a system
+in code without invalidating anyone's saved preference. `LUZ_LANGUAGE` accepts what a system
 locale looks like (`zh_Hans`, `zh-CN`, `en_US`, `ja_JP.UTF-8`) and falls back to the base language
 when a region has no dedicated entry.
 

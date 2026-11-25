@@ -4,7 +4,7 @@ description: Luz is a free, open-source photo library and raw developer, an alte
 verified: 0.7.1
 ---
 
-Luz is a photo library and raw developer that runs on your own computer. It is an open-source alternative to Adobe Lightroom, written in Rust, and part of the Craft App Suite from the ArtCraft team.
+Luz is a photo library and raw developer that runs on your own computer. It is an open-source alternative to Adobe Lightroom, written in Rust, and part of the Craft App Suite from the Nodalia team.
 
 You import photos, sort them with ratings, flags and albums, and edit them without touching the originals. It reads raw files from Canon, Sony, Nikon, Fujifilm, Panasonic, Leica, Pentax and Olympus cameras, and DNG. There is no account, no cloud, no telemetry and no subscription. It runs on Windows, macOS and Linux, and in a web browser. Luz is in alpha, so expect rough edges.
 
@@ -24,4 +24,4 @@ You import photos, sort them with ratings, flags and albums, and edit them witho
 
 ## Get help
 
-Ask in [Discord](https://discord.gg/artcraft) or open an issue in the [issue tracker](https://github.com/storytold/lightcraft/issues). Say which system and camera you use, and your Luz version (**Help** > **About Luz**; on macOS, **Luz** > **About Luz**).
+Ask in [Discord](https://github.com/getnodalia/luz/issues) or open an issue in the [issue tracker](https://github.com/getnodalia/luz/issues). Say which system and camera you use, and your Luz version (**Help** > **About Luz**; on macOS, **Luz** > **About Luz**).

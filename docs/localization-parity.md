@@ -82,7 +82,7 @@ Target languages Luz lacks: Korean, Dutch, Norwegian Bokmål, Thai
 
 - Route lower-layer error messages (catalog, raw, codecs, engine) through translatable message ids
   instead of English `format!` strings (~12–20 h). Translating them must not change what the app does:
-  since #1046 the interface decides on an error's kind (`lightcraft_engine::ErrorKind`, a download's or
+  since #1046 the interface decides on an error's kind (`luz_engine::ErrorKind`, a download's or
   Apple Photos import's `cancelled` flag), not its words; new decisions on an error go through a kind too.
 - A check in `cargo xtask ci` that every user-visible literal reaches a catalog (~4–8 h).
 - A user manual / help pages beyond What's New and the shortcut sheet (Lightroom links to online

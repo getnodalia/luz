@@ -181,7 +181,86 @@ pub fn paint_turned(p: &Painter, rect: Rect, icon: Icon, color: Color32, radians
     paint_with(p, rect, icon, color, Some((radians.cos(), radians.sin())));
 }
 
+/// The flat Nodalia Design Language glyph that stands for `icon`, where one says the same thing.
+/// Luz's own drawings stay for what NDL has no word for (curves, masks, grading wheels, flags…).
+fn ndl_name(icon: Icon) -> Option<&'static str> {
+    use Icon::*;
+    Some(match icon {
+        Sidebar => "sidebar",
+        Back | ChevronLeft => "chevron-left",
+        Forward | ChevronRight => "chevron-right",
+        ChevronDown => "chevron-down",
+        ChevronUp => "chevron-up",
+        ChevronDoubleLeft => "chevrons-left",
+        ChevronDoubleRight => "chevrons-right",
+        Search => "search",
+        Filter => "filter",
+        Bell => "bell",
+        Share => "share",
+        Help => "help",
+        Cloud => "cloud",
+        Sliders => "slider",
+        Crop => "crop",
+        Eraser => "eraser",
+        Eye => "view",
+        EyeOff => "eye-off",
+        Versions => "history",
+        More | Dots => "more-horizontal",
+        Tag => "tag",
+        Info => "info",
+        Sort => "sort",
+        Gear => "settings",
+        Plus => "plus",
+        Minus => "minus",
+        Folder => "folder",
+        Pencil => "pencil",
+        Photos => "image",
+        Clock => "clock",
+        Calendar => "calendar",
+        Trash => "delete",
+        Close => "close",
+        Check => "check",
+        Brush => "brush",
+        Picker => "eyedropper",
+        Flip => "flip",
+        Video => "video-camera",
+        Menu => "menu",
+        Play => "play",
+        Pause => "pause",
+        Sun => "sun",
+        Moon => "moon",
+        Monitor => "monitor",
+        Compare => "compare",
+        Heart => "heart",
+        Star => "star",
+        _ => return None,
+    })
+}
+
 fn paint_with(p: &Painter, rect: Rect, icon: Icon, color: Color32, turn: Option<(f32, f32)>) {
+    if turn.is_none()
+        && let Some(glyph) = ndl_name(icon).and_then(nodalia_theme::icons::get)
+    {
+        let side = rect.width().min(rect.height());
+        let side = if matches!(
+            icon,
+            Icon::Back
+                | Icon::Forward
+                | Icon::ChevronDown
+                | Icon::ChevronUp
+                | Icon::ChevronLeft
+                | Icon::ChevronRight
+                | Icon::ChevronDoubleLeft
+                | Icon::ChevronDoubleRight
+        ) {
+            side.min(16.0)
+        } else {
+            side
+        };
+        let r = Rect::from_center_size(rect.center(), vec2(side, side));
+        nodalia_theme::icons::paint(p, r, glyph, nodalia_theme::icons::Style::bold(color));
+        return;
+    }
     let side = rect.width().min(rect.height());
     // All disclosure and navigation chevrons share a 16-point size and stroke.
     let side = if matches!(
@@ -603,6 +682,67 @@ fn paint_with(p: &Painter, rect: Rect, icon: Icon, color: Color32, turn: Option<
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn every_ndl_icon_luz_names_exists() {
+        let mapped = [
+            Icon::Sidebar,
+            Icon::Back,
+            Icon::Forward,
+            Icon::ChevronDown,
+            Icon::ChevronUp,
+            Icon::ChevronLeft,
+            Icon::ChevronRight,
+            Icon::ChevronDoubleLeft,
+            Icon::ChevronDoubleRight,
+            Icon::Search,
+            Icon::Filter,
+            Icon::Bell,
+            Icon::Share,
+            Icon::Help,
+            Icon::Cloud,
+            Icon::Sliders,
+            Icon::Crop,
+            Icon::Eraser,
+            Icon::Eye,
+            Icon::EyeOff,
+            Icon::Versions,
+            Icon::More,
+            Icon::Dots,
+            Icon::Tag,
+            Icon::Info,
+            Icon::Sort,
+            Icon::Gear,
+            Icon::Plus,
+            Icon::Minus,
+            Icon::Folder,
+            Icon::Pencil,
+            Icon::Photos,
+            Icon::Clock,
+            Icon::Calendar,
+            Icon::Trash,
+            Icon::Close,
+            Icon::Check,
+            Icon::Brush,
+            Icon::Picker,
+            Icon::Flip,
+            Icon::Video,
+            Icon::Menu,
+            Icon::Play,
+            Icon::Pause,
+            Icon::Sun,
+            Icon::Moon,
+            Icon::Monitor,
+            Icon::Compare,
+            Icon::Heart,
+            Icon::Star,
+        ];
+        for icon in mapped {
+            let name = ndl_name(icon).unwrap_or_else(|| panic!("{icon:?} has no NDL name"));
+            assert!(nodalia_theme::icons::get(name).is_some(), "{icon:?} → {name}");
+        }
+        assert!(ndl_name(Icon::Curve).is_none() && ndl_name(Icon::StarFilled).is_none());
+    }
 
     #[test]
     fn navigation_arrowheads_have_both_halves() {

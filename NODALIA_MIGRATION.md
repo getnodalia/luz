@@ -46,8 +46,11 @@ hamburger menu with Preferences, Keyboard shortcuts and About; the theme chosen 
 Preferences; NDL window controls on Linux only, with a preference for the desktop's own; the
 menus exported over D-Bus to the desktop's top bar on Linux (`apps/luz/src/linux_menu.rs`).
 
-Still to do: the creator suite's shared Home sidebar and dialogs, and the NDL icon set in place
-of the app's own drawn icons.
+Done (2026-11-25): the flat general-purpose icons come from the NDL set
+(`crates/ui-egui/src/icons.rs`, `ndl_name`); Luz keeps its own drawings only for photo-specific
+ones (curves, masks, grading wheels, flags, filled stars).
+
+Still to do: the creator suite's shared Home sidebar and dialogs.
 
 ## Risks and priorities
 
@@ -58,7 +61,7 @@ of the app's own drawn icons.
 
 1. A Foundation release workflow, tested with a dry run, then Luz's release on it.
 2. A Foundation Windows ARM64 workflow.
-3. The creator suite's shared Home and dialogs, then NDL icons.
+3. The creator suite's shared Home and dialogs.
 
 ## What the first agent should do
 

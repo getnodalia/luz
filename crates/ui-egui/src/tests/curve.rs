@@ -297,15 +297,22 @@ fn curve_graph_rect(h: &mut Headless) -> [f32; 4] {
     std::array::from_fn(|i| v[i].as_f64().unwrap() as f32)
 }
 
+/// Whether `points` run across most of the graph's width, inside its rectangle `[x, y, w, h]`.
+fn spans_graph(points: &[egui::Pos2], r: [f32; 4]) -> bool {
+    let (lo, hi) = points.iter().fold((f32::MAX, f32::MIN), |(lo, hi), q| (lo.min(q.x), hi.max(q.x)));
+    lo >= r[0] - 1.0 && hi <= r[0] + r[2] + 1.0 && hi - lo > r[2] * 0.8
+}
+
 /// A reader for the height of the painted parametric curve at a graph fraction. The curve is the
-/// wide grey path the graph draws; the histogram is a mesh and the grid lines are single segments.
+/// wide grey path the graph draws, running across the whole graph; the histogram is a mesh, the grid
+/// lines are single segments and the panel's icons are short paths elsewhere on screen.
 fn painted_param_curve(h: &Headless, r: [f32; 4]) -> impl Fn(f64) -> f64 {
     let points = h
         .view
         .painted_shapes()
         .into_iter()
         .find_map(|s| match s {
-            egui::Shape::Path(p) if p.points.len() > 32 && (p.stroke.width - 2.0).abs() < 0.1 => Some(p.points),
+            egui::Shape::Path(p) if p.points.len() > 32 && (p.stroke.width - 2.0).abs() < 0.1 && spans_graph(&p.points, r) => Some(p.points),
             _ => None,
         })
         .unwrap_or_else(|| panic!("the parametric curve line is painted"));

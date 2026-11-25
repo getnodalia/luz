@@ -181,89 +181,69 @@ pub fn paint_turned(p: &Painter, rect: Rect, icon: Icon, color: Color32, radians
     paint_with(p, rect, icon, color, Some((radians.cos(), radians.sin())));
 }
 
-/// The flat Nodalia Design Language glyph that stands for `icon`, where one says the same thing.
-/// Luz's own drawings stay for what NDL has no word for (curves, masks, grading wheels, flags…).
+/// The flat Nodalia Design Language glyph that stands for each icon that has one. Luz's own
+/// drawings stay for what NDL has no word for (curves, masks, grading wheels, flags…).
+const NDL_GLYPHS: &[(Icon, &str)] = &[
+    (Icon::Sidebar, "sidebar"),
+    (Icon::Back, "chevron-left"),
+    (Icon::ChevronLeft, "chevron-left"),
+    (Icon::Forward, "chevron-right"),
+    (Icon::ChevronRight, "chevron-right"),
+    (Icon::ChevronDown, "chevron-down"),
+    (Icon::ChevronUp, "chevron-up"),
+    (Icon::ChevronDoubleLeft, "chevrons-left"),
+    (Icon::ChevronDoubleRight, "chevrons-right"),
+    (Icon::Search, "search"),
+    (Icon::Filter, "filter"),
+    (Icon::Bell, "bell"),
+    (Icon::Share, "share"),
+    (Icon::Help, "help"),
+    (Icon::Cloud, "cloud"),
+    (Icon::Sliders, "slider"),
+    (Icon::Crop, "crop"),
+    (Icon::Eraser, "eraser"),
+    (Icon::Eye, "view"),
+    (Icon::EyeOff, "eye-off"),
+    (Icon::Versions, "history"),
+    (Icon::More, "more-horizontal"),
+    (Icon::Dots, "more-horizontal"),
+    (Icon::Tag, "tag"),
+    (Icon::Info, "info"),
+    (Icon::Sort, "sort"),
+    (Icon::Gear, "settings"),
+    (Icon::Plus, "plus"),
+    (Icon::Minus, "minus"),
+    (Icon::Folder, "folder"),
+    (Icon::Pencil, "pencil"),
+    (Icon::Photos, "image"),
+    (Icon::Clock, "clock"),
+    (Icon::Calendar, "calendar"),
+    (Icon::Trash, "delete"),
+    (Icon::Close, "close"),
+    (Icon::Check, "check"),
+    (Icon::Brush, "brush"),
+    (Icon::Picker, "eyedropper"),
+    (Icon::Flip, "flip"),
+    (Icon::Video, "video-camera"),
+    (Icon::Menu, "menu"),
+    (Icon::Play, "play"),
+    (Icon::Pause, "pause"),
+    (Icon::Sun, "sun"),
+    (Icon::Moon, "moon"),
+    (Icon::Monitor, "monitor"),
+    (Icon::Compare, "compare"),
+    (Icon::Heart, "heart"),
+    (Icon::Star, "star"),
+];
+
 fn ndl_name(icon: Icon) -> Option<&'static str> {
-    use Icon::*;
-    Some(match icon {
-        Sidebar => "sidebar",
-        Back | ChevronLeft => "chevron-left",
-        Forward | ChevronRight => "chevron-right",
-        ChevronDown => "chevron-down",
-        ChevronUp => "chevron-up",
-        ChevronDoubleLeft => "chevrons-left",
-        ChevronDoubleRight => "chevrons-right",
-        Search => "search",
-        Filter => "filter",
-        Bell => "bell",
-        Share => "share",
-        Help => "help",
-        Cloud => "cloud",
-        Sliders => "slider",
-        Crop => "crop",
-        Eraser => "eraser",
-        Eye => "view",
-        EyeOff => "eye-off",
-        Versions => "history",
-        More | Dots => "more-horizontal",
-        Tag => "tag",
-        Info => "info",
-        Sort => "sort",
-        Gear => "settings",
-        Plus => "plus",
-        Minus => "minus",
-        Folder => "folder",
-        Pencil => "pencil",
-        Photos => "image",
-        Clock => "clock",
-        Calendar => "calendar",
-        Trash => "delete",
-        Close => "close",
-        Check => "check",
-        Brush => "brush",
-        Picker => "eyedropper",
-        Flip => "flip",
-        Video => "video-camera",
-        Menu => "menu",
-        Play => "play",
-        Pause => "pause",
-        Sun => "sun",
-        Moon => "moon",
-        Monitor => "monitor",
-        Compare => "compare",
-        Heart => "heart",
-        Star => "star",
-        _ => return None,
-    })
+    NDL_GLYPHS.iter().find(|(i, _)| *i == icon).map(|&(_, name)| name)
 }
 
-fn paint_with(p: &Painter, rect: Rect, icon: Icon, color: Color32, turn: Option<(f32, f32)>) {
-    if turn.is_none()
-        && let Some(glyph) = ndl_name(icon).and_then(nodalia_theme::icons::get)
-    {
-        let side = rect.width().min(rect.height());
-        let side = if matches!(
-            icon,
-            Icon::Back
-                | Icon::Forward
-                | Icon::ChevronDown
-                | Icon::ChevronUp
-                | Icon::ChevronLeft
-                | Icon::ChevronRight
-                | Icon::ChevronDoubleLeft
-                | Icon::ChevronDoubleRight
-        ) {
-            side.min(16.0)
-        } else {
-            side
-        };
-        let r = Rect::from_center_size(rect.center(), vec2(side, side));
-        nodalia_theme::icons::paint(p, r, glyph, nodalia_theme::icons::Style::bold(color));
-        return;
-    }
+/// The side a glyph is drawn at: all disclosure and navigation chevrons share a 16-point size.
+fn glyph_side(rect: Rect, icon: Icon) -> f32 {
     let side = rect.width().min(rect.height());
-    // All disclosure and navigation chevrons share a 16-point size and stroke.
-    let side = if matches!(
+    if matches!(
         icon,
         Icon::Back
             | Icon::Forward
@@ -277,8 +257,18 @@ fn paint_with(p: &Painter, rect: Rect, icon: Icon, color: Color32, turn: Option<
         side.min(16.0)
     } else {
         side
-    };
+    }
+}
+
+fn paint_with(p: &Painter, rect: Rect, icon: Icon, color: Color32, turn: Option<(f32, f32)>) {
+    let side = glyph_side(rect, icon);
     let r = Rect::from_center_size(rect.center(), vec2(side, side));
+    if turn.is_none()
+        && let Some(glyph) = ndl_name(icon).and_then(nodalia_theme::icons::get)
+    {
+        nodalia_theme::icons::paint(p, r, glyph, nodalia_theme::icons::Style::bold(color));
+        return;
+    }
     let k = side / 20.0;
     let pen = Pen { p, r, s: Stroke::new((1.5 * k).max(1.0), color), k, turn };
     use Icon::*;
@@ -685,60 +675,7 @@ mod tests {
 
     #[test]
     fn every_ndl_icon_luz_names_exists() {
-        let mapped = [
-            Icon::Sidebar,
-            Icon::Back,
-            Icon::Forward,
-            Icon::ChevronDown,
-            Icon::ChevronUp,
-            Icon::ChevronLeft,
-            Icon::ChevronRight,
-            Icon::ChevronDoubleLeft,
-            Icon::ChevronDoubleRight,
-            Icon::Search,
-            Icon::Filter,
-            Icon::Bell,
-            Icon::Share,
-            Icon::Help,
-            Icon::Cloud,
-            Icon::Sliders,
-            Icon::Crop,
-            Icon::Eraser,
-            Icon::Eye,
-            Icon::EyeOff,
-            Icon::Versions,
-            Icon::More,
-            Icon::Dots,
-            Icon::Tag,
-            Icon::Info,
-            Icon::Sort,
-            Icon::Gear,
-            Icon::Plus,
-            Icon::Minus,
-            Icon::Folder,
-            Icon::Pencil,
-            Icon::Photos,
-            Icon::Clock,
-            Icon::Calendar,
-            Icon::Trash,
-            Icon::Close,
-            Icon::Check,
-            Icon::Brush,
-            Icon::Picker,
-            Icon::Flip,
-            Icon::Video,
-            Icon::Menu,
-            Icon::Play,
-            Icon::Pause,
-            Icon::Sun,
-            Icon::Moon,
-            Icon::Monitor,
-            Icon::Compare,
-            Icon::Heart,
-            Icon::Star,
-        ];
-        for icon in mapped {
-            let name = ndl_name(icon).unwrap_or_else(|| panic!("{icon:?} has no NDL name"));
+        for &(icon, name) in NDL_GLYPHS {
             assert!(nodalia_theme::icons::get(name).is_some(), "{icon:?} → {name}");
         }
         assert!(ndl_name(Icon::Curve).is_none() && ndl_name(Icon::StarFilled).is_none());

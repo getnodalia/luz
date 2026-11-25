@@ -1,9 +1,9 @@
 <div align="center">
   <a href="https://getnodalia.com">
-    <img src="https://raw.githubusercontent.com/danielmigueltejedor/nodalia-web/main/assets/brand/nodalia-wordmark-badge.svg" width="150" alt="Nodalia">
+    <img src="https://raw.githubusercontent.com/getnodalia/nodalia-web/main/assets/brand/nodalia-wordmark-badge.svg" width="150" alt="Nodalia">
   </a>
   <br><br>
-  <img src="https://raw.githubusercontent.com/danielmigueltejedor/luz/main/assets/app-icon/hicolor/512x512/apps/dev.danielmiguelt.Luz.png" width="192" alt="Luz">
+  <img src="https://raw.githubusercontent.com/getnodalia/luz/main/assets/app-icon/hicolor/512x512/apps/dev.danielmiguelt.Luz.png" width="192" alt="Luz">
   <h1>Luz</h1>
   <p><strong>The RAW developer and photo library of the Nodalia suite.</strong></p>
 
@@ -30,8 +30,15 @@
 with no account and no cloud. It runs on Linux, macOS and Windows.
 
 > [!IMPORTANT]
-> **Luz is at an early stage.** There are no published builds yet, and the Nodalia interface is
-> not wired in.
+> **Luz is at an early stage.** Keep a copy of your original photos. Luz edits without touching them,
+> but a backup is wise.
+
+## Download
+
+Luz 0.1.0 and later are on the [releases page](https://github.com/getnodalia/luz/releases/latest) and on
+[getnodalia.com/luz](https://getnodalia.com/luz/): an AppImage, `.deb`, `.rpm` and `.tar.gz` for Linux x86_64,
+a DMG for macOS (Apple Silicon and Intel) and an MSI or portable zip for Windows x64. The macOS DMG is not
+signed or notarized: the first time, right-click Luz in Applications and choose **Open**.
 
 ## Build and run
 
@@ -49,9 +56,9 @@ cargo run --release -p luz
 |---|---|
 | Package and binary names | Done: the desktop binary is called `luz` |
 | App icon | Done: portrait of Louis Daguerre |
-| Nodalia interface | Not started |
-| Shared interface resources | Planned: the Nodalia apps will share interface components and styles |
-| Installable packages | None published |
+| Nodalia interface | Done: rounded islands, Nodalia window controls on Linux (native on macOS and Windows), flat Nodalia icons, light and dark theme in Preferences, menu in the desktop's top bar on Linux |
+| Shared interface resources | The Nodalia Design components and icons are shared with the other Nodalia apps |
+| Installable packages | Linux, macOS and Windows, from 0.1.0 |
 
 ## App icon
 

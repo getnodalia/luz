@@ -11,6 +11,7 @@
 pub const UPDATE_APP: nodalia_update::App =
     nodalia_update::App { name: "Luz", repo: "getnodalia/luz", bundle: "Luz.app", version: env!("CARGO_PKG_VERSION"), edition: None };
 
+pub mod brand;
 pub mod brush_live;
 pub mod canvas_keys;
 mod command_error;
@@ -67,7 +68,6 @@ use serde_json::Value;
 
 pub use command_error::CommandError;
 pub use control::{ControlRequest, ControlResponse};
-pub use dialogs::credits;
 pub use dialogs::import;
 pub use dialogs::lightroom_destination;
 pub use dialogs::merge;

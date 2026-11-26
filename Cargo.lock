@@ -3521,7 +3521,7 @@ dependencies = [
 
 [[package]]
 name = "luz"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "chrono",
  "eframe",
@@ -3550,7 +3550,7 @@ dependencies = [
 
 [[package]]
 name = "luz-catalog"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "chrono",
  "crc32fast",
@@ -3571,7 +3571,7 @@ dependencies = [
 
 [[package]]
 name = "luz-cli"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "dhat",
  "luz-codecs",
@@ -3588,7 +3588,7 @@ dependencies = [
 
 [[package]]
 name = "luz-codecs"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "avif-serialize",
  "bytemuck",
@@ -3619,7 +3619,7 @@ dependencies = [
 
 [[package]]
 name = "luz-color"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "luz-geom",
  "proptest",
@@ -3628,7 +3628,7 @@ dependencies = [
 
 [[package]]
 name = "luz-denoise"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "faer-core",
  "luz-denoise-core",
@@ -3645,7 +3645,7 @@ dependencies = [
 
 [[package]]
 name = "luz-denoise-core"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "dhat",
  "luz-raster",
@@ -3661,7 +3661,7 @@ dependencies = [
 
 [[package]]
 name = "luz-develop"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "luz-color",
  "luz-geom",
@@ -3673,7 +3673,7 @@ dependencies = [
 
 [[package]]
 name = "luz-engine"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "ab_glyph",
  "chrono",
@@ -3720,7 +3720,7 @@ dependencies = [
 
 [[package]]
 name = "luz-faces"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "luz-testkit",
  "matrixmultiply",
@@ -3735,7 +3735,7 @@ dependencies = [
 
 [[package]]
 name = "luz-fetch"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "log",
  "rustls",
@@ -3746,14 +3746,14 @@ dependencies = [
 
 [[package]]
 name = "luz-film"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "libm",
 ]
 
 [[package]]
 name = "luz-geocode"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "miniz_oxide 0.9.1",
  "serde",
@@ -3761,7 +3761,7 @@ dependencies = [
 
 [[package]]
 name = "luz-geom"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "proptest",
  "serde",
@@ -3769,7 +3769,7 @@ dependencies = [
 
 [[package]]
 name = "luz-gpu"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "bytemuck",
  "log",
@@ -3789,7 +3789,7 @@ dependencies = [
 
 [[package]]
 name = "luz-heif"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "heic-rs",
  "rayon",
@@ -3797,14 +3797,14 @@ dependencies = [
 
 [[package]]
 name = "luz-inpaint"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "rayon",
 ]
 
 [[package]]
 name = "luz-lensdb"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "luz-develop",
  "luz-geom",
@@ -3813,7 +3813,7 @@ dependencies = [
 
 [[package]]
 name = "luz-mcp"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "log",
  "luz-codecs",
@@ -3824,7 +3824,7 @@ dependencies = [
 
 [[package]]
 name = "luz-merge"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "luz-codecs",
  "luz-color",
@@ -3840,7 +3840,7 @@ dependencies = [
 
 [[package]]
 name = "luz-meta"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "chrono",
  "luz-geom",
@@ -3854,7 +3854,7 @@ dependencies = [
 
 [[package]]
 name = "luz-pipeline"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "dhat",
  "image",
@@ -3873,7 +3873,7 @@ dependencies = [
 
 [[package]]
 name = "luz-preview"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "jpeg-encoder",
  "log",
@@ -3885,7 +3885,7 @@ dependencies = [
 
 [[package]]
 name = "luz-raster"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "libc",
  "luz-color",
@@ -3897,7 +3897,7 @@ dependencies = [
 
 [[package]]
 name = "luz-raw"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "chrono",
  "dhat",
@@ -3923,7 +3923,7 @@ dependencies = [
 
 [[package]]
 name = "luz-scenes"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "image",
  "luz-color",
@@ -3936,7 +3936,7 @@ dependencies = [
 
 [[package]]
 name = "luz-segment"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "candle-core",
  "candle-nn",
@@ -3950,7 +3950,7 @@ dependencies = [
 
 [[package]]
 name = "luz-slideshow"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "luz-raster",
  "serde",
@@ -3959,15 +3959,15 @@ dependencies = [
 
 [[package]]
 name = "luz-sysmem"
-version = "0.2.0"
+version = "0.2.1"
 
 [[package]]
 name = "luz-testkit"
-version = "0.2.0"
+version = "0.2.1"
 
 [[package]]
 name = "luz-tiff"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "proptest",
  "serde",
@@ -3976,7 +3976,7 @@ dependencies = [
 
 [[package]]
 name = "luz-ui-egui"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "egui",
  "egui_extras",
@@ -4001,16 +4001,16 @@ dependencies = [
  "nodalia-ui",
  "nodalia-update",
  "nodalia-window",
+ "png",
  "pollster 1.0.1",
  "serde",
  "serde_json",
- "toml",
  "web-time",
 ]
 
 [[package]]
 name = "luz-web"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "crc32fast",
  "eframe",
@@ -4033,7 +4033,7 @@ dependencies = [
 
 [[package]]
 name = "luz-wincolor"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "luz-testkit",
  "windows-sys 0.61.2",
@@ -4320,7 +4320,7 @@ dependencies = [
 [[package]]
 name = "nodalia-theme"
 version = "0.1.0-alpha.1"
-source = "git+https://github.com/getnodalia/nodalia-design?rev=114848a2ff1a7c29c9a5432fb12e955fbe0aeef2#114848a2ff1a7c29c9a5432fb12e955fbe0aeef2"
+source = "git+https://github.com/getnodalia/nodalia-design?rev=a44fa27219fe36cbc58228858084b6ad4007f6ef#a44fa27219fe36cbc58228858084b6ad4007f6ef"
 dependencies = [
  "egui",
 ]
@@ -7766,7 +7766,7 @@ checksum = "e450f9b2ed1dff33c94c12589a87338689467b9c4f5d8a5710bd09a847d2c8a7"
 
 [[package]]
 name = "xtask"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "brotli",
  "flate2",

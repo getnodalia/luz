@@ -37,7 +37,6 @@ const EMBEDDED: &[(&str, &[&str])] = &[
     ("assets/camera-profiles/", &["luz-engine"]),
     ("assets/camera-tone/", &["luz-engine"]),
     ("assets/fonts/", &["luz-engine", "luz-ui-egui"]),
-    ("contributors/", &["luz-ui-egui"]),
     ("docs/whats-new.md", &["luz-ui-egui"]),
     ("docs/raw/coverage-sweep.tsv", &["luz-raw"]),
     ("docs/raf-corpus.sha256", &["luz-raw"]),

@@ -223,7 +223,7 @@ impl<'a> AlbumPicker<'a> {
         }
         let state: State = ui.data(|d| d.get_temp(key)).unwrap_or_default();
         let state = std::cell::RefCell::new(state);
-        let picked = craft_ui::combo::Menu::new(ui, &button)
+        let picked = nodalia_ui::combo::Menu::new(ui, &button)
             .height(MENU_HEIGHT)
             .close_behavior(egui::PopupCloseBehavior::CloseOnClickOutside)
             .show_ui_with_header(

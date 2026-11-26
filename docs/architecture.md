@@ -75,7 +75,7 @@ build is one `cargo check --target wasm32-unknown-unknown --keep-going` over the
 
 `ci` also probes the machine: OS, CPUs, RAM, the GPU adapters of each backend (from the ignored
 `gpu_probe` test of `luz-gpu`, run after the workspace tests so it reuses their build; xtask
-has no wgpu), the corpus and `CRAFT_FONTS_DIR`. Tests
+has no wgpu), the corpus and `NODALIA_FONTS_DIR`. Tests
 that need what is missing call `luz_testkit::skip!(need, reason)`, which appends a JSON line to
 the file `LUZ_SKIP_LOG` names. The run ends with the machine and the skips by need and reason,
 and writes `target/ci/report.json` (commit, dirty flag, machine, capabilities, each step's result and

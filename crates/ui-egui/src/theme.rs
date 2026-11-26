@@ -339,36 +339,36 @@ pub fn install_fonts(ctx: &egui::Context) {
 
 /// Install the browser's separately downloaded Chinese face alongside the embedded faces.
 pub fn install_fonts_with_chinese(ctx: &egui::Context, chinese: Option<&Arc<FontData>>) {
-    ctx.set_fonts(font_definitions_with_chinese(luz_engine::CRAFT_FONTS, chinese));
+    ctx.set_fonts(font_definitions_with_chinese(luz_engine::NODALIA_FONTS, chinese));
 }
 
-/// Inter remains the default UI face. Egui's default faces and craft-fonts cover other scripts;
+/// Inter remains the default UI face. Egui's default faces and nodalia-fonts cover other scripts;
 /// the browser's separate Chinese face precedes Japanese faces within the CJK fallback list.
-/// Without craft-fonts or that separate face, CJK text shows boxes.
-pub fn font_definitions(craft: &'static [luz_engine::CraftFont]) -> FontDefinitions {
+/// Without nodalia-fonts or that separate face, CJK text shows boxes.
+pub fn font_definitions(craft: &'static [luz_engine::NodaliaFont]) -> FontDefinitions {
     font_definitions_with_chinese(craft, None)
 }
 
 /// The web build keeps the large Simplified Chinese face outside the size-limited WASM module.
 /// Prefer it for Chinese UI text, including Traditional Chinese until it has its own face.
-pub fn font_definitions_with_chinese(craft: &'static [luz_engine::CraftFont], chinese: Option<&Arc<FontData>>) -> FontDefinitions {
+pub fn font_definitions_with_chinese(craft: &'static [luz_engine::NodaliaFont], chinese: Option<&Arc<FontData>>) -> FontDefinitions {
     let mut fonts = FontDefinitions::default();
     fonts.font_data.insert("Inter".into(), Arc::new(FontData::from_static(include_bytes!("../../../assets/fonts/Inter-Regular.ttf"))));
     fonts.font_data.insert("Inter-SemiBold".into(), Arc::new(FontData::from_static(include_bytes!("../../../assets/fonts/Inter-SemiBold.ttf"))));
     // Craft-fonts faces in preference order for a family drawn in `style`.
     let fallback = |style: &str| {
-        luz_engine::fonts::ui_fallback(craft, crate::i18n::language().script(), style).into_iter().map(craft_font_name).collect::<Vec<String>>()
+        luz_engine::fonts::ui_fallback(craft, crate::i18n::language().script(), style).into_iter().map(nodalia_font_name).collect::<Vec<String>>()
     };
     let (mut regular, mut bold) = (fallback("Regular"), fallback("Bold"));
     for name in regular.iter().chain(bold.iter()) {
-        if let Some(font) = craft.iter().find(|font| &craft_font_name(font) == name) {
+        if let Some(font) = craft.iter().find(|font| &nodalia_font_name(font) == name) {
             fonts.font_data.insert(name.clone(), Arc::new(FontData::from_static(font.bytes)));
         }
     }
     // A variable face holds every weight in its one file: strong text draws it heavier, from the
     // same bytes. A face with one fixed weight stays as it is.
     for name in &mut bold {
-        let Some(font) = craft.iter().find(|font| &craft_font_name(font) == name) else { continue };
+        let Some(font) = craft.iter().find(|font| &nodalia_font_name(font) == name) else { continue };
         let Some(heavier) = strong_weight(font.bytes) else { continue };
         *name = format!("{name} strong");
         fonts.font_data.insert(name.clone(), Arc::new(heavier));
@@ -409,7 +409,7 @@ pub fn font_definitions_with_chinese(craft: &'static [luz_engine::CraftFont], ch
 /// The font families used by this app instance, including the browser's separately loaded face.
 pub fn font_credits(chinese_loaded: bool) -> String {
     let mut families = vec!["Inter"];
-    for f in luz_engine::CRAFT_FONTS {
+    for f in luz_engine::NODALIA_FONTS {
         if !families.contains(&f.family) {
             families.push(f.family);
         }
@@ -436,8 +436,8 @@ fn strong_weight(bytes: &'static [u8]) -> Option<FontData> {
     Some(face.tweak(tweak))
 }
 
-fn craft_font_name(f: &luz_engine::CraftFont) -> String {
-    format!("craft-fonts {} {}", f.family, f.style)
+fn nodalia_font_name(f: &luz_engine::NodaliaFont) -> String {
+    format!("nodalia-fonts {} {}", f.family, f.style)
 }
 
 /// Points one mouse-wheel notch (a line) scrolls.
@@ -575,7 +575,7 @@ pub fn apply_kind(ctx: &egui::Context, kind: ThemeKind) {
     v.popup_shadow = egui::epaint::Shadow { offset: [0, 4], blur: 16, spread: 0, color: Color32::from_black_alpha(popup) };
     v.window_shadow = egui::epaint::Shadow { offset: [0, 8], blur: 30, spread: 0, color: Color32::from_black_alpha(window) };
     let w = &mut v.widgets;
-    craft_ui::theme::WidgetPalette { noninteractive: t.chrome, inactive: t.button, hovered: t.hover, active: t.pressed, open: t.hover }.apply_to(
+    nodalia_ui::theme::WidgetPalette { noninteractive: t.chrome, inactive: t.button, hovered: t.hover, active: t.pressed, open: t.hover }.apply_to(
         w,
         CornerRadius::same(8),
         Stroke::new(1.0, t.text_label),
@@ -692,14 +692,14 @@ mod tests {
     /// Exercise the Thai characters of the reported folder name through every egui family.
     #[test]
     fn thai_folder_name_has_glyphs_in_every_ui_family() {
-        if luz_engine::CRAFT_FONTS.is_empty() {
-            luz_testkit::skip!(Fonts, "built without CRAFT_FONTS_DIR: no craft-fonts to check");
+        if luz_engine::NODALIA_FONTS.is_empty() {
+            luz_testkit::skip!(Fonts, "built without NODALIA_FONTS_DIR: no nodalia-fonts to check");
             return;
         }
-        let thai = luz_engine::CRAFT_FONTS.iter().find(|f| f.covers("Thai")).expect("font input includes Thai");
+        let thai = luz_engine::NODALIA_FONTS.iter().find(|f| f.covers("Thai")).expect("font input includes Thai");
         set_language(Locale::En);
-        let definitions = font_definitions(luz_engine::CRAFT_FONTS);
-        let name = craft_font_name(thai);
+        let definitions = font_definitions(luz_engine::NODALIA_FONTS);
+        let name = nodalia_font_name(thai);
         assert!(definitions.font_data.contains_key(&name));
         // (The strong family has the face's heavier twin instead when it is a variable font.)
         let strong = format!("{name} strong");
@@ -725,14 +725,14 @@ mod tests {
 
     #[test]
     fn native_chinese_face_falls_back_after_default_faces() {
-        static FACES: &[luz_engine::CraftFont] = &[
-            luz_engine::CraftFont {
+        static FACES: &[luz_engine::NodaliaFont] = &[
+            luz_engine::NodaliaFont {
                 family: "BIZ UDPGothic",
                 style: "Regular",
                 scripts: &["Jpan", "Latn"],
                 bytes: include_bytes!("../../../assets/fonts/Inter-Regular.ttf"),
             },
-            luz_engine::CraftFont {
+            luz_engine::NodaliaFont {
                 family: "Noto Sans CJK SC",
                 style: "Regular",
                 scripts: &["Hans", "Latn"],
@@ -743,7 +743,7 @@ mod tests {
         let definitions = font_definitions(FACES);
         let defaults = FontDefinitions::default();
         let default_prop = defaults.families.get(&FontFamily::Proportional).expect("default proportional fonts");
-        let chinese = "craft-fonts Noto Sans CJK SC Regular";
+        let chinese = "nodalia-fonts Noto Sans CJK SC Regular";
         for (family, primary) in [(FontFamily::Proportional, "Inter"), (FontFamily::Name(FONT_SEMIBOLD.into()), "Inter-SemiBold")] {
             let names = definitions.families.get(&family).expect("UI font family");
             assert_eq!(names.first().map(String::as_str), Some(primary));
@@ -761,13 +761,13 @@ mod tests {
     fn separate_web_chinese_face_is_available_in_every_ui_family() {
         // Simulate the WASM build, which embeds only the Japanese face. The Chinese face arrives
         // as a separate file and must precede that face when the UI uses Chinese.
-        static JAPANESE: &[luz_engine::CraftFont] = &[luz_engine::CraftFont {
+        static JAPANESE: &[luz_engine::NodaliaFont] = &[luz_engine::NodaliaFont {
             family: "BIZ UDPGothic",
             style: "Regular",
             scripts: &["Jpan", "Latn"],
             bytes: include_bytes!("../../../assets/fonts/Inter-Regular.ttf"),
         }];
-        let embedded = luz_engine::CRAFT_FONTS.iter().find(|font| font.family == "Noto Sans CJK SC" && font.style == "Regular");
+        let embedded = luz_engine::NODALIA_FONTS.iter().find(|font| font.family == "Noto Sans CJK SC" && font.style == "Regular");
         let fallback: &'static [u8] = include_bytes!("../../../assets/fonts/Inter-Regular.ttf");
         let source = embedded.map_or(fallback, |font| font.bytes);
         let chinese = Arc::new(FontData::from_static(source));
@@ -797,7 +797,7 @@ mod tests {
         set_language(Locale::Ja);
         let japanese = font_definitions_with_chinese(JAPANESE, Some(&chinese));
         let names = japanese.families.get(&FontFamily::Proportional).expect("proportional fonts");
-        assert_eq!(names.get(1 + default_count).map(String::as_str), Some("craft-fonts BIZ UDPGothic Regular"));
+        assert_eq!(names.get(1 + default_count).map(String::as_str), Some("nodalia-fonts BIZ UDPGothic Regular"));
         assert_eq!(names.get(2 + default_count).map(String::as_str), Some(WEB_CHINESE_FONT));
         set_language(Locale::En);
     }
@@ -831,9 +831,9 @@ mod tests {
         })
     }
 
-    /// The craft-fonts face for Arabic, when it is a variable font with a weight axis.
-    fn variable_arabic_face() -> Option<&'static luz_engine::CraftFont> {
-        let face = luz_engine::CRAFT_FONTS.iter().find(|font| font.covers("Arab"))?;
+    /// The nodalia-fonts face for Arabic, when it is a variable font with a weight axis.
+    fn variable_arabic_face() -> Option<&'static luz_engine::NodaliaFont> {
+        let face = luz_engine::NODALIA_FONTS.iter().find(|font| font.covers("Arab"))?;
         FontData::from_static(face.bytes).variation_axes().iter().any(|axis| axis.tag.to_be_bytes() == *b"wght").then_some(face)
     }
 
@@ -841,15 +841,15 @@ mod tests {
     /// tab name used to be drawn at regular weight beside a bold Latin one.
     #[test]
     fn strong_arabic_text_is_heavier_than_regular_with_a_variable_face() {
-        // Given a build with craft-fonts whose Arabic face has a weight axis
+        // Given a build with nodalia-fonts whose Arabic face has a weight axis
         if variable_arabic_face().is_none() {
-            eprintln!("skipped: built without a variable-weight craft-fonts face for Arabic");
+            eprintln!("skipped: built without a variable-weight nodalia-fonts face for Arabic");
             return;
         }
         set_language(Locale::En);
         // When an Arabic word is laid out regular and strong at the same size
-        let (regular_width, regular_ink) = width_and_ink(font_definitions(luz_engine::CRAFT_FONTS), ARABIC_WORD, FontFamily::Proportional);
-        let (strong_width, strong_ink) = width_and_ink(font_definitions(luz_engine::CRAFT_FONTS), ARABIC_WORD, semibold_family());
+        let (regular_width, regular_ink) = width_and_ink(font_definitions(luz_engine::NODALIA_FONTS), ARABIC_WORD, FontFamily::Proportional);
+        let (strong_width, strong_ink) = width_and_ink(font_definitions(luz_engine::NODALIA_FONTS), ARABIC_WORD, semibold_family());
         eprintln!("{ARABIC_WORD}: regular {regular_width} px, ink {regular_ink}; strong {strong_width} px, ink {strong_ink}");
         // Then the strong one is wider and puts down more ink
         assert!(strong_width > regular_width, "strong Arabic is wider than regular: strong {strong_width} px, regular {regular_width} px");
@@ -860,17 +860,17 @@ mod tests {
     /// font file has it, and Latin text keeps Inter in both weights.
     #[test]
     fn regular_text_and_latin_are_unchanged_by_the_strong_variable_face() {
-        // Given a build with craft-fonts whose Arabic face has a weight axis
+        // Given a build with nodalia-fonts whose Arabic face has a weight axis
         let Some(arabic) = variable_arabic_face() else {
-            eprintln!("skipped: built without a variable-weight craft-fonts face for Arabic");
+            eprintln!("skipped: built without a variable-weight nodalia-fonts face for Arabic");
             return;
         };
         set_language(Locale::En);
         // When the UI builds its fonts
-        let definitions = font_definitions(luz_engine::CRAFT_FONTS);
+        let definitions = font_definitions(luz_engine::NODALIA_FONTS);
         // Then the regular Arabic face is the font file untouched, and the only Arabic face of
         // the regular and monospace families
-        let name = craft_font_name(arabic);
+        let name = nodalia_font_name(arabic);
         assert_eq!(definitions.font_data.get(&name).map(|data| &data.tweak), Some(&egui::FontTweak::default()));
         let plain_weight = egui::epaint::text::VariationCoords::default();
         for family in [FontFamily::Proportional, FontFamily::Monospace] {
@@ -888,7 +888,7 @@ mod tests {
         plain.families.insert(FontFamily::Proportional, vec!["Inter".into(), "Arabic".into()]);
         let (width, ink) = width_and_ink(definitions.clone(), ARABIC_WORD, FontFamily::Proportional);
         assert_eq!((width, ink), width_and_ink(plain, ARABIC_WORD, FontFamily::Proportional));
-        // And Latin text, strong and regular, is as it is without craft-fonts
+        // And Latin text, strong and regular, is as it is without nodalia-fonts
         for family in [FontFamily::Proportional, semibold_family()] {
             assert_eq!(
                 width_and_ink(definitions.clone(), "Library", family.clone()),
@@ -902,11 +902,11 @@ mod tests {
     }
 
     /// A face with one fixed weight is registered once: nothing heavier can be asked of it. Without
-    /// craft-fonts there is nothing to register at all.
+    /// nodalia-fonts there is nothing to register at all.
     #[test]
     fn a_static_face_has_no_strong_twin() {
         // Given a face without a weight axis for another script
-        static FACES: &[luz_engine::CraftFont] = &[luz_engine::CraftFont {
+        static FACES: &[luz_engine::NodaliaFont] = &[luz_engine::NodaliaFont {
             family: "Static Sans",
             style: "Regular",
             scripts: &["Thai"],

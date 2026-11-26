@@ -1,8 +1,8 @@
 //! Real library/tool panel moves preserve the selected tool and saved arrangement.
-use craft_ui::docking::{DockArea, Hit, Node, Side};
 use egui::{Event, Modifiers, PointerButton, vec2};
 use egui_kittest::{Harness, kittest::Queryable};
 use luz_ui_egui::{LuzApp, Services, UiState, docking::Panel, state::RightPanel};
+use nodalia_ui::docking::{DockArea, Hit, Node, Side};
 use serde_json::json;
 use std::time::{Duration, Instant};
 
@@ -183,7 +183,7 @@ fn docking_renders_real_photo_panels_default_floating_and_redocked() {
                 h.run_steps(8);
                 settle_photo(&mut h);
                 luz_ui_egui::docking::validate(h.state().ui.docking.as_ref().unwrap()).unwrap();
-                if let Ok(directory) = std::env::var("CRAFT_UI_DOCKING_DIR") {
+                if let Ok(directory) = std::env::var("NODALIA_UI_DOCKING_DIR") {
                     std::fs::create_dir_all(&directory).unwrap();
                     h.render().unwrap().save(format!("{directory}/light-{width}-{scale}-{state}.png")).unwrap();
                 }

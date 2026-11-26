@@ -16,7 +16,7 @@ luz-color = { workspace = true }
 luz-geom = { workspace = true }
 serde = { workspace = true }
 chrono = { workspace = true }
-craft-crw = { workspace = true }
+nodalia-crw = { workspace = true }
 thiserror = { workspace = true }
 rayon = { workspace = true }
 miniz_oxide = { workspace = true }

@@ -27,7 +27,7 @@ concurrency:
 jobs:
   windows-scope:
     if: github.event.action != 'labeled' || github.event.label.name == 'full-ci'
-    uses: getnodalia/foundation/.github/workflows/changed-paths.yml@976581262c95c0d95c0184149c0e1ba55485ccb3 # foundation main
+    uses: getnodalia/foundation/.github/workflows/changed-paths.yml@c37ef19e6bc213e3ebf3a281f1bf0f3fd7c5d495 # foundation main
     with:
       label: full-ci
       # The crates and files with `cfg(windows)` code, and what decides how they build: their
@@ -63,12 +63,12 @@ jobs:
   gate-windows:
     needs: windows-scope
     if: needs.windows-scope.outputs.matched == 'true'
-    uses: getnodalia/foundation/.github/workflows/rust-gate.yml@976581262c95c0d95c0184149c0e1ba55485ccb3 # foundation main
+    uses: getnodalia/foundation/.github/workflows/rust-gate.yml@c37ef19e6bc213e3ebf3a281f1bf0f3fd7c5d495 # foundation main
     with:
       os: '["windows-latest"]'
-      # Same craft-fonts commit as ci.yml and the release-*.yml workflows.
+      # Same nodalia-fonts commit as ci.yml and the release-*.yml workflows.
       fonts-repository: getnodalia/foundation
-      fonts-ref: b076417b5880bd4154bd22f00695b1d28c6bea83
+      fonts-ref: 7a66e2c6c6d60ac6417caef3e339e186d003b5b8
       targets: ""
       tools: ""
       timeout-minutes: 90

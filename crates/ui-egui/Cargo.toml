@@ -11,8 +11,8 @@ workspace = true
 
 [dependencies]
 nodalia-theme = { workspace = true, features = ["creator"] }
-craft-ui = { workspace = true }
-craft-window = { workspace = true }
+nodalia-ui = { workspace = true }
+nodalia-window = { workspace = true }
 luz-geom = { workspace = true }
 luz-meta = { workspace = true }
 luz-color = { workspace = true }

@@ -510,7 +510,7 @@ impl LuzApp {
         // AppKit moves the window on a drag anywhere in the title-bar band unless the window isn't
         // movable: it stops being movable while the pointer is on a bar control or a panel over it
         #[cfg(target_os = "macos")]
-        craft_window::title_bar::sync_movable(&ctx, &mut self.window_movable);
+        nodalia_window::title_bar::sync_movable(&ctx, &mut self.window_movable);
         if notice_blocks {
             // Keep the real press/release state for the next pass: an ordinary click spans host
             // frames, and resetting it above must only hide it from this pass's dialogs.

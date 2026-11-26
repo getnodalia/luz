@@ -48,7 +48,7 @@ fn release(h: &mut Headless, pos: egui::Pos2) {
 
 #[test]
 fn window_menu_reopens_closed_panels_in_their_dock_columns() {
-    use craft_ui::docking::Side;
+    use nodalia_ui::docking::Side;
     let mut h = app();
     let columns = |h: &Headless, side| {
         crate::docking::columns(h.app.ui.docking.as_ref().unwrap(), side).into_iter().map(|(_, groups)| groups).collect::<Vec<_>>()
@@ -362,7 +362,7 @@ fn held_divider_replacement_route(route: &str) {
             h.step();
         }
         "public-action" => {
-            let action = craft_ui::docking::Action::Float { panel: Panel::Tools, rect: [800.0, 100.0, 330.0, 500.0] };
+            let action = nodalia_ui::docking::Action::Float { panel: Panel::Tools, rect: [800.0, 100.0, 330.0, 500.0] };
             h.app.run("ui.dock", json!({"action":action})).unwrap();
             h.step();
         }

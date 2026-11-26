@@ -1182,79 +1182,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-crw"
-version = "0.1.0"
-source = "git+https://github.com/getnodalia/foundation?rev=f3b62ec61f45534392376492fc5ad33047375205#f3b62ec61f45534392376492fc5ad33047375205"
-dependencies = [
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "craft-docpath"
-version = "0.1.0"
-source = "git+https://github.com/getnodalia/foundation?rev=c5a1cbfb5f9049f9270955caffb5bee5997aebf7#c5a1cbfb5f9049f9270955caffb5bee5997aebf7"
-
-[[package]]
-name = "craft-fonts-build"
-version = "0.1.0"
-source = "git+https://github.com/getnodalia/foundation?rev=c5a1cbfb5f9049f9270955caffb5bee5997aebf7#c5a1cbfb5f9049f9270955caffb5bee5997aebf7"
-
-[[package]]
-name = "craft-i18n"
-version = "0.1.0"
-source = "git+https://github.com/getnodalia/foundation?rev=c5a1cbfb5f9049f9270955caffb5bee5997aebf7#c5a1cbfb5f9049f9270955caffb5bee5997aebf7"
-dependencies = [
- "fixed_decimal",
- "icu_decimal",
- "icu_locale_core",
- "icu_locale_fallback",
- "icu_normalizer",
- "icu_plurals",
- "icu_properties",
- "icu_provider",
- "icu_provider_adapters",
- "icu_provider_blob",
- "log",
- "objc2-foundation 0.3.2",
- "sys-locale",
- "unicode-bidi",
- "windows-registry",
- "writeable",
-]
-
-[[package]]
-name = "craft-ui"
-version = "0.1.0"
-source = "git+https://github.com/getnodalia/foundation?rev=c5a1cbfb5f9049f9270955caffb5bee5997aebf7#c5a1cbfb5f9049f9270955caffb5bee5997aebf7"
-dependencies = [
- "craft-fonts-build",
- "craft-i18n",
- "egui",
- "epaint",
- "js-sys",
- "log",
- "objc2 0.6.5",
- "objc2-app-kit 0.3.2",
- "objc2-foundation 0.3.2",
- "serde",
- "skrifa",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
-]
-
-[[package]]
-name = "craft-window"
-version = "0.1.0"
-source = "git+https://github.com/getnodalia/foundation?rev=c5a1cbfb5f9049f9270955caffb5bee5997aebf7#c5a1cbfb5f9049f9270955caffb5bee5997aebf7"
-dependencies = [
- "egui",
- "objc2 0.6.5",
- "objc2-app-kit 0.3.2",
- "wayland-client",
-]
-
-[[package]]
 name = "crc32fast"
 version = "1.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3750,7 +3677,6 @@ version = "0.2.0"
 dependencies = [
  "ab_glyph",
  "chrono",
- "craft-docpath",
  "crc32fast",
  "fs4",
  "harfrust 0.13.3",
@@ -3782,6 +3708,7 @@ dependencies = [
  "luz-testkit",
  "luz-tiff",
  "miniz_oxide 0.9.1",
+ "nodalia-docpath",
  "rayon",
  "serde",
  "serde_json",
@@ -3973,7 +3900,6 @@ name = "luz-raw"
 version = "0.2.0"
 dependencies = [
  "chrono",
- "craft-crw",
  "dhat",
  "jpeg-encoder",
  "jxl-oxide",
@@ -3984,6 +3910,7 @@ dependencies = [
  "luz-testkit",
  "luz-tiff",
  "miniz_oxide 0.9.1",
+ "nodalia-crw",
  "proptest",
  "rayon",
  "serde",
@@ -4051,8 +3978,6 @@ dependencies = [
 name = "luz-ui-egui"
 version = "0.2.0"
 dependencies = [
- "craft-ui",
- "craft-window",
  "egui",
  "egui_extras",
  "egui_kittest",
@@ -4073,7 +3998,9 @@ dependencies = [
  "luz-slideshow",
  "luz-testkit",
  "nodalia-theme",
+ "nodalia-ui",
  "nodalia-update",
+ "nodalia-window",
  "pollster 1.0.1",
  "serde",
  "serde_json",
@@ -4350,11 +4277,73 @@ dependencies = [
 ]
 
 [[package]]
+name = "nodalia-crw"
+version = "0.1.0"
+source = "git+https://github.com/getnodalia/foundation?rev=510c67b0d02ec63e31c4a0cc4761366ce54b26b6#510c67b0d02ec63e31c4a0cc4761366ce54b26b6"
+dependencies = [
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "nodalia-docpath"
+version = "0.1.0"
+source = "git+https://github.com/getnodalia/foundation?rev=412df258a982e3446ba46955a3d6dbb9cf5b60b0#412df258a982e3446ba46955a3d6dbb9cf5b60b0"
+
+[[package]]
+name = "nodalia-fonts-build"
+version = "0.1.0"
+source = "git+https://github.com/getnodalia/foundation?rev=412df258a982e3446ba46955a3d6dbb9cf5b60b0#412df258a982e3446ba46955a3d6dbb9cf5b60b0"
+
+[[package]]
+name = "nodalia-i18n"
+version = "0.1.0"
+source = "git+https://github.com/getnodalia/foundation?rev=412df258a982e3446ba46955a3d6dbb9cf5b60b0#412df258a982e3446ba46955a3d6dbb9cf5b60b0"
+dependencies = [
+ "fixed_decimal",
+ "icu_decimal",
+ "icu_locale_core",
+ "icu_locale_fallback",
+ "icu_normalizer",
+ "icu_plurals",
+ "icu_properties",
+ "icu_provider",
+ "icu_provider_adapters",
+ "icu_provider_blob",
+ "log",
+ "objc2-foundation 0.3.2",
+ "sys-locale",
+ "unicode-bidi",
+ "windows-registry",
+ "writeable",
+]
+
+[[package]]
 name = "nodalia-theme"
 version = "0.1.0-alpha.1"
 source = "git+https://github.com/getnodalia/nodalia-design?rev=114848a2ff1a7c29c9a5432fb12e955fbe0aeef2#114848a2ff1a7c29c9a5432fb12e955fbe0aeef2"
 dependencies = [
  "egui",
+]
+
+[[package]]
+name = "nodalia-ui"
+version = "0.1.0"
+source = "git+https://github.com/getnodalia/foundation?rev=412df258a982e3446ba46955a3d6dbb9cf5b60b0#412df258a982e3446ba46955a3d6dbb9cf5b60b0"
+dependencies = [
+ "egui",
+ "epaint",
+ "js-sys",
+ "log",
+ "nodalia-fonts-build",
+ "nodalia-i18n",
+ "objc2 0.6.5",
+ "objc2-app-kit 0.3.2",
+ "objc2-foundation 0.3.2",
+ "serde",
+ "skrifa",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
 ]
 
 [[package]]
@@ -4366,6 +4355,17 @@ dependencies = [
  "serde_json",
  "sha2",
  "ureq",
+]
+
+[[package]]
+name = "nodalia-window"
+version = "0.1.0"
+source = "git+https://github.com/getnodalia/foundation?rev=412df258a982e3446ba46955a3d6dbb9cf5b60b0#412df258a982e3446ba46955a3d6dbb9cf5b60b0"
+dependencies = [
+ "egui",
+ "objc2 0.6.5",
+ "objc2-app-kit 0.3.2",
+ "wayland-client",
 ]
 
 [[package]]

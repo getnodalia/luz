@@ -5,7 +5,7 @@
 #   $DIST/luz-cli-<version>-macos-<arch>.zip      the headless CLI
 #
 # Usage: packaging/macos/package.sh [--arch universal|aarch64|x86_64] [--skip-build]
-# Fonts: use CRAFT_FONTS_DIR or ../craft-fonts; download the pinned checkout if absent.
+# Fonts: use NODALIA_FONTS_DIR or ../nodalia-fonts; download the pinned checkout if absent.
 #
 # Signing (env):
 #   MACOS_SIGN_IDENTITY   codesign identity (name or SHA-1). Default "-" = ad-hoc (local testing;
@@ -142,7 +142,7 @@ if missing:
     sys.exit(f"error: Info.plist names files the bundle lacks: {missing}")
 PY
 printf 'APPL????' >"$APP/Contents/PkgInfo"
-# Licences (and the craft-fonts font licences when built with CRAFT_FONTS_DIR) inside the bundle.
+# Licences (and the nodalia-fonts font licences when built with NODALIA_FONTS_DIR) inside the bundle.
 mkdir -p "$APP/Contents/Resources/Licenses"
 copy_docs "$APP/Contents/Resources/Licenses"
 

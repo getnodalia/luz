@@ -75,8 +75,8 @@ the latter case), because the default signal action performs no cleanup.
    entries by the canonical repository URL and then adds `rev`/`tag`/`branch`.
    Two different revisions of the same repository therefore overwrite each
    other. The patch keys the entry by the full source URL without its `#`
-   fragment, so `https://github.com/storytold/craft-libs?rev=...` remains a
-   separate source for each craft-libs revision.
+   fragment, so `https://github.com/getnodalia/foundation?rev=...` remains a
+   separate source for each nodalia-libs revision.
 2. **Include `[patch.unused]`.** `Cargo.lock` records patched packages that are
    not in the resolved graph under `patch.unused`. Upstream iterates only
    `package`, which omits crates such as `egui_demo_lib`; `--locked` offline
@@ -84,7 +84,7 @@ the latter case), because the default signal action performs no cleanup.
    patch also walks `patch.unused` entries.
 
 No third patch is needed: upstream's `git_repo_name()` already appends the
-first seven characters of the commit, so the two craft-libs checkouts get
+first seven characters of the commit, so the two nodalia-libs checkouts get
 different destinations.
 
 ## Offline validation performed
@@ -95,7 +95,7 @@ was materialized as Flatpak would, crate archives were checked against their
 recorded SHA-256 values, and the generated Cargo config was pointed at the
 materialized vendor directory. With an isolated `CARGO_HOME` and
 `CARGO_NET_OFFLINE=true`, `cargo --config <generated-config> metadata --offline
---locked --format-version 1` exited 0. The two craft-libs revisions
+--locked --format-version 1` exited 0. The two nodalia-libs revisions
 (`82a24b006eefa036b43c09a67fb9a3fbd17ffe63` and
 `25da1314d443171b4adeaad2cd9454b273f35c6f`) are present as separate git sources
 and `[source]` entries. The checked-in `cargo-sources.json` has SHA-256

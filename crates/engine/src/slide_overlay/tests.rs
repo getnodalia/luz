@@ -288,14 +288,14 @@ fn huge_overlays_on_a_big_slide_stay_cheap() {
     assert!(img.get(100, 300)[0] > 0, "the text's start shows");
 }
 
-/// CJK text draws with the craft-fonts faces (skips without them).
+/// CJK text draws with the nodalia-fonts faces (skips without them).
 #[test]
-fn cjk_text_uses_the_craft_fonts() {
-    if crate::fonts::cjk(crate::fonts::CRAFT_FONTS).next().is_none() {
-        eprintln!("skipped: built without craft-fonts (CRAFT_FONTS_DIR)");
+fn cjk_text_uses_the_nodalia_fonts() {
+    if crate::fonts::cjk(crate::fonts::NODALIA_FONTS).next().is_none() {
+        eprintln!("skipped: built without nodalia-fonts (NODALIA_FONTS_DIR)");
         return;
     }
-    let cjk = crate::text::TextLayout::new("日本語", 40.0, false, crate::fonts::CRAFT_FONTS).unwrap();
+    let cjk = crate::text::TextLayout::new("日本語", 40.0, false, crate::fonts::NODALIA_FONTS).unwrap();
     let tofu = crate::text::TextLayout::new("日本語", 40.0, false, &[]).unwrap();
     let count = |t: &crate::text::TextLayout| {
         let mut n = 0usize;

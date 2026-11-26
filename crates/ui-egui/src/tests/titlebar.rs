@@ -180,7 +180,7 @@ fn a_panel_floating_over_the_bar_keeps_the_window_from_moving() {
     let hover = |h: &mut Headless, p: egui::Pos2| {
         h.events.push(egui::Event::PointerMoved(p));
         play(h);
-        craft_window::title_bar::window_movable(&h.view.ctx)
+        nodalia_window::title_bar::window_movable(&h.view.ctx)
     };
     assert!(hover(&mut h, empty), "the empty bar moves the window");
     let help = widget(&h, "icon:menu").center();
@@ -323,7 +323,7 @@ fn a_dialog_inside_the_bar_keeps_the_window_from_moving() {
     let hover = |h: &mut Headless, p: egui::Pos2| {
         h.events.push(egui::Event::PointerMoved(p));
         play(h);
-        craft_window::title_bar::window_movable(&h.view.ctx)
+        nodalia_window::title_bar::window_movable(&h.view.ctx)
     };
     let spot = empty_spot(&h);
     assert!(hover(&mut h, spot), "the bar beside the dialog moves the window");

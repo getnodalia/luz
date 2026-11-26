@@ -233,7 +233,7 @@ impl LuzApp {
             }
             // One slot and one callback per issue; the callback only holds a weak slot and wakes
             // the viewport. File writes and replies happen in `collect_screenshots`.
-            let (slot, callback) = craft_ui::capture::CaptureSlot::new(ctx, egui::ViewportId::ROOT, MAX_SHOT_BYTES);
+            let (slot, callback) = nodalia_ui::capture::CaptureSlot::new(ctx, egui::ViewportId::ROOT, MAX_SHOT_BYTES);
             ctx.send_viewport_cmd(egui::ViewportCommand::Screenshot(callback));
             log::debug!("ui.screenshot {}: issued at {:?}, {} bytes reserved", shot.token, geometry.viewport, shot.reserved);
             shot.slot = Some(slot);
@@ -291,7 +291,7 @@ impl LuzApp {
         let mut shots = std::mem::take(&mut self.pending_screenshots);
         let mut keep = Vec::with_capacity(shots.len());
         for mut shot in shots.drain(..) {
-            let completed = shot.slot.as_ref().and_then(craft_ui::capture::CaptureSlot::take);
+            let completed = shot.slot.as_ref().and_then(nodalia_ui::capture::CaptureSlot::take);
             match completed {
                 Some(Ok(image)) => {
                     let stale =

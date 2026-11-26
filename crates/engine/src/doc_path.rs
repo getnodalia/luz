@@ -3,13 +3,13 @@
 //!
 //! Such a path reaches the file system only through [`resolve`]: a relative path is taken from the
 //! document's folder, and only local files, or files on the network share the document itself is
-//! on, are looked at (see `craft_docpath`). A path that is not followed is handled like a missing
+//! on, are looked at (see `nodalia_docpath`). A path that is not followed is handled like a missing
 //! file.
 
 use std::fmt;
 use std::path::{Path, PathBuf};
 
-pub use craft_docpath::Refused;
+pub use nodalia_docpath::Refused;
 
 /// Why a stored path is not followed.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -38,11 +38,11 @@ impl std::error::Error for NotFollowed {}
 /// was opened from.
 pub fn resolve(stored: &str, document: Option<&Path>) -> Result<PathBuf, NotFollowed> {
     let document = document.map(|d| if d.is_relative() { std::path::absolute(d).unwrap_or_else(|_| d.to_path_buf()) } else { d.to_path_buf() });
-    match craft_docpath::resolve_absolute(stored, document.as_deref()) {
+    match nodalia_docpath::resolve_absolute(stored, document.as_deref()) {
         Ok(path) => Ok(path),
         // A usable path that is not absolute here: a Windows path on macOS or Linux, or a
         // relative path with no document folder to take it from.
-        Err(Refused::Invalid) if craft_docpath::resolve(stored, document.as_deref()).is_ok() => Err(NotFollowed::NotHere),
+        Err(Refused::Invalid) if nodalia_docpath::resolve(stored, document.as_deref()).is_ok() => Err(NotFollowed::NotHere),
         Err(r) => Err(NotFollowed::Refused(r)),
     }
 }

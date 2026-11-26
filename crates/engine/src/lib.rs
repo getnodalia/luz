@@ -93,7 +93,7 @@ use std::sync::Arc;
 
 pub use cmd::{CommandInfo, CommandSpec, command_specs, find_command};
 pub use errors::{AiModel, ErrorKind};
-pub use fonts::{CRAFT_FONTS, CraftFont};
+pub use fonts::{NODALIA_FONTS, NodaliaFont};
 use luz_catalog::{Catalog, Filter, Op, PhotoId, Sort};
 use luz_develop::DevelopSettings;
 pub use media::{RenderJob, SourceLevel};

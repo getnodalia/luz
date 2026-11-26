@@ -5,7 +5,7 @@
 //! `slideshow.overlays` command; [`SlideOverlays`] is those settings resolved for one photo (its
 //! texts expanded, its rating) and drawn onto the composed slide.
 //!
-//! **Where the drawing lives:** text needs the fonts (Inter plus the craft-fonts CJK fallbacks,
+//! **Where the drawing lives:** text needs the fonts (Inter plus the nodalia-fonts CJK fallbacks,
 //! [`crate::text`]) and tokens need the catalog's photo, both in the engine, so overlays are a
 //! second pass in the engine over `luz_slideshow::compose_with`'s slide (its `behind` hook
 //! draws an identity plate set to "render behind image" before the photo). The composer stays a
@@ -752,7 +752,7 @@ impl SlideOverlays {
             return Some(PlateContent::Image(img, w as usize, h as usize));
         }
         let text = p.text.trim();
-        crate::text::TextLayout::new(text, px as f32, false, crate::fonts::CRAFT_FONTS).map(PlateContent::Text)
+        crate::text::TextLayout::new(text, px as f32, false, crate::fonts::NODALIA_FONTS).map(PlateContent::Text)
     }
 
     fn text_layout(&self, i: usize, l: &Layout) -> Option<crate::text::TextLayout> {
@@ -761,7 +761,7 @@ impl SlideOverlays {
         if t.opacity <= 0.0 {
             return None;
         }
-        crate::text::TextLayout::new(text, (t.size * Self::short(l)).max(1.0) as f32, false, crate::fonts::CRAFT_FONTS)
+        crate::text::TextLayout::new(text, (t.size * Self::short(l)).max(1.0) as f32, false, crate::fonts::NODALIA_FONTS)
     }
 
     fn stars_size(&self, l: &Layout) -> Option<(usize, f64)> {

@@ -1,22 +1,5 @@
 {
   "nodes": {
-    "craft-fonts": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1792808533,
-        "narHash": "sha256-jZ3VBAJDofB6RvsS7GGV5lLT4xiShIjpz5XHBCD2oUc=",
-        "owner": "storytold",
-        "repo": "craft-fonts",
-        "rev": "b076417b5880bd4154bd22f00695b1d28c6bea83",
-        "type": "github"
-      },
-      "original": {
-        "owner": "storytold",
-        "repo": "craft-fonts",
-        "rev": "b076417b5880bd4154bd22f00695b1d28c6bea83",
-        "type": "github"
-      }
-    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1791260994,
@@ -33,10 +16,27 @@
         "type": "github"
       }
     },
+    "nodalia-fonts": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1792808533,
+        "narHash": "sha256-dhFqwsT7llqf8qTG9ozUWN8dcwdBykdIIukYcIYd3Jc=",
+        "owner": "getnodalia",
+        "repo": "foundation",
+        "rev": "7a66e2c6c6d60ac6417caef3e339e186d003b5b8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "getnodalia",
+        "repo": "foundation",
+        "rev": "7a66e2c6c6d60ac6417caef3e339e186d003b5b8",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
-        "craft-fonts": "craft-fonts",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "nodalia-fonts": "nodalia-fonts"
       }
     }
   },

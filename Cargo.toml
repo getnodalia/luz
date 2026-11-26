@@ -10,14 +10,14 @@ rust-version = "1.95"
 repository = "https://github.com/getnodalia/luz"
 
 [workspace.dependencies]
-craft-ui = { git = "https://github.com/getnodalia/foundation", rev = "c5a1cbfb5f9049f9270955caffb5bee5997aebf7", features = ["serde"] }
-craft-docpath = { version = "0.1.0", git = "https://github.com/getnodalia/foundation", rev = "c5a1cbfb5f9049f9270955caffb5bee5997aebf7" }
+nodalia-ui = { git = "https://github.com/getnodalia/foundation", rev = "412df258a982e3446ba46955a3d6dbb9cf5b60b0", features = ["serde"] }
+nodalia-docpath = { version = "0.1.0", git = "https://github.com/getnodalia/foundation", rev = "412df258a982e3446ba46955a3d6dbb9cf5b60b0" }
 # Canon CRW decoder shared with the other Nodalia apps
-craft-crw = { git = "https://github.com/getnodalia/foundation", rev = "f3b62ec61f45534392376492fc5ad33047375205" }
+nodalia-crw = { git = "https://github.com/getnodalia/foundation", rev = "510c67b0d02ec63e31c4a0cc4761366ce54b26b6" }
 # In-app updates from this app's GitHub releases, with the update windows for egui.
 nodalia-update = { git = "https://github.com/getnodalia/nodalia-design", rev = "114848a2ff1a7c29c9a5432fb12e955fbe0aeef2", features = ["egui"] }
 nodalia-theme = { git = "https://github.com/getnodalia/nodalia-design", rev = "114848a2ff1a7c29c9a5432fb12e955fbe0aeef2" }
-craft-window = { git = "https://github.com/getnodalia/foundation", rev = "c5a1cbfb5f9049f9270955caffb5bee5997aebf7", features = ["egui"] }
+nodalia-window = { git = "https://github.com/getnodalia/foundation", rev = "412df258a982e3446ba46955a3d6dbb9cf5b60b0", features = ["egui"] }
 # internal
 luz-denoise-core = { path = "crates/denoise-core" }
 luz-denoise = { path = "crates/denoise", default-features = false }

@@ -11,7 +11,7 @@
   zip needs the Visual C++ redistributable. Signing is delegated to sign.ps1 (skipped with a
   warning when no signing secrets are set).
 
-  Fonts: uses CRAFT_FONTS_DIR or ../craft-fonts; downloads the pinned checkout if absent.
+  Fonts: uses NODALIA_FONTS_DIR or ../nodalia-fonts; downloads the pinned checkout if absent.
 
   Needs: Rust (MSVC toolchain + the target), the Windows SDK (rc.exe, signtool.exe),
   and WiX v5: dotnet tool install --global wix --version 5.0.2
@@ -84,7 +84,7 @@ Write-Output "Luz $Version for Windows $Arch ($Target)"
 
 if (-not $SkipBuild) {
   . (Join-Path $PSScriptRoot 'fonts.ps1')
-  Initialize-CraftFonts $Root
+  Initialize-NodaliaFonts $Root
   # Static CRT: no VC++ redistributable needed. Scoped to the target so host build scripts and
   # proc-macros are unaffected.
   $flagVar = 'CARGO_TARGET_' + ($Target.ToUpper() -replace '-', '_') + '_RUSTFLAGS'
@@ -119,11 +119,11 @@ New-Item -ItemType Directory -Force -Path $Stage | Out-Null
 # installer and existing App Paths registrations still use it.
 Copy-Item (Join-Path $Bin 'luz.exe') (Join-Path $Stage 'luz.exe')
 Copy-Item (Join-Path $Bin 'luz-cli.exe') $Stage
-# The bundled egui font MIT notice is required even without optional craft-fonts.
+# The bundled egui font MIT notice is required even without optional nodalia-fonts.
 Copy-Item -LiteralPath (Join-Path $Root 'NOTICE') -Destination $Stage
 # Include the embedded fonts' unmodified OFL texts in both installer and portable releases.
 . (Join-Path $PSScriptRoot 'font-licences.ps1')
-Write-FontLicences (Join-Path $Stage 'FONT-LICENCES.txt') (Join-Path $Root 'assets\fonts\OFL-Inter.txt') $env:CRAFT_FONTS_DIR
+Write-FontLicences (Join-Path $Stage 'FONT-LICENCES.txt') (Join-Path $Root 'assets\fonts\OFL-Inter.txt') $env:NODALIA_FONTS_DIR
 
 & (Join-Path $PSScriptRoot 'sign.ps1') (Join-Path $Stage 'luz.exe') (Join-Path $Stage 'luz-cli.exe')
 
@@ -166,9 +166,9 @@ foreach ($f in 'README.md', 'LICENSE', 'LICENSE-MIT', 'LICENSE-APACHE', 'NOTICE'
   $p = Join-Path $Root $f
   if (Test-Path $p) { Copy-Item $p $Portable }
 }
-# Builds made with CRAFT_FONTS_DIR (storytold/craft-fonts) embed its fonts: ship their OFL licences.
-if ($env:CRAFT_FONTS_DIR) {
-  Get-ChildItem -Path (Join-Path $env:CRAFT_FONTS_DIR 'fonts\*\OFL.txt') -ErrorAction SilentlyContinue | ForEach-Object {
+# Builds made with NODALIA_FONTS_DIR (getnodalia/foundation (nodalia/fonts)) embed its fonts: ship their OFL licences.
+if ($env:NODALIA_FONTS_DIR) {
+  Get-ChildItem -Path (Join-Path $env:NODALIA_FONTS_DIR 'fonts\*\OFL.txt') -ErrorAction SilentlyContinue | ForEach-Object {
     Copy-Item $_.FullName (Join-Path $Portable "OFL-$($_.Directory.Name).txt")
   }
 }

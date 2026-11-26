@@ -368,7 +368,7 @@ mod visual_regressions {
 
     #[test]
     fn capture_bottom_bar_visual_fixtures() {
-        let Some(directory) = std::env::var_os("CRAFT_UI_VISUAL_FIXTURES").map(std::path::PathBuf::from) else { return };
+        let Some(directory) = std::env::var_os("NODALIA_UI_VISUAL_FIXTURES").map(std::path::PathBuf::from) else { return };
         std::fs::create_dir_all(&directory).unwrap();
         for width in [280.0, 400.0, 600.0, 1000.0] {
             for view in [

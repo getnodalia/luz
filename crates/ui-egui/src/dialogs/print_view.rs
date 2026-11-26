@@ -447,7 +447,7 @@ fn settings(app: &mut LuzApp, ui: &mut Ui, t: &Tokens, pu: &mut PrintUi, st: &Pr
     heading(ui, t, "Page Setup");
     row(ui, t, "Paper", |ui| {
         let current = current_paper(&l.page.paper);
-        let c = craft_ui::ComboBox::from_id_salt("printPaper").selected_text(paper_label(current)).show_ui(ui, |ui| {
+        let c = nodalia_ui::ComboBox::from_id_salt("printPaper").selected_text(paper_label(current)).show_ui(ui, |ui| {
             for name in layout::paper_names().chain(std::iter::once("custom")) {
                 if ui.selectable_label(current == name, paper_label(name)).clicked() {
                     patch(app, &ctx, json!({"layout": {"page": {"paper": name}}}));
@@ -521,7 +521,7 @@ fn print_job_color(app: &mut LuzApp, ui: &mut Ui, t: &Tokens, color: &PrintColor
     };
     let mut pick = false;
     row(ui, t, "Profile", |ui| {
-        let c = craft_ui::ComboBox::from_id_salt("print-profile").width(190.0).selected_text(shown.clone()).show_ui(ui, |ui| {
+        let c = nodalia_ui::ComboBox::from_id_salt("print-profile").width(190.0).selected_text(shown.clone()).show_ui(ui, |ui| {
             for (space, label) in [(ManagedSpace::Srgb, "Managed by Printer (sRGB)"), (ManagedSpace::AdobeRgb, "Managed by Printer (Adobe RGB)")] {
                 let r = ui.selectable_label(color.profile == managed(space), crate::i18n::tr(label));
                 register(ui, format!("item:printProfile-{}", to_value(space).as_str().unwrap_or_default()), r.rect);

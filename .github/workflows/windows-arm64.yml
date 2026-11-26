@@ -27,10 +27,9 @@ permissions:
 
 jobs:
   windows-arm64:
-    # Intentionally tracked at @main (not SHA-pinned) so org-wide CI improvements, security fixes, and build optimizations propagate without PR churn across all craftapp repos.
-    uses: storytold/craft-common-actions/.github/workflows/windows-arm64.yml@main
+    uses: getnodalia/foundation/.github/workflows/windows-arm64.yml@c37ef19e6bc213e3ebf3a281f1bf0f3fd7c5d495 # foundation main
     with:
       app-name: luz
-      app-dir: Luz
-      install-relative-path: Programs/Nodalia/Luz
-      install-scope: perUser
+      cli-name: luz-cli
+      fonts-repository: getnodalia/foundation
+      fonts-ref: 7a66e2c6c6d60ac6417caef3e339e186d003b5b8 # nodalia/fonts

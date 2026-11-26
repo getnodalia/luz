@@ -45,9 +45,9 @@ are in [`localization-zh-hans.md`](localization-zh-hans.md), [`localization-zh-h
    `LANGUAGE_COMMANDS` and `language_from_command` in `src/menus.rs`, and to the
    `language_commands_cover_every_language` test. Settings read the locale table; menus and
    the control channel share the language-command mapping.
-3. **Make sure the glyphs exist.** The script drives which craft-fonts faces the UI installs: a
+3. **Make sure the glyphs exist.** The script drives which nodalia-fonts faces the UI installs: a
    language whose script has no face in the build shows boxes (the test says so instead of failing).
-   Fonts live in [storytold/craft-fonts](https://github.com/storytold/craft-fonts), never here; a
+   Fonts live in [getnodalia/foundation (nodalia/fonts)](https://github.com/getnodalia/foundation), never here; a
    missing face is added there, not worked around in this repository. Sentence-cased messages go
    through `i18n::upper_first`, which leaves Georgian lowercase (upper-casing Mkhedruli would make
    Mtavruli).
@@ -88,7 +88,7 @@ tr_format!("Added {n} photo{} to “{}”", if n == 1 { "" } else { "s" }, album
 
 ```sh
 cargo test -p luz-ui-egui i18n::tests                       # catalogs load, placeholders, switching
-CRAFT_FONTS_DIR=../craft-fonts cargo test -p luz-ui-egui i18n::tests   # + glyph coverage
+NODALIA_FONTS_DIR=../nodalia-fonts cargo test -p luz-ui-egui i18n::tests   # + glyph coverage
 cargo test -p luz-ui-egui --lib -- --exact i18n::tests::translation_gaps_report --nocapture
 ```
 
@@ -100,7 +100,7 @@ or not some catalog has it yet: the report reads calls rustfmt wrapped over seve
 literal branches of `tr(if …)` and `tr(match …)`, and skips tests and comments. A string that
 reaches `tr` through a variable is listed only when it is a catalog key or in one of the label
 tables the report reads. It always passes, and `cargo xtask ci` prints it after its test step. The
-glyph tests are skipped without `CRAFT_FONTS_DIR` (there are no CJK faces to check then).
+glyph tests are skipped without `NODALIA_FONTS_DIR` (there are no CJK faces to check then).
 To look at a language, render it headless:
 
 ```sh

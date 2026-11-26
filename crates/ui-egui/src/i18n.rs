@@ -40,7 +40,7 @@ macro_rules! language_table {
             }
 
             /// The ISO 15924 script this language is written in (`"Latn"`, `"Jpan"`, `"Hans"`…):
-            /// the craft-fonts faces for it are the ones this language needs.
+            /// the nodalia-fonts faces for it are the ones this language needs.
             pub const fn script(self) -> &'static str {
                 match self { Self::$source => "Latn", $(Self::$variant => $script,)* }
             }

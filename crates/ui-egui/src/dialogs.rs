@@ -2026,7 +2026,7 @@ fn about_body(app: &mut LuzApp, ui: &mut egui::Ui, t: &Tokens, dlg: &mut Dialog)
     let tagline = crate::i18n::tr("A clean-room, pure-Rust photo library and raw developer.");
     let suite = crate::i18n::tr("Part of the Nodalia suite of open creative tools.");
     let footer = crate::i18n::tr_format!("MIT OR Apache-2.0. Fonts: {} (OFL).", crate::theme::font_credits(app.chinese_font.is_some()));
-    let info = ndl::Info { name: "Luz", version: &version, tagline: &tagline, suite: &suite, links: &links, footer: &footer };
+    let info = ndl::Info { name: "Luz", version: &version, tagline, suite, links: &links, footer: &footer };
     let page = ndl::page(ui, &look, &info, |ui, rect| crate::brand::paint_mark(ui.painter(), rect));
     if let Some((_, url)) = page.picked.and_then(|i| entries.get(i)) {
         let _ = crate::links::open(app, url);

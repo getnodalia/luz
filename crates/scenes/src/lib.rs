@@ -171,7 +171,7 @@ const PHOTOS: &[PhotoDef] = &[
         creator: ADAMS,
         camera: FILM,
         captured: "1942-06-15T12:00:00",
-        keywords: &["masters", "mountains", "black and white", "landscape"],
+        keywords: &[],
     },
     PhotoDef {
         file: 1,
@@ -180,7 +180,7 @@ const PHOTOS: &[PhotoDef] = &[
         creator: ADAMS,
         camera: FILM,
         captured: "1941-09-20T12:00:00",
-        keywords: &["masters", "mountains", "desert", "black and white", "landscape"],
+        keywords: &[],
     },
     PhotoDef {
         file: 2,
@@ -189,17 +189,9 @@ const PHOTOS: &[PhotoDef] = &[
         creator: ADAMS,
         camera: FILM,
         captured: "1941-12-10T12:00:00",
-        keywords: &["masters", "winter", "black and white", "landscape"],
+        keywords: &["snow"],
     },
-    PhotoDef {
-        file: 3,
-        name: "Cave formations",
-        location: "",
-        creator: ADAMS,
-        camera: FILM,
-        captured: "1941-11-01T12:00:00",
-        keywords: &["masters", "cave", "black and white"],
-    },
+    PhotoDef { file: 3, name: "Cave formations", location: "", creator: ADAMS, camera: FILM, captured: "1941-11-01T12:00:00", keywords: &["rock"] },
     PhotoDef {
         file: 4,
         name: "White House Ruin",
@@ -207,17 +199,9 @@ const PHOTOS: &[PhotoDef] = &[
         creator: ADAMS,
         camera: FILM,
         captured: "1941-10-05T12:00:00",
-        keywords: &["masters", "canyon", "rock", "black and white", "landscape"],
+        keywords: &["rock"],
     },
-    PhotoDef {
-        file: 5,
-        name: "Steaming stream",
-        location: "",
-        creator: ADAMS,
-        camera: FILM,
-        captured: "1942-07-02T12:00:00",
-        keywords: &["masters", "black and white", "landscape"],
-    },
+    PhotoDef { file: 5, name: "Steaming stream", location: "", creator: ADAMS, camera: FILM, captured: "1942-07-02T12:00:00", keywords: &["fog"] },
     PhotoDef {
         file: 6,
         name: "Earthrise",
@@ -225,7 +209,7 @@ const PHOTOS: &[PhotoDef] = &[
         creator: NASA,
         camera: "Hasselblad 500 EL",
         captured: "1968-12-24T12:00:00",
-        keywords: &["masters", "space", "night"],
+        keywords: &[],
     },
     PhotoDef {
         file: 7,
@@ -234,7 +218,7 @@ const PHOTOS: &[PhotoDef] = &[
         creator: NASA,
         camera: "Hasselblad 500 EL",
         captured: "1972-12-07T12:00:00",
-        keywords: &["masters", "space"],
+        keywords: &[],
     },
 ];
 
@@ -340,7 +324,7 @@ mod tests {
         for (i, s) in photos.iter().enumerate() {
             assert_eq!(s.id as usize, DEFS.len() + i + 1, "ids stay positions + 1");
             assert!(s.width >= 1000 && s.height >= 1000 && s.width.max(s.height) <= 1600, "{}", s.name);
-            assert!(!s.meta.creator.is_empty() && s.meta.keywords.contains(&"masters"), "{}", s.name);
+            assert!(!s.meta.creator.is_empty(), "{}", s.name);
             let full = s.render_fit(usize::MAX);
             assert_eq!((full.width as u32, full.height as u32), (s.width, s.height));
             let small = s.render_fit(120);

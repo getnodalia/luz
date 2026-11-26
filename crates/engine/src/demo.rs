@@ -47,11 +47,6 @@ pub fn load(s: &mut Session) {
             4 => Flag::Reject,
             _ => Flag::None,
         };
-        if sc.kind == luz_scenes::Kind::Photo {
-            // the real photographs are the library's masters: top rated, never rejected
-            p.rating = 5;
-            p.flag = if sc.id % 2 == 0 { Flag::Pick } else { Flag::None };
-        }
         // A few photos come pre-edited so the grid shows the "edited" badge and variety.
         let mut d = DevelopSettings::default();
         match sc.id {
@@ -97,7 +92,6 @@ pub fn load(s: &mut Session) {
         ("Deserts", Some(folder), by_kw("desert")),
         ("Night Sky", None, by_kw("night")),
         ("Garden", None, by_kw("flower")),
-        ("Masters", None, by_kw("masters")),
         ("Portfolio", None, ids.iter().copied().step_by(3).collect()),
     ] {
         let id = s.catalog.alloc_album_id();

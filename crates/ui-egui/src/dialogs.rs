@@ -34,7 +34,6 @@ pub(crate) use sam_model::show_model_folder;
 use sam_model::{sam_by_hand, sam_model_body};
 use slideshow_export::slideshow_export_body;
 
-pub mod credits;
 pub mod faces;
 pub mod import;
 pub mod keymap;
@@ -45,9 +44,6 @@ pub mod rules_editor;
 pub mod settings;
 pub mod slideshow_export;
 pub mod updates_ui;
-
-/// About dialog tabs: (widget id suffix, label). The credits come from `crate::credits`.
-pub const ABOUT_TABS: &[(&str, &str)] = &[("about", "About"), ("contributors", "Contributors"), ("models", "Models")];
 
 /// Help ▸ What's New (docs/whats-new.md).
 pub const WHATS_NEW: &str = include_str!("../../../docs/whats-new.md");
@@ -2010,45 +2006,35 @@ fn remove_folder_body(ui: &mut egui::Ui, t: &Tokens, dlg: &mut Dialog) {
     );
 }
 
-/// The body of the About dialog.
+/// The body of the About dialog: the page every Nodalia app shares (`nodalia_theme::about`) with
+/// Luz's mark, name and version, what it is, the suite it belongs to and its links. There are no
+/// Contributors or Models tabs; the authors of the code this app began from are credited in
+/// `NOTICE`.
 fn about_body(app: &mut LuzApp, ui: &mut egui::Ui, t: &Tokens, dlg: &mut Dialog) {
+    use nodalia_theme::about as ndl;
     let Dialog::About = dlg else { return };
-    ui.set_min_width(820.0);
-    let tab_id = egui::Id::unique("about_tab");
-    let mut tab = ui.data_mut(|d| d.get_temp::<u8>(tab_id)).unwrap_or(0);
-    ui.horizontal(|ui| {
-        ui.spacing_mut().item_spacing.x = 4.0;
-        for (i, (id, label)) in ABOUT_TABS.iter().enumerate() {
-            if crate::widgets::text_button(ui, &format!("aboutTab-{id}"), label, usize::from(tab) == i).clicked() {
-                tab = u8::try_from(i).unwrap_or(0);
-            }
-        }
-    });
-    ui.data_mut(|d| d.insert_temp(tab_id, tab));
-    ui.separator();
-    match tab {
-        1 => crate::credits::contributors_ui(app, ui),
-        2 => crate::credits::models_ui(ui),
-        _ => {
-            ui.label(egui::RichText::new("Luz").font(t.semibold(20.0)).color(t.text));
-            ui.label(crate::i18n::tr_format!("Version {} — a clean-room, pure-Rust photo library and raw developer.", env!("CARGO_PKG_VERSION")));
-            ui.label(crate::i18n::tr_format!(
-                "MIT OR Apache-2.0. Fonts: {} (OFL). Icons: original.",
-                crate::theme::font_credits(app.chinese_font.is_some())
-            ));
-            ui.add_space(10.0);
-            for (label, url) in [
-                ("Luz website", crate::links::APP_PAGE),
-                ("Source code on GitHub", crate::links::GITHUB),
-                ("Nodalia — more creative apps", crate::links::WEBSITE),
-            ] {
-                let r = ui.link(crate::i18n::tr(label)).on_hover_text(url);
-                if r.clicked() {
-                    let _ = crate::links::open(app, url);
-                }
-            }
-        }
+    ui.set_width(ndl::measures::WIDTH);
+    let look = t.creator();
+    let version = crate::i18n::tr_format!("Version {}", env!("CARGO_PKG_VERSION"));
+    let entries = [
+        ("Luz website", crate::links::APP_PAGE),
+        ("Source code on GitHub", crate::links::GITHUB),
+        ("Nodalia — more creative apps", crate::links::WEBSITE),
+    ];
+    let labels: Vec<String> = entries.iter().map(|(label, _)| crate::i18n::tr(label).to_string()).collect();
+    let links: Vec<ndl::Link> = labels.iter().zip(&entries).map(|(label, (_, url))| ndl::Link { label, url }).collect();
+    let tagline = crate::i18n::tr("A clean-room, pure-Rust photo library and raw developer.");
+    let suite = crate::i18n::tr("Part of the Nodalia suite of open creative tools.");
+    let footer = crate::i18n::tr_format!("MIT OR Apache-2.0. Fonts: {} (OFL).", crate::theme::font_credits(app.chinese_font.is_some()));
+    let info = ndl::Info { name: "Luz", version: &version, tagline: &tagline, suite: &suite, links: &links, footer: &footer };
+    let page = ndl::page(ui, &look, &info, |ui, rect| crate::brand::paint_mark(ui.painter(), rect));
+    if let Some((_, url)) = page.picked.and_then(|i| entries.get(i)) {
+        let _ = crate::links::open(app, url);
     }
+    ui.add_space(4.0);
+    ui.vertical_centered(|ui| {
+        ui.label(egui::RichText::new(crate::i18n::tr("Includes work by other open-source authors (see NOTICE).")).small().color(t.text_dim));
+    });
 }
 
 /// The body of the open dialog: what each kind of dialog shows between its title and its buttons. `confirm` is set

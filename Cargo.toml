@@ -3,7 +3,7 @@ resolver = "3"
 members = ["crates/*", "apps/*", "xtask"]
 
 [workspace.package]
-version = "0.2.0"
+version = "0.2.1"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 rust-version = "1.95"
@@ -16,7 +16,7 @@ nodalia-docpath = { version = "0.1.0", git = "https://github.com/getnodalia/foun
 nodalia-crw = { git = "https://github.com/getnodalia/foundation", rev = "510c67b0d02ec63e31c4a0cc4761366ce54b26b6" }
 # In-app updates from this app's GitHub releases, with the update windows for egui.
 nodalia-update = { git = "https://github.com/getnodalia/nodalia-design", rev = "114848a2ff1a7c29c9a5432fb12e955fbe0aeef2", features = ["egui"] }
-nodalia-theme = { git = "https://github.com/getnodalia/nodalia-design", rev = "114848a2ff1a7c29c9a5432fb12e955fbe0aeef2" }
+nodalia-theme = { git = "https://github.com/getnodalia/nodalia-design", rev = "a44fa27219fe36cbc58228858084b6ad4007f6ef" }
 nodalia-window = { git = "https://github.com/getnodalia/foundation", rev = "412df258a982e3446ba46955a3d6dbb9cf5b60b0", features = ["egui"] }
 # internal
 luz-denoise-core = { path = "crates/denoise-core" }

@@ -334,5 +334,7 @@
   "The lens database is not installed (about {size} MB).": "La base de datos de objetivos no está instalada (unos {size} MB).",
   "{n} photos in view · {slides} slides · {time}": "{n} fotos a la vista · {slides} diapositivas · {time}",
   "{n} selected photos · {pages} pages": "{n} fotos seleccionadas · {pages} páginas",
-  "{title}: {line}": "{title}: {line}"
+  "{title}: {line}": "{title}: {line}",
+  "Version {}": "Versión {}",
+  "MIT OR Apache-2.0. Fonts: {} (OFL).": "MIT OR Apache-2.0. Fuentes: {} (OFL)."
 }

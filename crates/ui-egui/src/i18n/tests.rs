@@ -1006,6 +1006,24 @@ fn translation_gaps_report() {
     println!("{}", gaps_text(&messages, &format_messages(), &notes));
 }
 
+/// Spanish is the language this app is written for in practice, so nothing the screen can say may
+/// stay English there: every message and format the report finds has a Spanish entry. (The What's
+/// New notes are the release history, translated as releases are written.)
+#[test]
+fn spanish_has_every_message_and_format() {
+    let notes = whats_new_lines();
+    let messages: std::collections::BTreeSet<String> = plain_messages().into_iter().filter(|m| !notes.contains(&m.as_str())).collect();
+    let catalog = Locale::Es.catalog();
+    let missing: Vec<&String> = messages.iter().filter(|m| !catalog.contains_key(m.as_str())).collect();
+    assert!(missing.is_empty(), "no Spanish for these messages: {missing:#?}");
+    let own_formats = formats_catalog("es");
+    // the one format that only a test of `tr_format!` itself uses
+    let formats = format_messages();
+    let missing_formats: Vec<&String> =
+        formats.iter().filter(|m| m.as_str() != "{} of {} (no catalog has this)" && !own_formats.contains_key(m.as_str())).collect();
+    assert!(missing_formats.is_empty(), "no Spanish for these formats: {missing_formats:#?}");
+}
+
 /// A string only the source parsing finds (a call rustfmt wrapped, the branches of an `if` or a
 /// `match`) is in no catalog, and the report still lists it for every language.
 #[test]

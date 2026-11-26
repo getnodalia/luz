@@ -1558,7 +1558,7 @@
 ### Edit in Lienzo
 - Right-click a photo ▸ Edit In ▸ Edit in Lienzo (or Photo ▸ Edit In, ⇧⌘E) renders a copy with your edits, stacks it
   with the original and opens it in Lienzo. Luz finds Lienzo where its installer put it (Windows,
-  macOS, Linux packages, AppImage), and says so if it isn't installed, before making a copy.
+  macOS, Linux packages, AppImage, Flatpak), and says so if it isn't installed, before making a copy.
 - The copy is a 16-bit PSD by default, which Lienzo saves straight back to with File ▸ Save; when you come back to
   Luz the copy shows what you saved.
 - Settings ▸ General ▸ External Editing: the format (PSD or TIFF), colour space and bit depth for Lienzo and for

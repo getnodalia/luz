@@ -3,12 +3,15 @@
 //! Scenes are resolution independent (`render(w, h)` evaluates a continuous function) and return
 //! scene-referred linear Rec.2020 radiance with real highlight headroom (the sun is ≫ 1.0), so the
 //! develop pipeline's highlight recovery, tone mapping and colour tools have something real to do.
-//! Every scene is deterministic for its seed. No external assets: zero licensing or privacy risk.
+//! Every scene is deterministic for its seed. The procedural scenes use no external assets. The
+//! last eight scenes of the library are real public-domain photographs (see [`photo`]'s module
+//! documentation and `assets/ATTRIBUTION.md`).
 #![forbid(unsafe_code)]
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
 mod noise;
 mod paint;
+mod photo;
 
 use luz_raster::Rgb32f;
 use serde::Serialize;
@@ -29,6 +32,8 @@ pub enum Kind {
     Canyon,
     Beach,
     BlueHour,
+    /// A real photograph: the scene's seed is the index of the embedded picture.
+    Photo,
 }
 
 /// Fake capture metadata so the library looks like a real shoot.
@@ -44,6 +49,8 @@ pub struct SceneMeta {
     pub captured: String,
     pub location: &'static str,
     pub keywords: Vec<&'static str>,
+    /// Who made the picture (a real photograph), or empty for a procedural scene.
+    pub creator: &'static str,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -140,6 +147,97 @@ const DEFS: &[Def] = &[
     Def { kind: Kind::Dunes, name: "Wind lines", seed: 127, portrait: false, location: "Death Valley", keywords: &["desert"] },
 ];
 
+/// A real photograph of the demo library; `file` indexes the embedded pictures.
+struct PhotoDef {
+    file: u32,
+    name: &'static str,
+    location: &'static str,
+    creator: &'static str,
+    camera: &'static str,
+    /// Year of the picture (the series is dated 1941–42 by its archive; the day is not known).
+    captured: &'static str,
+    keywords: &'static [&'static str],
+}
+
+const ADAMS: &str = "Ansel Adams";
+const NASA: &str = "NASA";
+const FILM: &str = "Large-format film";
+
+const PHOTOS: &[PhotoDef] = &[
+    PhotoDef {
+        file: 0,
+        name: "The Tetons and the Snake River",
+        location: "Grand Teton",
+        creator: ADAMS,
+        camera: FILM,
+        captured: "1942-06-15T12:00:00",
+        keywords: &["masters", "mountains", "black and white", "landscape"],
+    },
+    PhotoDef {
+        file: 1,
+        name: "Desert range under a clearing sky",
+        location: "",
+        creator: ADAMS,
+        camera: FILM,
+        captured: "1941-09-20T12:00:00",
+        keywords: &["masters", "mountains", "desert", "black and white", "landscape"],
+    },
+    PhotoDef {
+        file: 2,
+        name: "Snow-laden orchard",
+        location: "",
+        creator: ADAMS,
+        camera: FILM,
+        captured: "1941-12-10T12:00:00",
+        keywords: &["masters", "winter", "black and white", "landscape"],
+    },
+    PhotoDef {
+        file: 3,
+        name: "Cave formations",
+        location: "",
+        creator: ADAMS,
+        camera: FILM,
+        captured: "1941-11-01T12:00:00",
+        keywords: &["masters", "cave", "black and white"],
+    },
+    PhotoDef {
+        file: 4,
+        name: "White House Ruin",
+        location: "Canyon de Chelly",
+        creator: ADAMS,
+        camera: FILM,
+        captured: "1941-10-05T12:00:00",
+        keywords: &["masters", "canyon", "rock", "black and white", "landscape"],
+    },
+    PhotoDef {
+        file: 5,
+        name: "Steaming stream",
+        location: "",
+        creator: ADAMS,
+        camera: FILM,
+        captured: "1942-07-02T12:00:00",
+        keywords: &["masters", "black and white", "landscape"],
+    },
+    PhotoDef {
+        file: 6,
+        name: "Earthrise",
+        location: "Lunar orbit",
+        creator: NASA,
+        camera: "Hasselblad 500 EL",
+        captured: "1968-12-24T12:00:00",
+        keywords: &["masters", "space", "night"],
+    },
+    PhotoDef {
+        file: 7,
+        name: "The Blue Marble",
+        location: "Space",
+        creator: NASA,
+        camera: "Hasselblad 500 EL",
+        captured: "1972-12-07T12:00:00",
+        keywords: &["masters", "space"],
+    },
+];
+
 const CAMERAS: &[(&str, &str, f32)] = &[
     ("Synthetic S1", "24-70mm f/2.8", 35.0),
     ("Synthetic S1", "70-200mm f/4", 135.0),
@@ -147,45 +245,68 @@ const CAMERAS: &[(&str, &str, f32)] = &[
     ("Synthetic X2", "90mm f/2.8 Macro", 90.0),
 ];
 
-/// The demo library: 24 scenes, 6000×4000 (or 4000×6000) nominal size.
+/// The demo library: 24 procedural scenes, 6000×4000 (or 4000×6000) nominal size, then the real
+/// photographs at their own size. Scene ids are positions + 1, so the order never changes.
 pub fn demo_library() -> Vec<Scene> {
-    DEFS.iter()
-        .enumerate()
-        .map(|(i, d)| {
-            let cam = if d.kind == Kind::Macro { CAMERAS[3] } else { CAMERAS[i % 3] };
-            let shutter = match d.kind {
-                Kind::Aurora => "8",
-                Kind::BlueHour => "1/4",
-                Kind::MistyForest => "1/60",
-                _ => ["1/250", "1/500", "1/125", "1/1000"][i % 4],
-            };
-            let iso = match d.kind {
-                Kind::Aurora => 3200,
-                Kind::BlueHour => 400,
-                _ => [100, 200, 64, 100][i % 4],
-            };
-            let (w, h) = if d.portrait { (4000, 6000) } else { (6000, 4000) };
-            Scene {
-                id: i as u32 + 1,
-                name: d.name.to_string(),
-                kind: d.kind,
-                seed: d.seed,
-                width: w,
-                height: h,
-                meta: SceneMeta {
-                    camera: cam.0,
-                    lens: cam.1,
-                    focal_mm: cam.2,
-                    aperture: [2.8, 8.0, 11.0, 4.0][i % 4],
-                    shutter,
-                    iso,
-                    captured: format!("2026-{:02}-{:02}T{:02}:{:02}:00", 3 + i % 7, 1 + (i * 5) % 27, 5 + (i * 3) % 15, (i * 17) % 60),
-                    location: d.location,
-                    keywords: d.keywords.to_vec(),
-                },
-            }
+    let procedural = DEFS.iter().enumerate().map(|(i, d)| {
+        let cam = if d.kind == Kind::Macro { CAMERAS[3] } else { CAMERAS[i % 3] };
+        let shutter = match d.kind {
+            Kind::Aurora => "8",
+            Kind::BlueHour => "1/4",
+            Kind::MistyForest => "1/60",
+            _ => ["1/250", "1/500", "1/125", "1/1000"][i % 4],
+        };
+        let iso = match d.kind {
+            Kind::Aurora => 3200,
+            Kind::BlueHour => 400,
+            _ => [100, 200, 64, 100][i % 4],
+        };
+        let (w, h) = if d.portrait { (4000, 6000) } else { (6000, 4000) };
+        Scene {
+            id: i as u32 + 1,
+            name: d.name.to_string(),
+            kind: d.kind,
+            seed: d.seed,
+            width: w,
+            height: h,
+            meta: SceneMeta {
+                camera: cam.0,
+                lens: cam.1,
+                focal_mm: cam.2,
+                aperture: [2.8, 8.0, 11.0, 4.0][i % 4],
+                shutter,
+                iso,
+                captured: format!("2026-{:02}-{:02}T{:02}:{:02}:00", 3 + i % 7, 1 + (i * 5) % 27, 5 + (i * 3) % 15, (i * 17) % 60),
+                location: d.location,
+                keywords: d.keywords.to_vec(),
+                creator: "",
+            },
+        }
+    });
+    let photos = PHOTOS.iter().enumerate().filter_map(|(i, d)| {
+        let (width, height) = photo::size(d.file)?;
+        Some(Scene {
+            id: (DEFS.len() + i) as u32 + 1,
+            name: d.name.to_string(),
+            kind: Kind::Photo,
+            seed: d.file,
+            width,
+            height,
+            meta: SceneMeta {
+                camera: d.camera,
+                lens: "",
+                focal_mm: 0.0,
+                aperture: 0.0,
+                shutter: "",
+                iso: 0,
+                captured: d.captured.to_string(),
+                location: d.location,
+                keywords: d.keywords.to_vec(),
+                creator: d.creator,
+            },
         })
-        .collect()
+    });
+    procedural.chain(photos).collect()
 }
 
 #[cfg(test)]
@@ -195,7 +316,7 @@ mod tests {
     #[test]
     fn library_is_deterministic_and_varied() {
         let lib = demo_library();
-        assert_eq!(lib.len(), 24);
+        assert_eq!(lib.len(), 24 + photo::COUNT, "every embedded photograph decodes and joins the library");
         let a = lib[0].render(64, 43);
         let b = lib[0].render(64, 43);
         assert_eq!(a, b);
@@ -206,6 +327,31 @@ mod tests {
             let mean: f32 = img.data.iter().map(|p| p[1]).sum::<f32>() / img.len() as f32;
             assert!(mean > 0.005 && mean < 3.0, "{} mean {mean}", s.name);
         }
+    }
+
+    /// The photographs are real pictures at their own size, resampled in linear light: a thumbnail's
+    /// mean matches the full render's, and the library lists exactly the embedded files, in order.
+    #[test]
+    fn photographs_resample_consistently() {
+        let lib = demo_library();
+        let photos: Vec<_> = lib.iter().filter(|s| s.kind == Kind::Photo).collect();
+        assert_eq!(photos.len(), PHOTOS.len());
+        assert_eq!(photos.len(), photo::COUNT);
+        for (i, s) in photos.iter().enumerate() {
+            assert_eq!(s.id as usize, DEFS.len() + i + 1, "ids stay positions + 1");
+            assert!(s.width >= 1000 && s.height >= 1000 && s.width.max(s.height) <= 1600, "{}", s.name);
+            assert!(!s.meta.creator.is_empty() && s.meta.keywords.contains(&"masters"), "{}", s.name);
+            let full = s.render_fit(usize::MAX);
+            assert_eq!((full.width as u32, full.height as u32), (s.width, s.height));
+            let small = s.render_fit(120);
+            let mean = |img: &Rgb32f| img.data.iter().map(|p| p[1]).sum::<f32>() / img.len() as f32;
+            let (a, b) = (mean(&full), mean(&small));
+            assert!((a - b).abs() < 0.02 + 0.05 * a, "{}: {a} vs {b}", s.name);
+            let up = s.render(s.width as usize + 40, s.height as usize + 30);
+            assert!(up.data.iter().all(|p| p.iter().all(|v| v.is_finite() && *v >= 0.0)));
+        }
+        assert!(photo::get(photo::COUNT as u32).is_none() && photo::size(u32::MAX).is_none());
+        assert!(paint::render_serial(Kind::Photo, 9999, 4, 3).data.iter().all(|p| p[1] > 0.0), "an unknown photo renders grey");
     }
 
     /// Found by fuzzing catalog snapshots: a demo photo whose width read 4294967295 asked its scene

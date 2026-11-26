@@ -20,14 +20,15 @@ pub fn load(s: &mut Session) {
         p.meta = Meta {
             camera: sc.meta.camera.into(),
             lens: sc.meta.lens.into(),
-            focal_mm: Some(sc.meta.focal_mm),
-            aperture: Some(sc.meta.aperture),
+            // a scanned or space-borne photograph has no exposure data worth showing
+            focal_mm: (sc.meta.focal_mm > 0.0).then_some(sc.meta.focal_mm),
+            aperture: (sc.meta.aperture > 0.0).then_some(sc.meta.aperture),
             shutter: sc.meta.shutter.into(),
-            iso: Some(sc.meta.iso),
+            iso: (sc.meta.iso > 0).then_some(sc.meta.iso),
             location: sc.meta.location.into(),
             title: sc.name.clone(),
             keywords: sc.meta.keywords.iter().map(|k| k.to_string()).collect(),
-            creator: "Luz Demo".into(),
+            creator: if sc.meta.creator.is_empty() { "Luz Demo" } else { sc.meta.creator }.into(),
             ..Default::default()
         };
         // one demo photo carries a camera focus point (as a Sony raw would), on the bloom's centre, so
@@ -46,6 +47,11 @@ pub fn load(s: &mut Session) {
             4 => Flag::Reject,
             _ => Flag::None,
         };
+        if sc.kind == luz_scenes::Kind::Photo {
+            // the real photographs are the library's masters: top rated, never rejected
+            p.rating = 5;
+            p.flag = if sc.id % 2 == 0 { Flag::Pick } else { Flag::None };
+        }
         // A few photos come pre-edited so the grid shows the "edited" badge and variety.
         let mut d = DevelopSettings::default();
         match sc.id {
@@ -91,6 +97,7 @@ pub fn load(s: &mut Session) {
         ("Deserts", Some(folder), by_kw("desert")),
         ("Night Sky", None, by_kw("night")),
         ("Garden", None, by_kw("flower")),
+        ("Masters", None, by_kw("masters")),
         ("Portfolio", None, ids.iter().copied().step_by(3).collect()),
     ] {
         let id = s.catalog.alloc_album_id();

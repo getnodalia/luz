@@ -2,7 +2,7 @@
 //! refuses it as a normal dependency. Std only, so every crate can use it at no build cost.
 //!
 //! **Skips.** libtest has no "skipped" status and hides the output of passing tests, so a test that
-//! needs a GPU, a corpus file, the craft-fonts faces or a model, and returns early without them,
+//! needs a GPU, a corpus file, the nodalia-fonts faces or a model, and returns early without them,
 //! passes silently: "all steps passed" could mean the GPU tests never ran. Such a test calls
 //! [`skip!`] before it returns:
 //!
@@ -37,7 +37,7 @@ pub enum Need {
     Gpu,
     /// A file from the gitignored `corpus/` (`cargo xtask corpus --download`) or a private corpus.
     Corpus,
-    /// Faces from craft-fonts, embedded only in builds with `CRAFT_FONTS_DIR`.
+    /// Faces from nodalia-fonts, embedded only in builds with `NODALIA_FONTS_DIR`.
     Fonts,
     /// A model file named by an environment variable (SAM 3, YuNet, …).
     Model,

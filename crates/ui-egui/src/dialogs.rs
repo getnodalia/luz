@@ -427,7 +427,7 @@ fn title_bar_handle(ctx: &egui::Context, band: egui::Rect, dialog: egui::Rect) {
     for (i, (from, to)) in sides.into_iter().enumerate().filter(|(_, (from, to))| to - from > 1.0) {
         let part = egui::Rect::from_x_y_ranges(from..=to, band.y_range());
         egui::Area::new(egui::Id::unique("dialog-title-bar").with(i)).order(egui::Order::Foreground).fixed_pos(part.min).show(ctx, |ui| {
-            craft_window::title_bar::empty_area(ui, part);
+            nodalia_window::title_bar::empty_area(ui, part);
         });
     }
 }

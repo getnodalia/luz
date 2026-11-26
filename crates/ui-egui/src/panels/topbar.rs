@@ -12,7 +12,7 @@ use crate::widgets::{icon_button, register};
 /// double-click acts as the system setting says. Made before the bar's widgets so they win the click.
 fn window_handle(ui: &mut egui::Ui, bar: Rect) {
     register(ui, "region:titlebar", bar);
-    let resp = craft_window::title_bar::empty_area(ui, bar);
+    let resp = nodalia_window::title_bar::empty_area(ui, bar);
     crate::widgets::announce(&resp, crate::i18n::tr("Title bar"));
 }
 

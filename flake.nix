@@ -9,14 +9,14 @@
     # Optional build input of the repository: the default fonts (BIZ UDPGothic Regular/Bold, BIZ UDMincho,
     # Shippori Mincho, Noto Sans CJK SC, Noto Sans Arabic, Noto Sans Thai, Noto Sans Georgian,
     # NanumGothic, Noto Sans Symbols, Noto Sans Symbols 2, Noto Sans Hebrew and Noto Sans Devanagari)
-    # listed in craft-fonts' `fonts/manifest.txt`, which `crates/engine/build.rs` embeds when
-    # `CRAFT_FONTS_DIR` is set. The opt-in LXGW WenKai Lite face in `fonts/simplified-chinese-manifest.txt`
+    # listed in nodalia-fonts' `fonts/manifest.txt`, which `crates/engine/build.rs` embeds when
+    # `NODALIA_FONTS_DIR` is set. The opt-in LXGW WenKai Lite face in `fonts/simplified-chinese-manifest.txt`
     # is not part of that default set and is not embedded. Official releases always build with the
     # default fonts; without them everything works but non-Latin text lacks glyphs. Pinned to the same
     # revision CI, the release workflow and the standalone packaging helpers use — bump all of them
-    # together (`nix flake update craft-fonts`).
-    craft-fonts = {
-      url = "github:storytold/craft-fonts/b076417b5880bd4154bd22f00695b1d28c6bea83";
+    # together (`nix flake update nodalia-fonts`).
+    nodalia-fonts = {
+      url = "github:getnodalia/foundation/7a66e2c6c6d60ac6417caef3e339e186d003b5b8";
       flake = false;
     };
   };
@@ -25,7 +25,7 @@
     {
       self,
       nixpkgs,
-      craft-fonts,
+      nodalia-fonts,
     }:
     let
       inherit (nixpkgs) lib;
@@ -51,7 +51,7 @@
           "1970-01-01";
 
       packageArgs = {
-        inherit craft-fonts buildDate;
+        inherit nodalia-fonts buildDate;
       };
 
       forAllSystems = f: lib.genAttrs systems (system: f (import nixpkgs { inherit system; }) system);
@@ -94,9 +94,9 @@
               LD_LIBRARY_PATH = lib.makeLibraryPath luz.passthru.runtimeLibs;
               RUST_BACKTRACE = "1";
             }
-            // lib.optionalAttrs (craft-fonts != null) {
-              # CJK glyphs in `cargo run` too; build.rs reads this as CRAFT_FONTS_DIR.
-              CRAFT_FONTS_DIR = toString craft-fonts;
+            // lib.optionalAttrs (nodalia-fonts != null) {
+              # CJK glyphs in `cargo run` too; build.rs reads this as NODALIA_FONTS_DIR.
+              NODALIA_FONTS_DIR = toString nodalia-fonts;
             }
           );
         }

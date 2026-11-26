@@ -331,7 +331,7 @@ mod tests {
                 }
             }
             for t in targets {
-                // outside the workspace (`../craft-fonts`), not a real file, or inside the package
+                // outside the workspace (`../nodalia-fonts`), not a real file, or inside the package
                 let Some(rel) = normalize(&t) else { continue };
                 if !root.join(&rel).exists() || rel.starts_with(&format!("{pkg_rel}/")) {
                     continue;

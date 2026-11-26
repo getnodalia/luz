@@ -10,9 +10,9 @@ fn harness() -> Harness<'static, LuzApp> {
     app.headless_host = true;
     let mut builder = Harness::builder().with_size(vec2(1500.0, 950.0));
     // Settings lists each language by its own name, and some scripts (Georgian, the CJK
-    // languages) have glyphs only in the craft-fonts faces (releases always have them): without
+    // languages) have glyphs only in the nodalia-fonts faces (releases always have them): without
     // them the names are drawn as boxes, which this check of roles and titles doesn't need
-    if luz_engine::CRAFT_FONTS.is_empty() {
+    if luz_engine::NODALIA_FONTS.is_empty() {
         builder = builder.allow_missing_glyphs();
     }
     let mut h = builder.build_ui_state(

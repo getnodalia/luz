@@ -66,9 +66,9 @@ jobs:
     uses: getnodalia/foundation/.github/workflows/rust-gate.yml@976581262c95c0d95c0184149c0e1ba55485ccb3 # foundation main
     with:
       os: '["windows-latest"]'
-      # Same craft-fonts commit as ci.yml and the release-*.yml workflows.
+      # Same nodalia-fonts commit as ci.yml and the release-*.yml workflows.
       fonts-repository: getnodalia/foundation
-      fonts-ref: b076417b5880bd4154bd22f00695b1d28c6bea83
+      fonts-ref: 7a66e2c6c6d60ac6417caef3e339e186d003b5b8
       targets: ""
       tools: ""
       timeout-minutes: 90

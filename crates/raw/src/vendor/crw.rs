@@ -16,12 +16,12 @@
 use crate::{BlackLevel, Cfa, ColorData, Metadata, Mode, OpcodeLists, Orientation, RawData, RawError, RawFormat, RawImage, Rect, Result};
 use luz_meta::DateTime;
 
-fn map_err(e: craft_crw::Error) -> RawError {
+fn map_err(e: nodalia_crw::Error) -> RawError {
     match e {
-        craft_crw::Error::NotCrw => RawError::NotRaw,
-        craft_crw::Error::Corrupt(why) => RawError::Corrupt(format!("CRW: {why}")),
-        craft_crw::Error::Unsupported(why) => RawError::Unsupported(format!("CRW: {why}")),
-        craft_crw::Error::LimitExceeded(what) => RawError::Limit(what),
+        nodalia_crw::Error::NotCrw => RawError::NotRaw,
+        nodalia_crw::Error::Corrupt(why) => RawError::Corrupt(format!("CRW: {why}")),
+        nodalia_crw::Error::Unsupported(why) => RawError::Unsupported(format!("CRW: {why}")),
+        nodalia_crw::Error::LimitExceeded(what) => RawError::Limit(what),
     }
 }
 
@@ -31,15 +31,15 @@ pub(crate) fn decode(bytes: &[u8], mode: Mode) -> Result<RawImage> {
     // (2³⁰) would let a malformed file ask for gigabytes. No sample may be filled after the
     // entropy stream ends (the crate allows one 64-sample block by default): every corpus file
     // ends exactly on its frame, so a shorter stream is a truncated file and is `Corrupt`.
-    let mut limits = craft_crw::Limits::default();
+    let mut limits = nodalia_crw::Limits::default();
     limits.max_stream_end_fill = 0;
     let full = mode == Mode::Full;
     let (h, samples, black, white) = if full {
-        let img = craft_crw::decode(bytes, &limits).map_err(map_err)?;
+        let img = nodalia_crw::decode(bytes, &limits).map_err(map_err)?;
         let black = BlackLevel { repeat_rows: 2, repeat_cols: 2, values: img.black.values.to_vec(), delta_h: vec![], delta_v: vec![] };
         (img.header, img.samples, black, img.white)
     } else {
-        let h = craft_crw::header(bytes, &limits).map_err(map_err)?;
+        let h = nodalia_crw::header(bytes, &limits).map_err(map_err)?;
         let white = ((1u32 << h.bits.clamp(1, 16)) - 1) as f32;
         (h, Vec::new(), BlackLevel::uniform(0.0), white)
     };
@@ -197,7 +197,7 @@ mod tests {
         assert!(matches!(decode(b"II    HEAPCCDR  ", Mode::Full), Err(RawError::Corrupt(w)) if w.starts_with("CRW: ")));
         let Err(RawError::Unsupported(why)) = decode(&synthetic_crw("Canon PowerShot G5"), Mode::Header) else { panic!("expected Unsupported") };
         assert!(why.contains("PowerShot G5"), "{why}");
-        assert_eq!(map_err(craft_crw::Error::LimitExceeded("image too large")), RawError::Limit("image too large"));
+        assert_eq!(map_err(nodalia_crw::Error::LimitExceeded("image too large")), RawError::Limit("image too large"));
     }
 
     /// A file declaring more samples than any CRW camera has is refused before anything is
@@ -236,7 +236,7 @@ mod tests {
         assert!(decode(&whole, Mode::Full).is_ok());
         // six bytes fewer leave 10 samples unread, within the crate's default of 64
         let short = synthetic_crw_with_payload("Canon EOS D60", W, H, payload(836));
-        let filled = craft_crw::decode(&short, &craft_crw::Limits::default()).map(|i| i.stream_end_fill);
+        let filled = nodalia_crw::decode(&short, &nodalia_crw::Limits::default()).map(|i| i.stream_end_fill);
         assert_eq!(filled, Ok(10));
         let Err(RawError::Corrupt(why)) = decode(&short, Mode::Full) else { panic!("a stream 10 samples short must be refused") };
         assert!(why.contains("10 samples before the frame does"), "{why}");

@@ -1,11 +1,11 @@
-//! Canon CRW through the shared craft-crw decoder, on the CC0 corpus files (URLs and SHA-256 in
+//! Canon CRW through the shared nodalia-crw decoder, on the CC0 corpus files (URLs and SHA-256 in
 //! `xtask/src/raw_samples.rs`; downloaded into the gitignored corpus/raw by `cargo xtask corpus --download`).
 //!
 //! The FNV-1a hashes over the decoded u16 samples (row-major, little-endian, masked borders
 //! included) were computed from Luz's earlier in-tree clean-room CRW decoder (commit
-//! dd02f12f, branch `clean-room-crw-format-decode`) before it moved to craft-libs: the shared
+//! dd02f12f, branch `clean-room-crw-format-decode`) before it moved to nodalia-libs: the shared
 //! decoder reproduces it bit for bit on all ten files, six bodies. Black and white levels are not
-//! pinned: craft-crw changed both on purpose (border padding no longer lowers the black level; the
+//! pinned: nodalia-crw changed both on purpose (border padding no longer lowers the black level; the
 //! white level follows these bodies' low-ISO clip near 4000), so they are only checked for sanity.
 
 use luz_raw::{RawData, RawError, decode};

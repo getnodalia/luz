@@ -9,7 +9,7 @@ português do Brasil. A preferência de idioma é gravada em `language` no `ui.j
   principais mensagens de progresso.
 - Menus, telas e o texto com valores variáveis usam as fontes Inter (regular e semibold). Texto em
   chinês e japonês exibido nos nomes de idioma (por exemplo, 日本語) continua dependendo do repositório
-  de fontes [storytold/craft-fonts](https://github.com/storytold/craft-fonts).
+  de fontes [getnodalia/foundation (nodalia/fonts)](https://github.com/getnodalia/foundation).
 - A tradução fica na camada de apresentação. IDs de comandos, nomes de arquivos de fotos e metadados
   digitados pelo usuário nunca são alterados.
 - Erros técnicos, informações complementares e notas de versão não traduzidos aparecem em inglês.
@@ -29,7 +29,7 @@ consuma o argumento correspondente com `{:.0}` — um texto com precisão 0 não
 
 Aparência, fontes, troca de idioma, persistência da preferência e estabilidade dos IDs de comando são
 verificadas por `cargo test -p luz-ui-egui i18n::tests` (a checagem de glifos só roda com
-`CRAFT_FONTS_DIR`). Para visualizar o idioma, renderize sem interface gráfica:
+`NODALIA_FONTS_DIR`). Para visualizar o idioma, renderize sem interface gráfica:
 
 ```sh
 LUZ_LANGUAGE=pt-br luz-cli snapshot --demo --script tour.jsonl -o out.png --size 1600x1000

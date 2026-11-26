@@ -55,7 +55,7 @@ không được dịch.
 
 ## Font
 
-Tiếng Việt dùng Inter (Latin + dấu). Không cần craft-fonts CJK. Kiểm tra glyph trong
+Tiếng Việt dùng Inter (Latin + dấu). Không cần nodalia-fonts CJK. Kiểm tra glyph trong
 `vietnamese_panels_dialogs_and_diacritics_paint_with_bundled_fonts`.
 
 ## Kiểm tra

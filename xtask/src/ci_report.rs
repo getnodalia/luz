@@ -1,5 +1,5 @@
 //! What a `cargo xtask ci` run covered on this machine: the capability probe (OS, CPUs, RAM, GPU
-//! adapters per backend, corpus, craft-fonts), each step's result and time, and the tests that
+//! adapters per backend, corpus, nodalia-fonts), each step's result and time, and the tests that
 //! skipped for want of hardware or data. Written to `target/ci/report.json` and
 //! `target/ci/summary.md` (a block to paste into a PR) and printed after the CI summary.
 //!
@@ -102,12 +102,12 @@ pub fn toolchain() -> Option<String> {
     output(&std::env::var("RUSTC").unwrap_or_else(|_| "rustc".into()), &["-V"], None)
 }
 
-/// Test data present: how many of the pinned raw samples, other corpus files, craft-fonts.
+/// Test data present: how many of the pinned raw samples, other corpus files, nodalia-fonts.
 pub fn data(root: &Path, pinned_raw: &[&str]) -> Value {
     let corpus = std::env::var_os("LUZ_CORPUS").map(PathBuf::from).unwrap_or_else(|| root.join("corpus"));
     let count = |sub: &str| -> usize { std::fs::read_dir(corpus.join(sub)).map(|d| d.flatten().filter(|e| e.path().is_file()).count()).unwrap_or(0) };
     let pinned = pinned_raw.iter().filter(|name| corpus.join("raw").join(name).is_file()).count();
-    let fonts = std::env::var_os("CRAFT_FONTS_DIR").filter(|d| !d.is_empty()).map(PathBuf::from);
+    let fonts = std::env::var_os("NODALIA_FONTS_DIR").filter(|d| !d.is_empty()).map(PathBuf::from);
     json!({
         "corpus": {
             "custom_dir": std::env::var_os("LUZ_CORPUS").is_some(),
@@ -117,7 +117,7 @@ pub fn data(root: &Path, pinned_raw: &[&str]) -> Value {
             "images": count("images"),
             "pngsuite": count("pngsuite"),
         },
-        "craft_fonts": {
+        "nodalia_fonts": {
             "set": fonts.is_some(),
             // crates/engine/build.rs embeds the fonts of `fonts/manifest.txt` (a relative dir may mean the root)
             "found": fonts.as_deref().is_some_and(|d| [d.to_path_buf(), root.join(d)].iter().any(|d| d.join("fonts/manifest.txt").is_file())),
@@ -283,7 +283,7 @@ fn hint(need: &str) -> &'static str {
     match need {
         "gpu" => "a hardware GPU adapter the pipeline accepts",
         "corpus" => "the corpus (`cargo xtask corpus --download`; some files are private)",
-        "fonts" => "craft-fonts (`CRAFT_FONTS_DIR`, see the README)",
+        "fonts" => "nodalia-fonts (`NODALIA_FONTS_DIR`, see the README)",
         "model" => "the model files the reasons name",
         "input" => "the input files the reasons name",
         "system" => "what the operating system provides",
@@ -381,10 +381,10 @@ fn data_line(report: &Value) -> String {
     let d = &report["capabilities"]["data"];
     let c = &d["corpus"];
     let n = |k: &str| c[k].as_u64().unwrap_or(0);
-    let fonts = match (d["craft_fonts"]["set"].as_bool(), d["craft_fonts"]["found"].as_bool()) {
-        (Some(true), Some(true)) => "CRAFT_FONTS_DIR set",
-        (Some(true), _) => "CRAFT_FONTS_DIR set but not found",
-        _ => "no CRAFT_FONTS_DIR",
+    let fonts = match (d["nodalia_fonts"]["set"].as_bool(), d["nodalia_fonts"]["found"].as_bool()) {
+        (Some(true), Some(true)) => "NODALIA_FONTS_DIR set",
+        (Some(true), _) => "NODALIA_FONTS_DIR set but not found",
+        _ => "no NODALIA_FONTS_DIR",
     };
     format!("corpus: {} of {} pinned raws, {} images, {} PngSuite files; {fonts}", n("raw_pinned"), n("raw_pinned_total"), n("images"), n("pngsuite"))
 }
@@ -594,7 +594,7 @@ mod tests {
             "result": "pass",
             "git": {"commit": "0123456789abcdef", "dirty": false},
             "machine": {"os": "windows", "arch": "x86_64", "cpus": 8, "ram_total_gb": 16},
-            "capabilities": {"gpu": gpu_all, "data": {"corpus": {"raw_pinned": 3, "raw_pinned_total": 30}, "craft_fonts": {"set": false}}},
+            "capabilities": {"gpu": gpu_all, "data": {"corpus": {"raw_pinned": 3, "raw_pinned_total": 30}, "nodalia_fonts": {"set": false}}},
             "steps": [{"name": "fmt", "status": "ok", "seconds": 1.25}, {"name": "test", "status": "ok", "seconds": 125.0}],
             "skips": [{"need": "gpu", "reason": "no GPU | adapter", "test": "memory", "binary": "memory", "location": "x.rs:1", "steps": ["test"]}],
         });

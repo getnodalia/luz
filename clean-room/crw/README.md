@@ -2,10 +2,10 @@
 
 The Canon CRW (CIFF) decoder and its clean-room record (the frozen format, the verification
 summary, the colour, geometry and metadata notes, the private-corpus summary and the source log)
-live in craft-libs:
+live in nodalia-libs:
 [`crates/crw/clean-room/`](https://github.com/storytold/craft-libs/tree/main/crates/crw/clean-room).
 The derivation trail and the frozen table-generation materials stay in Luz PR #3021.
-Luz uses the crate `craft-crw` through the adapter `crates/raw/src/vendor/crw.rs`.
+Luz uses the crate `nodalia-crw` through the adapter `crates/raw/src/vendor/crw.rs`.
 
 What stays here is Luz's own colour work on these cameras:
 
@@ -15,4 +15,4 @@ What stays here is Luz's own colour work on these cameras:
   frames (no image content).
 
 The capture statistics those documents cite (`04-color.md`, `05-private-corpus.md`, `sources.md`)
-are in the craft-libs record.
+are in the nodalia-libs record.

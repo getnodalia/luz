@@ -47,7 +47,7 @@ warn() {
 }
 
 # Copy licence and readme files that exist into a package directory, plus the font licence texts
-# (Inter's OFL always; the craft-fonts OFLs when building with CRAFT_FONTS_DIR).
+# (Inter's OFL always; the nodalia-fonts OFLs when building with NODALIA_FONTS_DIR).
 copy_docs() {
   local dest="$1" f
   for f in README.md LICENSE LICENSE-MIT LICENSE-APACHE COPYRIGHT NOTICE; do
@@ -58,14 +58,14 @@ copy_docs() {
 }
 
 # Inter is embedded in every build (crates/ui-egui/src/theme.rs), so its OFL always ships with the
-# package as OFL-Inter.txt. Builds made with CRAFT_FONTS_DIR (storytold/craft-fonts, an optional
+# package as OFL-Inter.txt. Builds made with NODALIA_FONTS_DIR (getnodalia/foundation (nodalia/fonts), an optional
 # build input) also embed its fonts; their OFL licences go with the package as OFL-<family-dir>.txt.
 copy_font_licences() {
   local dest="$1" lic family
   local inter="$ROOT/assets/fonts/OFL-Inter.txt"
   cp "$inter" "$dest/OFL-Inter.txt" || return $?
-  [[ -n "${CRAFT_FONTS_DIR:-}" ]] || return 0
-  for lic in "$CRAFT_FONTS_DIR"/fonts/*/OFL.txt; do
+  [[ -n "${NODALIA_FONTS_DIR:-}" ]] || return 0
+  for lic in "$NODALIA_FONTS_DIR"/fonts/*/OFL.txt; do
     [[ -f "$lic" ]] || continue
     family="$(basename "$(dirname "$lic")")"
     cp "$lic" "$dest/OFL-$family.txt"

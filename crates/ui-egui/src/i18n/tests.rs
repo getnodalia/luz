@@ -289,12 +289,12 @@ fn formats_render_in_every_language() {
 }
 
 /// Every character a catalog paints has a glyph in the fonts the UI installs, so a translation
-/// never shows as boxes. Without craft-fonts there are no CJK faces at all, and the CJK
+/// never shows as boxes. Without nodalia-fonts there are no CJK faces at all, and the CJK
 /// catalogs are skipped (the same degradation the Japanese UI has always had).
 #[test]
 fn catalog_characters_are_paintable() {
     let ctx = egui::Context::default();
-    ctx.set_fonts(crate::theme::font_definitions(luz_engine::CRAFT_FONTS));
+    ctx.set_fonts(crate::theme::font_definitions(luz_engine::NODALIA_FONTS));
     let mut out = ctx.run_ui(egui::RawInput::default(), |_| {});
     out.textures_delta.clear();
     for language in Locale::ALL {
@@ -302,12 +302,12 @@ fn catalog_characters_are_paintable() {
         if messages.is_empty() {
             continue;
         }
-        // The faces this language's script needs; a language the craft-fonts input does not
+        // The faces this language's script needs; a language the nodalia-fonts input does not
         // cover (a translation added ahead of its font) is reported, not failed.
-        let mut faces: Vec<&str> = luz_engine::CRAFT_FONTS.iter().filter(|font| font.serves(language.script())).map(|font| font.family).collect();
+        let mut faces: Vec<&str> = luz_engine::NODALIA_FONTS.iter().filter(|font| font.serves(language.script())).map(|font| font.family).collect();
         faces.dedup();
         if faces.is_empty() {
-            luz_testkit::skip!(Fonts, "{}: built without a craft-fonts face for {}", language.code(), language.script());
+            luz_testkit::skip!(Fonts, "{}: built without a nodalia-fonts face for {}", language.code(), language.script());
             continue;
         }
         ctx.fonts_mut(|fonts| {
@@ -333,7 +333,7 @@ fn catalog_characters_are_paintable() {
 #[test]
 fn interface_symbols_are_paintable() {
     let ctx = egui::Context::default();
-    ctx.set_fonts(crate::theme::font_definitions(luz_engine::CRAFT_FONTS));
+    ctx.set_fonts(crate::theme::font_definitions(luz_engine::NODALIA_FONTS));
     let mut out = ctx.run_ui(egui::RawInput::default(), |_| {});
     out.textures_delta.clear();
     // ⌥ and ⌫ come from egui's bundled fonts; ▸ and ▾ are in neither (measured 2026-10-07).
@@ -345,7 +345,7 @@ fn interface_symbols_are_paintable() {
     });
 }
 
-/// Symbols a translation must not carry, because the craft-fonts faces of at least one shipped
+/// Symbols a translation must not carry, because the nodalia-fonts faces of at least one shipped
 /// script have no glyph for them and egui's bundled fonts do not either: the menu triangles,
 /// and the heavy multiplication X (U+2715) that Noto Sans Georgian lacks — `×` (U+00D7) reads
 /// the same and every face has it.
@@ -803,26 +803,26 @@ fn every_language_is_painted_and_menu_ids_stay_the_same() {
 }
 
 /// The UI families, after one frame so the font definitions are loaded.
-fn fonts_ctx(craft: &'static [luz_engine::CraftFont]) -> egui::Context {
+fn fonts_ctx(nodalia_fonts: &'static [luz_engine::NodaliaFont]) -> egui::Context {
     let ctx = egui::Context::default();
-    ctx.set_fonts(crate::theme::font_definitions(craft));
+    ctx.set_fonts(crate::theme::font_definitions(nodalia_fonts));
     let mut out = ctx.run_ui(egui::RawInput::default(), |_| {});
     out.textures_delta.clear();
     ctx
 }
 
-/// Built with craft-fonts, every CJK language renders with real glyphs (no tofu) in every UI
+/// Built with nodalia-fonts, every CJK language renders with real glyphs (no tofu) in every UI
 /// family, Monospace included.
 #[test]
-fn craft_fonts_render_cjk_in_the_ui() {
+fn nodalia_fonts_render_cjk_in_the_ui() {
     let samples = [(Locale::Ja, "日本語の文字"), (Locale::ZhHans, "简体中文字"), (Locale::ZhHant, "繁體中文字")];
     for (language, sample) in samples {
-        if !luz_engine::CRAFT_FONTS.iter().any(|font| font.serves(language.script())) {
-            luz_testkit::skip!(Fonts, "{}: built without a craft-fonts face for {}", language.code(), language.script());
+        if !luz_engine::NODALIA_FONTS.iter().any(|font| font.serves(language.script())) {
+            luz_testkit::skip!(Fonts, "{}: built without a nodalia-fonts face for {}", language.code(), language.script());
             continue;
         }
         set_language(language);
-        let ctx = fonts_ctx(luz_engine::CRAFT_FONTS);
+        let ctx = fonts_ctx(luz_engine::NODALIA_FONTS);
         ctx.fonts_mut(|fonts| {
             for family in [egui::FontFamily::Proportional, egui::FontFamily::Name(crate::theme::FONT_SEMIBOLD.into()), egui::FontFamily::Monospace] {
                 let font = egui::FontId::new(13.0, family);
@@ -838,10 +838,10 @@ fn craft_fonts_render_cjk_in_the_ui() {
     set_language(Locale::En);
 }
 
-/// Built without craft-fonts, the UI (in every language) still installs its fonts and runs;
+/// Built without nodalia-fonts, the UI (in every language) still installs its fonts and runs;
 /// Latin text keeps Inter.
 #[test]
-fn the_ui_works_without_craft_fonts() {
+fn the_ui_works_without_nodalia_fonts() {
     let ctx = fonts_ctx(&[]);
     ctx.fonts_mut(|fonts| {
         // (Not Monospace: egui's `has_glyph` reports false for glyphs of the family's

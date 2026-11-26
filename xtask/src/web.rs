@@ -52,9 +52,9 @@ fn copy_chinese_font(out: &Path) -> Result<bool, String> {
             Err(e) => return Err(format!("{}: {e}", path.display())),
         }
     }
-    let Some(dir) = std::env::var_os("CRAFT_FONTS_DIR") else {
-        if std::env::var_os("CRAFT_FONTS_REQUIRED").is_some() {
-            return Err("CRAFT_FONTS_REQUIRED is set but CRAFT_FONTS_DIR is missing".into());
+    let Some(dir) = std::env::var_os("NODALIA_FONTS_DIR") else {
+        if std::env::var_os("NODALIA_FONTS_REQUIRED").is_some() {
+            return Err("NODALIA_FONTS_REQUIRED is set but NODALIA_FONTS_DIR is missing".into());
         }
         return Ok(false);
     };

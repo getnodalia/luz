@@ -303,7 +303,7 @@ P2 items 12–25 h; look tuning, performance, packaging, hardening 25–45 h.
 | 2026-11-04 | minor | Compressed ORF support was introduced in #3775; subsequently withdrawn pending provenance review. Earlier clean-room and verification claims are withdrawn; compressed files use embedded previews when available. See [ORF status](orf-compression.md). |
 | 2026-10-24 | patch | Stability, the stability discount, the Beta-needs list and the estimate history: tests run in CI on Linux x64 since #2667 (FreeBSD nightly), not on macOS or Windows (gap 9); percentages and hours unchanged |
 | 2026-10-23 | minor | AI Denoise runs without a model (built-in denoiser); percentages unchanged, since it is a classical filter and Bayer-only |
-| 2026-10-13 | minor | Canon CRW decoded (clean-room, craft-libs `crates/crw/clean-room/`): 551 models verified with the coverage sweep (557 with MRW after merging main), Canon preview rows 21 → 6; RAW decoding unchanged |
+| 2026-10-13 | minor | Canon CRW decoded (clean-room, nodalia-libs `crates/crw/clean-room/`): 551 models verified with the coverage sweep (557 with MRW after merging main), Canon preview rows 21 → 6; RAW decoding unchanged |
 | 2026-10-19 | patch | Stability note: tests run in CI on Linux x64 (every PR) as well as FreeBSD; macOS and Windows remain (gap 9) |
 | 2026-10-19 | minor | Localization ~55% → ~64% (mean of the 12 key languages): Indonesian (`id`) catalog, every message but What's New; full target 61.2% → 61.5% (still ~61%) |
 | 2026-10-19 | patch | Platforms: the Windows installer is no longer listed as unverified (the 0.9.1 x64 MSI is tested on Windows 11; a confirmation after uninstalling from Settings → Apps, #892, remains); #790 noted as fixed in 0.9.1; percentages and hours unchanged |
@@ -323,4 +323,4 @@ P2 items 12–25 h; look tuning, performance, packaging, hardening 25–45 h.
 | 2026-10-10 | minor | Stage re-checked against the core-workflow alpha gate: passes, stays alpha |
 | 2026-10-10 | major | Created as progress docs: full re-measure (checklist recount, installed Lightroom 9.6 bundle listing, code counts, catalogs, CI), feature areas with weights, dimensions, AI, stage, calibration; merged ROADMAP's *Where we stand* and *Parity estimate* |
 | 2026-10-14 | minor | RAW: 82% of Adobe's models decode, 36% verified (integration batch 36) |
-| 2026-10-26 | minor | Canon CRW decoder moved to craft-libs as `craft-crw` (shared with the other Nodalia apps); Luz keeps the adapter, the EOS D60 colour work and its records; numbers unchanged |
+| 2026-10-26 | minor | Canon CRW decoder moved to nodalia-libs as `nodalia-crw` (shared with the other Nodalia apps); Luz keeps the adapter, the EOS D60 colour work and its records; numbers unchanged |

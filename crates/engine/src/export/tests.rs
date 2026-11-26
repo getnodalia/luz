@@ -423,10 +423,10 @@ fn japanese_watermark_options_and_legacy_defaults() {
     assert!(round.vertical);
 }
 
-/// Built without craft-fonts, a Japanese watermark still lays out and draws (Inter's
+/// Built without nodalia-fonts, a Japanese watermark still lays out and draws (Inter's
 /// missing-glyph boxes), and Latin text is unaffected.
 #[test]
-fn watermarks_work_without_craft_fonts() {
+fn watermarks_work_without_nodalia_fonts() {
     assert_eq!(watermark_fonts(&[]).len(), 1, "Inter only");
     for wm in [vertical_japanese(), Watermark { text: "Luz 日本語".into(), ..Watermark::default() }] {
         let mut covered = 0usize;
@@ -438,8 +438,8 @@ fn watermarks_work_without_craft_fonts() {
 #[test]
 fn biz_ud_vertical_watermarks_place_punctuation_at_the_top_right() {
     use ab_glyph::Font;
-    let Some(entry) = crate::fonts::CRAFT_FONTS.iter().find(|f| f.family == "BIZ UDMincho") else {
-        luz_testkit::skip!(Fonts, "built without BIZ UDMincho from craft-fonts");
+    let Some(entry) = crate::fonts::NODALIA_FONTS.iter().find(|f| f.family == "BIZ UDMincho") else {
+        luz_testkit::skip!(Fonts, "built without BIZ UDMincho from nodalia-fonts");
         return;
     };
     let font = ab_glyph::FontRef::try_from_slice(entry.bytes).unwrap();
@@ -453,8 +453,8 @@ fn biz_ud_vertical_watermarks_place_punctuation_at_the_top_right() {
         let rect = font.outline_glyph(glyph).unwrap().px_bounds();
         assert!(rect.min.x > 50.0 && rect.max.y < 50.0, "{ch} in the upper right: {rect:?}");
     }
-    let craft = Box::leak(
-        vec![crate::fonts::CraftFont { family: entry.family, style: entry.style, scripts: entry.scripts, bytes: entry.bytes }].into_boxed_slice(),
+    let nodalia_fonts = Box::leak(
+        vec![crate::fonts::NodaliaFont { family: entry.family, style: entry.style, scripts: entry.scripts, bytes: entry.bytes }].into_boxed_slice(),
     );
     let wm = Watermark {
         text: "、。".into(),
@@ -468,7 +468,7 @@ fn biz_ud_vertical_watermarks_place_punctuation_at_the_top_right() {
         ..Default::default()
     };
     let mut pixels = Vec::new();
-    watermark_coverage(400, 300, &wm, craft, 1.0, |x, y, k, _| {
+    watermark_coverage(400, 300, &wm, nodalia_fonts, 1.0, |x, y, k, _| {
         if k > 0.5 {
             pixels.push((x, y));
         }
@@ -481,7 +481,7 @@ fn biz_ud_vertical_watermarks_place_punctuation_at_the_top_right() {
 
 #[test]
 fn vertical_watermarks_keep_combining_marks_in_one_cell() {
-    let coverage = |text: &str, craft| {
+    let coverage = |text: &str, nodalia_fonts| {
         let wm = Watermark {
             text: text.into(),
             vertical: true,
@@ -494,24 +494,24 @@ fn vertical_watermarks_keep_combining_marks_in_one_cell() {
             ..Default::default()
         };
         let mut pixels = vec![0.0f32; 400 * 300];
-        watermark_coverage(400, 300, &wm, craft, 1.0, |x, y, k, _| pixels[y * 400 + x] = k);
+        watermark_coverage(400, 300, &wm, nodalia_fonts, 1.0, |x, y, k, _| pixels[y * 400 + x] = k);
         assert!(pixels.iter().any(|&k| k > 0.0));
         pixels
     };
-    let compare = |a: &str, b: &str, craft| {
-        let (a_pixels, b_pixels) = (coverage(a, craft), coverage(b, craft));
+    let compare = |a: &str, b: &str, nodalia_fonts| {
+        let (a_pixels, b_pixels) = (coverage(a, nodalia_fonts), coverage(b, nodalia_fonts));
         let difference = a_pixels.iter().zip(&b_pixels).position(|(a, b)| a != b);
         assert!(difference.is_none(), "{a:?} vs {b:?}: first differing pixel {difference:?}");
     };
     for (composed, decomposed) in [("éA", "e\u{301}A"), ("Å\nA", "A\u{30a}\nA"), ("A\nB", "A\r\nB"), ("日A", "日\u{e0100}A")] {
         compare(composed, decomposed, &[]);
     }
-    if crate::fonts::CRAFT_FONTS.iter().any(|f| f.family == "BIZ UDMincho") {
+    if crate::fonts::NODALIA_FONTS.iter().any(|f| f.family == "BIZ UDMincho") {
         for (composed, decomposed) in [("が日", "か\u{3099}日"), ("ぱ\n日", "は\u{309a}\n日")] {
-            compare(composed, decomposed, crate::fonts::CRAFT_FONTS);
+            compare(composed, decomposed, crate::fonts::NODALIA_FONTS);
         }
     } else {
-        luz_testkit::skip!(Fonts, "Japanese comparisons: built without BIZ UDMincho from craft-fonts");
+        luz_testkit::skip!(Fonts, "Japanese comparisons: built without BIZ UDMincho from nodalia-fonts");
     }
 }
 
@@ -533,13 +533,13 @@ fn upright_watermark_cell_retains_multiple_glyphs() {
 #[test]
 fn japanese_watermarks_support_vertical_columns() {
     use ab_glyph::Font;
-    let fonts = watermark_fonts(crate::fonts::CRAFT_FONTS);
+    let fonts = watermark_fonts(crate::fonts::NODALIA_FONTS);
     if fonts.len() < 2 {
-        luz_testkit::skip!(Fonts, "built without CRAFT_FONTS_DIR, so there is no Japanese watermark face");
+        luz_testkit::skip!(Fonts, "built without NODALIA_FONTS_DIR, so there is no Japanese watermark face");
         return;
     }
     for c in "日本語の文字".chars() {
-        assert!(fonts[1..].iter().any(|f| f.glyph_id(c).0 != 0), "a craft-fonts face has {c}");
+        assert!(fonts[1..].iter().any(|f| f.glyph_id(c).0 != 0), "a nodalia-fonts face has {c}");
     }
     let wm = vertical_japanese();
     let mut img = Rgba8::new(400, 300);

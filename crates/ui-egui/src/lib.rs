@@ -159,7 +159,7 @@ pub struct LuzApp {
     pub custom_titlebar: bool,
     /// The theme's window colour as of the last frame: the host clears the window with it.
     pub window_fill: egui::Color32,
-    /// The `movable` flag last given to the window (macOS, `craft_window::title_bar::sync_movable`).
+    /// The `movable` flag last given to the window (macOS, `nodalia_window::title_bar::sync_movable`).
     pub window_movable: Option<bool>,
     /// The host installed a native menu bar (no in-window menus then).
     pub native_menu: bool,
@@ -545,7 +545,7 @@ struct PendingShot {
     /// Bytes this request reserves until it is drained or cancelled.
     reserved: usize,
     /// The one-shot completion slot; only the app owns the strong reference.
-    slot: Option<craft_ui::capture::CaptureSlot>,
+    slot: Option<nodalia_ui::capture::CaptureSlot>,
     /// The geometry and document generation the issued command was bound to.
     issued: Option<ShotGeometry>,
     /// Library generation at issue (a different library changed mid-capture).

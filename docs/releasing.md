@@ -45,7 +45,7 @@ and the WASM web app. The platform scripts in [`packaging/`](../packaging/) writ
 - Windows: MSI installer and portable ZIP for each architecture.
 - Linux: AppImage (with its `.AppImage.zsync`), `.deb`, `.rpm`, and `.tar.gz` for each
   architecture (`packaging/linux/package.sh`). Each AppImage embeds
-  `gh-releases-zsync|storytold|luz|latest|luz-*-linux-<arch>.AppImage.zsync`, so
+  `gh-releases-zsync|getnodalia|luz|latest|luz-*-linux-<arch>.AppImage.zsync`, so
   AppImageUpdate fetches only the changed blocks from the latest published (non-pre-) release.
 - Linux riscv64: `.tar.gz` only, cross-compiled on Ubuntu 24.04 against its riscv64 ports
   libraries (so glibc 2.39 or newer), with the CLI smoke-tested under QEMU (`CROSS_*` variables
@@ -69,25 +69,25 @@ The Linux builds run on Ubuntu 22.04 and target glibc 2.35 or newer. AppImages a
 also require system libraries for the windowing stack; the `.deb` and `.rpm` packages declare
 their runtime dependencies.
 
-Release builds fetch the pinned [`storytold/craft-fonts`](https://github.com/storytold/craft-fonts)
-revision and require it (`CRAFT_FONTS_REQUIRED=1`). Keep that pin deliberate when updating the
-workflow, and bump it (in `release.yml`, five jobs, and `freebsd.yml`) whenever craft-fonts adds a face a
+Release builds fetch the pinned [`getnodalia/foundation (nodalia/fonts)`](https://github.com/getnodalia/foundation)
+revision and require it (`NODALIA_FONTS_REQUIRED=1`). Keep that pin deliberate when updating the
+workflow, and bump it (in `release.yml`, five jobs, and `freebsd.yml`) whenever nodalia-fonts adds a face a
 shipped language needs: a stale pin still builds, it just ships tofu (issue #319: v0.4.0 pinned a revision
 from before Noto Sans CJK SC, so Simplified Chinese had no glyphs). Before a release, check the pin against
-craft-fonts' `fonts/manifest.txt` and run `CRAFT_FONTS_DIR=../craft-fonts cargo test -p luz-ui-egui i18n`,
-whose glyph-coverage test checks the characters in available faces. `CRAFT_FONTS_REQUIRED=1` now also makes
+nodalia-fonts' `fonts/manifest.txt` and run `NODALIA_FONTS_DIR=../nodalia-fonts cargo test -p luz-ui-egui i18n`,
+whose glyph-coverage test checks the characters in available faces. `NODALIA_FONTS_REQUIRED=1` now also makes
 the native build fail if the pinned manifest lacks Noto Sans CJK SC Regular (`Hans`) or BIZ UDPGothic Regular;
 the web build requires BIZ UDPGothic Regular and packages Noto Sans CJK SC as a separate asset.
 
-Local macOS, Linux and Windows packaging scripts automatically use the sibling `../craft-fonts`
+Local macOS, Linux and Windows packaging scripts automatically use the sibling `../nodalia-fonts`
 checkout. If it is absent, they clone it at revision
-`b076417b5880bd4154bd22f00695b1d28c6bea83` (keep the pins in `packaging/fonts.sh` and
+`7a66e2c6c6d60ac6417caef3e339e186d003b5b8` (keep the pins in `packaging/fonts.sh` and
 `packaging/windows/fonts.ps1` in sync with the release workflow). Existing checkouts are left untouched.
-Set `CRAFT_FONTS_DIR` to use another
+Set `NODALIA_FONTS_DIR` to use another
 checkout; relative paths resolve from the workspace root. The script requires the Chinese and Japanese
 UI faces and includes their OFL licences in the package. Download failures or incomplete checkouts
 stop packaging with an error. `--skip-build` (`-SkipBuild` on Windows) packages existing binaries without downloading fonts or
-changing what they embed; pass the same `CRAFT_FONTS_DIR` used to compile them so their licences ship.
+changing what they embed; pass the same `NODALIA_FONTS_DIR` used to compile them so their licences ship.
 
 ## Signing credentials
 

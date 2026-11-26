@@ -18,15 +18,8 @@ interface follows Foundation's [NDL standard](https://github.com/getnodalia/foun
 
 | Dependency | Where | Replacement | Blocked on |
 |---|---|---|---|
-| `storytold/craft-common-actions` | `.github/workflows/windows-arm64.yml` | Foundation reusable workflows (release, refresh-contributors, windows-arm64) | writing and testing them |
-| `storytold/craft-fonts` | `crates/engine/build.rs`, `flake.nix`, `nix/package.nix`, `packaging/env.sh`, `packaging/windows/package.ps1` | getnodalia/foundation `vendor/craft-fonts/main` | repointing |
-| `storytold/craft-libs` | `nix/package.nix`, `packaging/linux/flatpak/README.md`, `packaging/linux/flatpak/cargo-sources.json` | to decide | — |
-| `storytold/egui` | `packaging/linux/flatpak/cargo-sources.json` | to decide | — |
-| `storytold/egui.git` | `packaging/linux/flatpak/cargo-sources.json` | to decide | — |
+| `storytold/vectorcraft` (link) | `packaging/macos/dmg/README.md` | prose only | rewording |
 | `getnodalia/luz` | `.github/workflows/upstream-sync.yml`, `Cargo.toml`, `packaging/linux/dev.danielmiguelt.Luz.metainfo.xml.in`, `packaging/linux/flatpak-oci.sh`, `packaging/linux/package.sh`, `packaging/windows/sign.ps1` | none: intended upstream sync | — |
-| `storytold/vectorcraft` | `packaging/macos/dmg/README.md` | to decide | — |
-| `storytold/winit` | `packaging/linux/flatpak/cargo-sources.json` | to decide | — |
-| `storytold/winit.git` | `packaging/linux/flatpak/cargo-sources.json` | to decide | — |
 
 ## Technical debt
 

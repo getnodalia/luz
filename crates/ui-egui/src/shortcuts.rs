@@ -353,7 +353,7 @@ fn keyboard_owned(app: &LuzApp, ctx: &egui::Context) -> bool {
         .ui
         .docking
         .as_ref()
-        .is_some_and(|workspace| craft_ui::docking::DockArea::new(egui::Id::unique("luz-docking")).chrome_has_focus(ctx, &workspace.layout));
+        .is_some_and(|workspace| nodalia_ui::docking::DockArea::new(egui::Id::unique("luz-docking")).chrome_has_focus(ctx, &workspace.layout));
     if !chrome {
         return true;
     }

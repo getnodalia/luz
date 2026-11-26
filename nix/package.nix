@@ -5,8 +5,8 @@
 #
 # Kept in step with the release workflow (.github/workflows/release.yml) and packaging/env.sh:
 #   * `Cargo.lock` drives the dependencies (`cargoLock`), so there is no vendorHash to bump. The git
-#     source (storytold/craft-libs) is fetched at the revision the lock file pins;
-#   * `CRAFT_FONTS_DIR` embeds the CJK fonts from storytold/craft-fonts (the `craft-fonts`
+#     source (getnodalia/foundation (nodalia/libs)) is fetched at the revision the lock file pins;
+#   * `NODALIA_FONTS_DIR` embeds the CJK fonts from getnodalia/foundation (nodalia/fonts) (the `nodalia-fonts`
 #     flake input); without it everything builds and runs, but Japanese and Chinese text have no glyphs;
 #   * the desktop file, hicolor icons and AppStream metadata are the same files the .deb/.rpm ship
 #     (packaging/linux/), so `apt` and NixOS users see one identical Luz;
@@ -41,8 +41,8 @@
   # Adds the driver search path (/run/opengl-driver/lib) to the binaries' RPATH so wgpu finds the
   # installed Vulkan driver on NixOS. Optional: harmless on nixpkgs without it.
   autoAddDriverRunpath ? null,
-  # storytold/craft-fonts checkout (flake input). `null` builds without CJK glyphs.
-  craft-fonts ? null,
+  # getnodalia/foundation (nodalia/fonts) checkout (flake input). `null` builds without CJK glyphs.
+  nodalia-fonts ? null,
   # Release date for the AppStream metadata (YYYY-MM-DD); the flake derives it from its own commit.
   buildDate ? "1970-01-01",
 }:
@@ -106,7 +106,7 @@ rustPlatform.buildRustPackage {
 
   cargoLock = {
     lockFile = root + "/Cargo.lock";
-    # The git dependency (storytold/craft-libs) is pinned by revision in Cargo.lock.
+    # The git dependency (getnodalia/foundation (nodalia/libs)) is pinned by revision in Cargo.lock.
     allowBuiltinFetchGit = true;
   };
 
@@ -157,10 +157,10 @@ rustPlatform.buildRustPackage {
     libxrandr
   ];
 
-  env = lib.optionalAttrs (craft-fonts != null) {
-    CRAFT_FONTS_DIR = toString craft-fonts;
+  env = lib.optionalAttrs (nodalia-fonts != null) {
+    NODALIA_FONTS_DIR = toString nodalia-fonts;
     # A malformed font input must fail the build rather than silently ship without glyphs.
-    CRAFT_FONTS_REQUIRED = "1";
+    NODALIA_FONTS_REQUIRED = "1";
   };
 
   postInstall = ''
@@ -174,14 +174,14 @@ rustPlatform.buildRustPackage {
       --subst-var-by VERSION ${version} \
       --subst-var-by DATE ${buildDate}
 
-    # Licences for everything embedded in the binaries: Inter, the app icon, each craft font.
+    # Licences for everything embedded in the binaries: Inter, the app icon, each nodalia font.
     doc=$out/share/doc/luz
     install -Dm644 -t "$doc" \
       README.md LICENSE-MIT LICENSE-APACHE NOTICE \
       assets/ATTRIBUTION.md assets/fonts/OFL-Inter.txt
   ''
-  + lib.optionalString (craft-fonts != null) ''
-    for lic in ${toString craft-fonts}/fonts/*/OFL.txt; do
+  + lib.optionalString (nodalia-fonts != null) ''
+    for lic in ${toString nodalia-fonts}/fonts/*/OFL.txt; do
       install -Dm644 "$lic" "$doc/OFL-$(basename "$(dirname "$lic")").txt"
     done
   ''

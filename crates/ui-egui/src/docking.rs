@@ -1,11 +1,11 @@
 //! Application panel identities and persistence around the shared docking renderer.
 //! Document contents remain owned by their existing view implementations.
 
-use craft_ui::docking::{
+use nodalia_ui::docking::{
     Action, Column, ColumnLocation, DockArea, DockCommand, DockError, DockOperation, DockStyle, FloatSpace, Group, GroupLocation, Layout, Location,
     Node, PanelLimits, PanelState, Permissions, Placement, Side, UiDock, Zone,
 };
-use craft_ui::layout::{SplitAxis, SplitSize};
+use nodalia_ui::layout::{SplitAxis, SplitSize};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
@@ -82,7 +82,7 @@ fn split(axis: SplitAxis, size: SplitSize, first: Node<Panel>, second: Node<Pane
 }
 
 /// The saved arrangement. Closed panels keep their last group, side, size or floating rect.
-pub type Workspace = craft_ui::docking::Workspace<Panel>;
+pub type Workspace = nodalia_ui::docking::Workspace<Panel>;
 
 fn column(panel: Panel, width: f32) -> Column<Panel> {
     Column::new(vec![Group::new(vec![panel], 0)], width)
@@ -312,7 +312,7 @@ pub(crate) fn cancel_replaced_gesture(app: &crate::LuzApp, workspace: Option<&Wo
         _ => true,
     };
     if replaced && let Some(ctx) = &app.tasks.repaint {
-        craft_ui::docking::cancel_drag::<Panel>(ctx, egui::Id::unique("luz-docking"));
+        nodalia_ui::docking::cancel_drag::<Panel>(ctx, egui::Id::unique("luz-docking"));
     }
 }
 
@@ -468,7 +468,7 @@ pub fn show(app: &mut crate::LuzApp, ui: &mut egui::Ui) {
     let _ = sync(&mut workspace, app);
     let stale = workspace.layout != rendered.layout || workspace.hidden != rendered.hidden;
     if stale {
-        craft_ui::docking::cancel_drag::<Panel>(ui.ctx(), egui::Id::unique("luz-docking"));
+        nodalia_ui::docking::cancel_drag::<Panel>(ui.ctx(), egui::Id::unique("luz-docking"));
     }
     publish_visibility(app, &workspace);
     app.ui.docking = Some(workspace);
@@ -610,7 +610,7 @@ mod tests {
         app.ui.right = crate::state::RightPanel::Crop;
         let entries = [Panel::Tools, Panel::Library, Panel::Presets]
             .into_iter()
-            .map(|panel| craft_ui::docking::StackEntry { panel, open: panel != Panel::Tools, height: Some(180.0) })
+            .map(|panel| nodalia_ui::docking::StackEntry { panel, open: panel != Panel::Tools, height: Some(180.0) })
             .collect();
         app.ui.docking = Some(Workspace::new(Layout {
             root: Some(split(SplitAxis::Horizontal, SplitSize::FixedSecond(350.0), tabs(Panel::Canvas), Node::Stack { entries })),
@@ -831,7 +831,7 @@ mod tests {
         let root = split(SplitAxis::Horizontal, SplitSize::FixedSecond(300.0), tabs(Panel::Canvas), tabs(Panel::Tools));
         let mut workspace = Workspace::new(Layout { root: Some(root), floating: Vec::new() });
         // Presets, the panel Library went back beside, is neither shown nor hidden.
-        let location: craft_ui::docking::Location<Panel> = serde_json::from_value(json!({
+        let location: nodalia_ui::docking::Location<Panel> = serde_json::from_value(json!({
             "floating": null,
             "anchor": "presets",
             "placement": {"Split": "Left"},

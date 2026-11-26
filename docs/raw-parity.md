@@ -141,9 +141,9 @@ checked (the per-model CC0 sweeps of October 2026).
 | CR3 | sRAW / mRAW | ⬜ | 4-plane Bayer only |
 | CR3 | HEIF / HDR PQ | ⬜ | HEVC tracks recognised, not decoded |
 | CR3 | dual-pixel raw | ⬜ | never substituted |
-| CRW | CIFF: EOS D30/D60/10D/300D, PowerShot G1/G6 | ✅ | clean-room derivation frozen in `craft-libs crates/crw/clean-room/02-crw-format.md`; 28 of 29 files pixel-exact vs a black-box reference (8 CC0 EOS, G1, G6, 18 private D60); as-shot WB from ColorBalance; EOS D60 colour matrices measured on a ColorChecker (Kelvin white balance) |
+| CRW | CIFF: EOS D30/D60/10D/300D, PowerShot G1/G6 | ✅ | clean-room derivation frozen in `nodalia-libs crates/crw/clean-room/02-crw-format.md`; 28 of 29 files pixel-exact vs a black-box reference (8 CC0 EOS, G1, G6, 18 private D60); as-shot WB from ColorBalance; EOS D60 colour matrices measured on a ColorChecker (Kelvin white balance) |
 | CRW | CIFF: PowerShot G2/G3/G4, Pro1, S-series | 🟡 | same decoder and tables; no sample file checked |
-| CRW | CIFF: PowerShot G5 | ⬜ | refused (entropy anomaly, `craft-libs crates/crw/clean-room/02-crw-format.md`); preview |
+| CRW | CIFF: PowerShot G5 | ⬜ | refused (entropy anomaly, `nodalia-libs crates/crw/clean-room/02-crw-format.md`); preview |
 | NEF | uncompressed, lossless, lossy type 1 / 2, lossy after split | ✅ | D5100, D7000, D7500, Z f corpus; ~60 NEFs by hand; #633; D4, D90, D5000, D600 and D610 image area measured against the camera JPEG (white level too for the D4, D90 and D5000) |
 | NEF | packed 14-bit stored under a compressed tag (Z 6II uncompressed) | ⬜ | #769; fix in PR #671 (not merged) |
 | NEF | High Efficiency / HE★ (JPEG XS) | ⬜ | named, preview (#193); needs a JPEG XS decoder |
@@ -299,7 +299,7 @@ Beyond decoding:
 | 2026-10-26 | patch | Bundled camera profile count 5 → 9 (Nikon Z 6II, Z 8 and D5300, ILCE-7RM5); counts only |
 | 2026-10-23 | minor | Lens profiles: Sony ILCE-6700 (APS-C) in-file distortion through the ILCE-7RM6 conversion, knots spanning its own crop; lens score unchanged (~10%: one more body) |
 | 2026-10-25 | patch | CRW variant rows split by verification status (EOS and G1/G6 verified; G2/G3/G4/Pro1/S-series unverified; G5 preview); the CIFF heap walk is bounded by a per-file record budget, so a block of sub-heap records pointing back at their parent no longer hangs decode |
-| 2026-10-13 | minor | Canon CRW decoded (clean-room derivation, craft-libs `crates/crw/clean-room/`): EOS D30/D60/10D/300D, PowerShot G1/G6 verified pixel-exact (28 of 29 corpus files); G5 preview (entropy anomaly); as-shot WB from ColorBalance 0x10a9; 243 verified, 950 unverified, 217 preview; Canon bucket 76% (21% verified) |
+| 2026-10-13 | minor | Canon CRW decoded (clean-room derivation, nodalia-libs `crates/crw/clean-room/`): EOS D30/D60/10D/300D, PowerShot G1/G6 verified pixel-exact (28 of 29 corpus files); G5 preview (entropy anomaly); as-shot WB from ColorBalance 0x10a9; 243 verified, 950 unverified, 217 preview; Canon bucket 76% (21% verified) |
 | 2026-10-18 | patch | X-T30, X-T30 II, X-Pro3, X100V, X-S10 and X-E4 take the X-T3's spectral matrices (same 26.1 MP X-Trans CMOS 4 sensor): an X-T30 raw with a black-and-white (Acros) camera JPEG no longer opens in the muted neutral fallback |
 | 2026-10-16 | minor | Kelvin white balance from Canon CR2 `ColorData` presets (PowerShot G1 X Mark III) |
 | 2026-10-15 | minor | DNGs with a look table and no tone curve (Lightroom-written, Adobe Standard) fit their tone to the embedded preview, also Lightroom's 1024 px one: two lossy ILCE-7CM2 DNGs no longer render 0.8 EV dark and flat |
@@ -338,4 +338,4 @@ Beyond decoding:
 | 2026-10-18 | minor | Minolta MRW decoded (`vendor/mrw.rs`): DiMAGE 7, 7Hi, A1, A2, A200 and Dynax / Maxxum 7D verified; 551 verified, 656 unverified, 201 preview (re-measured with `coverage.py`) |
 | 2026-10-23 | minor | AHD blends its horizontal and vertical candidates where their homogeneity is close, so flat noise no longer becomes a maze pattern; Bayer demosaic row notes the pre-white-balance demosaic (#1328); scores unchanged |
 | 2026-10-30 | patch | RAF camera look fitted on the vignetting-corrected sensor (`LOOK_VERSION` 13): renders were up to 0.3 EV too bright in midtones and 0.6 EV in shadows; X-S10 mean ΔE00 vs the camera JPEG 2.71 → 2.55 on 60 photos |
-| 2026-10-26 | minor | Canon CRW decoding moved to the shared craft-libs crate `craft-crw` (local path dependency until that branch merges); `vendor/crw.rs` is now the adapter onto `RawImage`, and the clean-room derivation record lives in craft-libs `crates/crw/clean-room/`; counts unchanged |
+| 2026-10-26 | minor | Canon CRW decoding moved to the shared nodalia-libs crate `nodalia-crw` (local path dependency until that branch merges); `vendor/crw.rs` is now the adapter onto `RawImage`, and the clean-room derivation record lives in nodalia-libs `crates/crw/clean-room/`; counts unchanged |

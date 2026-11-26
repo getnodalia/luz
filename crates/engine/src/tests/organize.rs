@@ -318,10 +318,10 @@ fn stacks_group_collapse_and_replay() {
     s.execute("edit.undo", &json!({})).unwrap();
     assert_eq!(s.catalog.stack_of(c).unwrap().photos.len(), 3);
     // auto-stack the rest of the view: a huge gap groups everything unstacked
-    let pre = s.execute("stack.auto", &json!({"gap": 1e9, "preview": true})).unwrap();
+    let pre = s.execute("stack.auto", &json!({"gap": 1e12, "preview": true})).unwrap();
     assert_eq!(pre["stacks"], 1);
     assert_eq!(s.catalog.stacks().count(), 1, "preview changes nothing");
-    s.execute("stack.auto", &json!({"gap": 1e9})).unwrap();
+    s.execute("stack.auto", &json!({"gap": 1e12})).unwrap();
     assert_eq!(s.catalog.stacks().count(), 2);
     assert_eq!(s.visible_cloned().len(), 2);
     s.execute("stack.expandAll", &json!({})).unwrap();

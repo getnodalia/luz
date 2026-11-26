@@ -482,11 +482,12 @@ fn upright_analysis_is_resolution_independent() {
 }
 
 /// Regression: Upright Auto must not invent perspective in natural scenes (conical trees, ridgelines, a level
-/// water line) — the demo library has no buildings, so Auto should stay close to identity everywhere.
+/// water line) — the generated demo scenes have no buildings, so Auto should stay close to identity everywhere.
+/// The real photographs are left out: a cave's columns or a cliff's strata are real verticals Auto may rightly level.
 #[test]
 fn upright_auto_leaves_natural_scenes_nearly_alone() {
     use luz_develop::Upright;
-    for scene in luz_scenes::demo_library() {
+    for scene in luz_scenes::demo_library().into_iter().filter(|s| s.kind != luz_scenes::Kind::Photo) {
         let src = scene.render_fit(768);
         let h = crate::upright::auto_transform(&src, &SourceInfo::default(), &DevelopSettings::default(), Upright::Auto);
         // how far the corners of the centred unit frame move

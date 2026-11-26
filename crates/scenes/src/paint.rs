@@ -214,6 +214,9 @@ pub fn render_serial(kind: Kind, seed: u32, w: usize, h: usize) -> Rgb32f {
 }
 
 fn render_rows(kind: Kind, seed: u32, w: usize, h: usize, parallel: bool) -> Rgb32f {
+    if kind == Kind::Photo {
+        return crate::photo::render(seed, w, h, parallel);
+    }
     let mut img = Rgb32f::new(w, h);
     if w == 0 || h == 0 {
         return img;
@@ -267,6 +270,8 @@ fn shade(kind: Kind, p: &P, x: f32, v: f32) -> C {
         Kind::Macro => macro_flower(p, x, v),
         Kind::Canyon => canyon(p, x, v),
         Kind::Beach => beach(p, x, v),
+        // photographs are resampled, never shaded (see `render_rows`)
+        Kind::Photo => [0.0; 3],
     }
 }
 

@@ -20,14 +20,15 @@ pub fn load(s: &mut Session) {
         p.meta = Meta {
             camera: sc.meta.camera.into(),
             lens: sc.meta.lens.into(),
-            focal_mm: Some(sc.meta.focal_mm),
-            aperture: Some(sc.meta.aperture),
+            // a scanned or space-borne photograph has no exposure data worth showing
+            focal_mm: (sc.meta.focal_mm > 0.0).then_some(sc.meta.focal_mm),
+            aperture: (sc.meta.aperture > 0.0).then_some(sc.meta.aperture),
             shutter: sc.meta.shutter.into(),
-            iso: Some(sc.meta.iso),
+            iso: (sc.meta.iso > 0).then_some(sc.meta.iso),
             location: sc.meta.location.into(),
             title: sc.name.clone(),
             keywords: sc.meta.keywords.iter().map(|k| k.to_string()).collect(),
-            creator: "Luz Demo".into(),
+            creator: if sc.meta.creator.is_empty() { "Luz Demo" } else { sc.meta.creator }.into(),
             ..Default::default()
         };
         // one demo photo carries a camera focus point (as a Sony raw would), on the bloom's centre, so

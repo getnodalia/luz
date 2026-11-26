@@ -155,13 +155,16 @@ fn reset_edits_restores_a_raws_import_defaults() {
     }
 }
 
+/// Photos in the demo library: the generated scenes and the real photographs.
+const DEMO_PHOTOS: usize = 32;
+
 #[test]
 fn demo_library_loads() {
     let mut s = demo();
-    assert_eq!(s.visible().len(), 24);
+    assert_eq!(s.visible().len(), DEMO_PHOTOS);
     assert!(s.active().is_some());
     let st = s.execute("catalog.stats", &json!({})).unwrap();
-    assert_eq!(st["photos"], 24);
+    assert_eq!(st["photos"], DEMO_PHOTOS);
     let albums = s.execute("albums.list", &json!({})).unwrap();
     assert!(albums.as_array().unwrap().iter().any(|a| a["folder"] == true));
 }
@@ -244,11 +247,11 @@ fn albums_crud() {
     s.execute("library.source", &json!({"kind": "all"})).unwrap();
     s.execute("library.selectAll", &json!({})).unwrap();
     s.execute("album.addPhotos", &json!({"id": a})).unwrap();
-    assert_eq!(s.catalog.album(luz_catalog::AlbumId(a)).unwrap().photos.len(), 24);
+    assert_eq!(s.catalog.album(luz_catalog::AlbumId(a)).unwrap().photos.len(), DEMO_PHOTOS);
     s.execute("album.delete", &json!({"id": f})).unwrap();
     assert!(s.catalog.album(luz_catalog::AlbumId(a)).is_none());
     assert!(s.catalog.album(luz_catalog::AlbumId(f)).is_none());
-    assert_eq!(s.catalog.photos().count(), 24, "album deletion keeps the photos");
+    assert_eq!(s.catalog.photos().count(), DEMO_PHOTOS, "album deletion keeps the photos");
 }
 
 /// Given an album and a folder, when something is created inside each, then only the folder
@@ -279,15 +282,15 @@ fn filters_and_delete_restore() {
     let mut s = demo();
     s.execute("library.filter", &json!({"rating": 4})).unwrap();
     let n = s.visible().len();
-    assert!(n > 0 && n < 24);
+    assert!(n > 0 && n < DEMO_PHOTOS);
     s.execute("library.clearFilter", &json!({})).unwrap();
     s.execute("photo.delete", &json!({})).unwrap();
-    assert_eq!(s.visible().len(), 23);
+    assert_eq!(s.visible().len(), DEMO_PHOTOS - 1);
     s.execute("library.source", &json!({"kind": "recentlyDeleted"})).unwrap();
     assert_eq!(s.visible().len(), 1);
     s.execute("photo.restore", &json!({})).unwrap();
     s.execute("library.source", &json!({"kind": "all"})).unwrap();
-    assert_eq!(s.visible().len(), 24);
+    assert_eq!(s.visible().len(), DEMO_PHOTOS);
 }
 
 #[test]

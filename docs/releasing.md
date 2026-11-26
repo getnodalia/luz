@@ -50,11 +50,6 @@ and the WASM web app. The platform scripts in [`packaging/`](../packaging/) writ
 - Linux riscv64: `.tar.gz` only, cross-compiled on Ubuntu 24.04 against its riscv64 ports
   libraries (so glibc 2.39 or newer), with the CLI smoke-tested under QEMU (`CROSS_*` variables
   of `packaging/linux/package.sh`).
-- Flatpak: a single-file `.flatpak` bundle for each architecture, repackaged from that
-  architecture's Linux tarball (`packaging/linux/flatpak-bundle.sh` with
-  `packaging/linux/flatpak/dev.danielmiguelt.Luz.bundle.yml`; no Rust build). The from-source
-  manifest `dev.danielmiguelt.Luz.yml` is for Flathub; packaging-lint keeps their runtime and
-  `finish-args` identical.
 - FreeBSD: `luz-<version>-freebsd-x86_64.tar.gz`, a `/usr/local`-style tree built in a
   FreeBSD 14.3 VM (`packaging/freebsd/package.sh`, the same packages as `freebsd.yml`). Install
   with `tar -xzf <file> --strip-components 1 -C /usr/local`.

@@ -19,12 +19,11 @@ interface follows Foundation's [NDL standard](https://github.com/getnodalia/foun
 | Dependency | Where | Replacement | Blocked on |
 |---|---|---|---|
 | `storytold/vectorcraft` (link) | `packaging/macos/dmg/README.md` | prose only | rewording |
-| `getnodalia/luz` | `.github/workflows/upstream-sync.yml`, `Cargo.toml`, `packaging/linux/dev.danielmiguelt.Luz.metainfo.xml.in`, `packaging/linux/flatpak-oci.sh`, `packaging/linux/package.sh`, `packaging/windows/sign.ps1` | none: intended upstream sync | — |
 
 ## Technical debt
 
-- None left from the rename: every name is Luz's (`scripts/rebrand.py check`). File signatures
-  keep upstream's values on purpose (`rebrand: keep`), so older libraries and presets open.
+- None left from the rename: every name is Luz's. File signatures keep their earlier values on
+  purpose, so older libraries and presets open.
 
 ## Reusable Nodalia components
 

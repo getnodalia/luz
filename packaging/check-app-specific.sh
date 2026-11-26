@@ -10,21 +10,6 @@ done
 grep -qF '<DialogRef Id="ExitDialog" />' packaging/windows/luz.wxs \
   || { echo "::error::ExitDialog is not referenced; installs and removes end without a completion dialog" >&2; exit 1; }
 
-python3 - <<'PYEOF'
-import yaml
-manifests = []
-for name in ("dev.danielmiguelt.Luz.yml", "dev.danielmiguelt.Luz.bundle.yml"):
-    with open("packaging/linux/flatpak/" + name) as source:
-        manifest = yaml.safe_load(source)
-    assert manifest["id"] == "dev.danielmiguelt.Luz" and manifest["command"] == "luz", name
-    # Without this talk-name the sandbox hides the accessibility bus and Orca cannot see the app.
-    assert "--talk-name=org.a11y.Bus" in manifest["finish-args"], f"{name} lost --talk-name=org.a11y.Bus"
-    manifests.append(manifest)
-for key in ("runtime", "runtime-version", "sdk", "finish-args"):
-    assert manifests[0][key] == manifests[1][key], f"Flatpak manifests disagree on {key}"
-print("Luz package identity ok")
-PYEOF
-
 # The macOS bundle must declare only file types Luz can open. It used to carry Lienzo's
 # `.pcraft` document type and imported PSB/QOI declarations, so Launch Services typed Lienzo
 # documents as Luz's and `.pcraft` had three claimant apps (issue #1951). plistlib parses the

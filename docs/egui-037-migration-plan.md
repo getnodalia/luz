@@ -16,12 +16,11 @@ Bitstream Vera License), Ubuntu Light (Ubuntu Font Licence 1.0) and Noto Emoji R
 next to the existing egui-icons/emoji-icon-font block; `assets/ATTRIBUTION.md` gains rows for
 `epaint_default_fonts::HACK_REGULAR`, `UBUNTU_LIGHT` and `NOTO_EMOJI_REGULAR`; `packaging/env.sh`
 `copy_font_licences` now always stages `assets/fonts/OFL-Inter.txt` as `OFL-Inter.txt` before the optional
-nodalia-fonts OFLs (Linux, macOS app and CLI, FreeBSD and web use it), and the Flatpak from-source manifest
-installs it directly. The release Flatpak bundle repackages the Linux tarball and so inherits its documents;
+nodalia-fonts OFLs (Linux, macOS app and CLI, FreeBSD and web use it).
 Windows and Nix already staged Inter. Managed staging checks verified the three upstream licence texts
 byte-for-byte in `NOTICE`, copied Inter with and without an optional nodalia-fonts input, and confirmed
 that a missing Inter licence makes staging fail. These checks exercise the shared document-copy helper;
-actual release artifacts (deb/rpm/tar, macOS app and CLI, FreeBSD, web zip, Flatpak, MSI/portable zip, Nix)
+actual release artifacts (deb/rpm/tar, macOS app and CLI, FreeBSD, web zip, MSI/portable zip, Nix)
 and their installed notice contents remain unverified.
 
 Library-check results now remain visible for the frame in which they arrive, so a zero-delay refresh cannot immediately replace a fresh missing-library answer. The scheduling fence uses the root UI frame number across all layout passes; focused regressions cover the single-pass and forced-multipass cases with isolated temporary directories. Fresh static review accepted the delivery-frame behavior.

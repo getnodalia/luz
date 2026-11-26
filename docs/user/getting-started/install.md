@@ -32,7 +32,6 @@ The release has these files for `x86_64` and `aarch64` (Arm). Replace `x86_64` w
 | File                                         | Notes                                                    |
 |----------------------------------------------|----------------------------------------------------------|
 | `luz-<version>-linux-x86_64.AppImage` | Runs anywhere.                                           |
-| `luz-<version>-linux-x86_64.flatpak`  | Sandboxed. Install with `flatpak install --user <file>`. |
 | `luz-<version>-linux-x86_64.deb`      | For Debian and Ubuntu.                                   |
 | `luz-<version>-linux-x86_64.rpm`      | For Fedora, RHEL and openSUSE.                           |
 | `luz-<version>-linux-x86_64.tar.gz`   | Unpack anywhere.                                         |

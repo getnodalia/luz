@@ -3,7 +3,7 @@
 The Canon CRW (CIFF) decoder and its clean-room record (the frozen format, the verification
 summary, the colour, geometry and metadata notes, the private-corpus summary and the source log)
 live in nodalia-libs:
-[`crates/crw/clean-room/`](https://github.com/storytold/craft-libs/tree/main/crates/crw/clean-room).
+`crates/crw/clean-room/`.
 The derivation trail and the frozen table-generation materials stay in Luz PR #3021.
 Luz uses the crate `nodalia-crw` through the adapter `crates/raw/src/vendor/crw.rs`.
 

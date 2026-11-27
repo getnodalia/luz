@@ -1,8 +1,7 @@
-//! Canon CRW (CIFF heap) raw decoding through the shared `craft-crw` crate (craft-libs,
-//! `crates/crw`): the bodies before the CR2 era (EOS D30/D60/10D/300D, PowerShot G-series).
+//! Canon CRW (CIFF heap) raw decoding through the shared `nodalia-crw` crate (`crates/crw`): the bodies before the CR2 era (EOS D30/D60/10D/300D, PowerShot G-series).
 //!
 //! The decoder, its frozen code tables and its clean-room record live in
-//! craft-libs (`crates/crw/clean-room/`: the frozen format `02-crw-format.md`, the verification
+//! nodalia-libs (`crates/crw/clean-room/`: the frozen format `02-crw-format.md`, the verification
 //! `03-verification.md`, 28 of 29 corpus files and 1,516 EOS D60 files sample-exact against a
 //! black-box reference). This module maps its output onto [`RawImage`]: CFA phase, black and white
 //! levels, active area, orientation, as-shot white balance and the make, model and capture-time

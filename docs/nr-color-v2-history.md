@@ -1,6 +1,6 @@
 # Colour noise reduction V2: what was tried, measured and dropped
 
-Prototype branch `nr-color-v2` for storytold/lightcraft#815 (dark-scene colour noise also in #820). This file
+Prototype branch `nr-color-v2` for #815 (dark-scene colour noise also in #820). This file
 records every approach that was tried, including the ones that failed on quality or speed, so later work does
 not repeat them. Method details of the current version: [`nr-color-joint.md`](nr-color-joint.md). All numbers
 are our own measurements (October 2026); test files: the two ILCE-7M4 raws from #820 ("candle", ISO 3200;
